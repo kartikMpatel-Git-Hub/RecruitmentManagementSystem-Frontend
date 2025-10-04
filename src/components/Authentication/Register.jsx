@@ -14,6 +14,19 @@ function Register() {
     confirmPassword: "",
     image: null,
     role: "",
+    candidateFirstName: "",
+    candidateMiddleName: "",
+    candidateLastName: "",
+    candidateGender: "",
+    candidateDateOfBirth: "",
+    candidateAddress: "",
+    candidateCity: "",
+    candidateState: "",
+    candidateCountry: "",
+    candidateZipCode: "",
+    candidatePhoneNumber: "",
+    candidateTotalExperienceInYears: "",
+    resume: null,
   });
   const [imagePreview, setImagePreview] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -135,52 +148,140 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (validateForm()) {
-      const user = {
-        userName: formData.userName,
-        userEmail: formData.userEmail,
-        userPassword: formData.userPassword,
-      };
-      const formDataToSubmit = new FormData();
-      formDataToSubmit.append(
-        "user",
-        new Blob([JSON.stringify(user)], { type: "application/json" })
-      );
-      formDataToSubmit.append("image", formData.image);
-      formDataToSubmit.append("role", formData.role);
+    if (!validateForm()) return;
 
-      try {
-        const response = await axios.post(
-          "http://localhost:8080/authentication/register",
-          formDataToSubmit,
+    try {
+      if (formData.role === "ROLE_CANDIDATE") {
+        // ✅ Candidate registration → /register
+        const candidateDto = {
+          userName: formData.userName,
+          userEmail: formData.userEmail,
+          userPassword: formData.userPassword,
+          candidateFirstName: formData.candidateFirstName,
+          candidateMiddleName: formData.candidateMiddleName,
+          candidateLastName: formData.candidateLastName,
+          candidateGender: formData.candidateGender,
+          candidateDateOfBirth: formData.candidateDateOfBirth,
+          candidateAddress: formData.candidateAddress,
+          candidateCity: formData.candidateCity,
+          candidateState: formData.candidateState,
+          candidateCountry: formData.candidateCountry,
+          candidateZipCode: formData.candidateZipCode,
+          candidatePhoneNumber: formData.candidatePhoneNumber,
+          candidateTotalExperienceInYears:
+            formData.candidateTotalExperienceInYears,
+        };
+
+        const submissionData = new FormData();
+        submissionData.append(
+          "candidate",
+          new Blob([JSON.stringify(candidateDto)], {
+            type: "application/json",
+          })
+        );
+        submissionData.append("image", formData.image);
+        submissionData.append("resume", formData.resume);
+
+        await axios.post(
+          "http://localhost:8080/candidate/register",
+          submissionData,
           {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
+            headers: { "Content-Type": "multipart/form-data" },
           }
         );
+
+        toast.success("Candidate Registered Successfully!", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+      } else {
+        // ✅ All other roles → /authentication/register
+        const user = {
+          userName: formData.userName,
+          userEmail: formData.userEmail,
+          userPassword: formData.userPassword,
+        };
+
+        const submissionData = new FormData();
+        submissionData.append(
+          "user",
+          new Blob([JSON.stringify(user)], { type: "application/json" })
+        );
+        submissionData.append("image", formData.image);
+        submissionData.append("role", formData.role);
+
+        const response = await axios.post(
+          "http://localhost:8080/authentication/register",
+          submissionData,
+          { headers: { "Content-Type": "multipart/form-data" } }
+        );
+
+        console.log(response);
+        
         toast.success("User Created Successfully!", {
           position: "top-right",
           autoClose: 3000,
         });
-        setTimeout(() => {
-          navigator("/login");
-        }, 3000);
-      } catch (error) {
-        toast.error(error?.response?.data?.message || "Registration failed!", {
-          position: "top-right",
-          autoClose: 3000,
-        });
-      } finally {
-        requestFormReset();
       }
-    
+
+      setTimeout(() => navigator("/login"), 3000);
+      requestFormReset();
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Registration failed!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
     }
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   if (validateForm()) {
+  //     const user = {
+  //       userName: formData.userName,
+  //       userEmail: formData.userEmail,
+  //       userPassword: formData.userPassword,
+  //     };
+  //     const formDataToSubmit = new FormData();
+  //     formDataToSubmit.append(
+  //       "user",
+  //       new Blob([JSON.stringify(user)], { type: "application/json" })
+  //     );
+  //     formDataToSubmit.append("image", formData.image);
+  //     formDataToSubmit.append("role", formData.role);
+
+  //     try {
+  //       const response = await axios.post(
+  //         "http://localhost:8080/authentication/register",
+  //         formDataToSubmit,
+  //         {
+  //           headers: {
+  //             "Content-Type": "multipart/form-data",
+  //           },
+  //         }
+  //       );
+  //       toast.success("User Created Successfully!", {
+  //         position: "top-right",
+  //         autoClose: 3000,
+  //       });
+  //       setTimeout(() => {
+  //         navigator("/login");
+  //       }, 3000);
+  //     } catch (error) {
+  //       toast.error(error?.response?.data?.message || "Registration failed!", {
+  //         position: "top-right",
+  //         autoClose: 3000,
+  //       });
+  //     } finally {
+  //       requestFormReset();
+  //     }
+  //   }
+  // };
+
   return (
-    <div className="flex justify-center items-center min-h-screen bg-neutral-600 py-8">
-      <div className="bg-neutral-800 p-8 rounded-lg shadow-lg w-full max-w-md">
+    <div className="flex justify-center items-center min-h-screen bg-neutral-600">
+      <div className="bg-neutral-800 p-8 rounded-lg shadow-lg w-screen mx-10">
         <h2 className="text-3xl font-bold text-center mb-6 text-white">
           Register
         </h2>
@@ -430,6 +531,166 @@ function Register() {
               <p className="text-red-500 text-xs mt-1">{errors.role}</p>
             )}
           </div>
+
+          {formData.role === "ROLE_CANDIDATE" && (
+            <>
+              <h3 className="text-lg text-white mt-4 mb-2">
+                Candidate Details
+              </h3>
+
+              {/* First Name */}
+              <input
+                type="text"
+                name="candidateFirstName"
+                placeholder="First Name"
+                value={formData.candidateFirstName}
+                onChange={handleInputChange}
+                className="text-white w-full px-3 py-2 border rounded-md mb-2"
+              />
+
+              {/* Middle Name */}
+              <input
+                type="text"
+                name="candidateMiddleName"
+                placeholder="Middle Name"
+                value={formData.candidateMiddleName}
+                onChange={handleInputChange}
+                className="text-white w-full px-3 py-2 border rounded-md mb-2"
+              />
+
+              {/* Last Name */}
+              <input
+                type="text"
+                name="candidateLastName"
+                placeholder="Last Name"
+                value={formData.candidateLastName}
+                onChange={handleInputChange}
+                className="text-white w-full px-3 py-2 border rounded-md mb-2"
+              />
+
+              {/* Gender Dropdown */}
+              <label className="block text-sm font-medium text-white mb-1">
+                Gender
+              </label>
+              <select
+                name="candidateGender"
+                value={formData.candidateGender}
+                onChange={handleInputChange}
+                className="bg-neutral-800 text-white w-full px-3 py-2 border rounded-md mb-2"
+              >
+                <option value="">-SELECT-</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+
+              {/* DOB */}
+              <input
+                type="date"
+                name="candidateDateOfBirth"
+                value={formData.candidateDateOfBirth}
+                onChange={handleInputChange}
+                className="text-white w-full px-3 py-2 border rounded-md mb-2"
+              />
+
+              {/* Address */}
+              <input
+                type="text"
+                name="candidateAddress"
+                placeholder="Address"
+                value={formData.candidateAddress}
+                onChange={handleInputChange}
+                className="text-white w-full px-3 py-2 border rounded-md mb-2"
+              />
+
+              {/* City */}
+              <input
+                type="text"
+                name="candidateCity"
+                placeholder="City"
+                value={formData.candidateCity}
+                onChange={handleInputChange}
+                className="text-white w-full px-3 py-2 border rounded-md mb-2"
+              />
+
+              {/* State */}
+              <input
+                type="text"
+                name="candidateState"
+                placeholder="State"
+                value={formData.candidateState}
+                onChange={handleInputChange}
+                className="text-white w-full px-3 py-2 border rounded-md mb-2"
+              />
+
+              {/* Country Dropdown */}
+              <label className="block text-sm font-medium text-white mb-1">
+                Country
+              </label>
+              <select
+                name="candidateCountry"
+                value={formData.candidateCountry}
+                onChange={handleInputChange}
+                className="bg-neutral-800 text-white w-full px-3 py-2 border rounded-md mb-2"
+              >
+                <option value="">-SELECT-</option>
+                <option value="India">India</option>
+                <option value="USA">USA</option>
+                <option value="UK">UK</option>
+                <option value="Canada">Canada</option>
+              </select>
+
+              {/* Zip Code */}
+              <input
+                type="text"
+                name="candidateZipCode"
+                placeholder="Zip Code"
+                value={formData.candidateZipCode}
+                onChange={handleInputChange}
+                className="text-white w-full px-3 py-2 border rounded-md mb-2"
+              />
+
+              {/* Phone Number */}
+              <input
+                type="text"
+                name="candidatePhoneNumber"
+                placeholder="Phone Number"
+                value={formData.candidatePhoneNumber}
+                onChange={handleInputChange}
+                className="text-white w-full px-3 py-2 border rounded-md mb-2"
+              />
+
+              {/* Years of Experience */}
+              <input
+                type="number"
+                name="candidateTotalExperienceInYears"
+                placeholder="Years of Experience"
+                value={formData.candidateTotalExperienceInYears}
+                onChange={handleInputChange}
+                className="text-white w-full px-3 py-2 border rounded-md mb-2"
+                min="0"
+              />
+
+              {/* Resume Upload */}
+              <label className="block text-sm font-medium text-white mb-1">
+                Upload Resume
+              </label>
+              <input
+                type="file"
+                name="resume"
+                accept=".pdf,.doc,.docx"
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    resume: e.target.files[0],
+                  }))
+                }
+                className="text-white w-full px-3 py-2 border rounded-md mb-2"
+              />
+              {errors.resume && (
+                <p className="text-red-500 text-xs mt-1">{errors.resume}</p>
+              )}
+            </>
+          )}
 
           <button
             type="submit"
