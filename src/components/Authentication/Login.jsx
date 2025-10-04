@@ -1,10 +1,11 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import {jwtDecode} from "jwt-decode";
 import axios from "axios";
 
 function Login() {
-  const { login } = useContext(AuthContext);
+  const { login,logout,userType } = useContext(AuthContext);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ userName: "", password: "" });
   const [error, setError] = useState("");
@@ -21,6 +22,11 @@ function Login() {
     setError("");
   };
 
+  useEffect(() => {
+
+    logout();
+
+  }, []); 
   const validateForm = () => {
     const errors = {};
     if (!formData.userName.trim()) {
@@ -46,8 +52,15 @@ function Login() {
         formData
       );
       const token = response.data.token; 
-      login(token); 
-      navigate("/home");
+      const decodedToken = jwtDecode(token);
+      
+      const userType = decodedToken.userType.substring(5).toLowerCase();
+
+      login(token, userType);
+      if (userType === "admin") 
+        navigate("/admin/dashboard");
+      else
+        navigate("/home");
     } catch (err) {
       setError(
         err.response?.data?.message || "Login failed. Please try again."
