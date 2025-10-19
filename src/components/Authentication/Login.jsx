@@ -53,10 +53,8 @@ function Login() {
       );
       const token = response.data.token; 
       const decodedToken = jwtDecode(token);
-      
-      const userType = decodedToken.userType.substring(5).toLowerCase();
-
-      login(token, userType);
+      const userType = decodedToken.userType.toLowerCase();
+      login(token, userType); 
       if (userType === "admin") 
         navigate("/admin/dashboard");
       else
