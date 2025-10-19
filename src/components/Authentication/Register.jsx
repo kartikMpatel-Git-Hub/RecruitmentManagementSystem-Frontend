@@ -14,19 +14,6 @@ function Register() {
     confirmPassword: "",
     image: null,
     role: "",
-    candidateFirstName: "",
-    candidateMiddleName: "",
-    candidateLastName: "",
-    candidateGender: "",
-    candidateDateOfBirth: "",
-    candidateAddress: "",
-    candidateCity: "",
-    candidateState: "",
-    candidateCountry: "",
-    candidateZipCode: "",
-    candidatePhoneNumber: "",
-    candidateTotalExperienceInYears: "",
-    resume: null,
   });
   const [imagePreview, setImagePreview] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -101,6 +88,36 @@ function Register() {
     }
   };
 
+  const handleResumeChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const allowed = [
+        "application/pdf",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      ];
+      if (!allowed.includes(file.type)) {
+        setErrors((prev) => ({
+          ...prev,
+          resume: "Please upload resume in PDF or DOC/DOCX format",
+        }));
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        setErrors((prev) => ({
+          ...prev,
+          resume: "Resume size should be less than 5MB",
+        }));
+        return;
+      }
+
+      setFormData((prev) => ({ ...prev, resume: file }));
+      if (errors.resume) {
+        setErrors((prev) => ({ ...prev, resume: "" }));
+      }
+    }
+  };
+
   const validateForm = () => {
     const newErrors = {};
 
@@ -145,139 +162,50 @@ function Register() {
     return Object.keys(newErrors).length === 0;
   };
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!validateForm()) return;
+    if (validateForm()) {
+      const user = {
+        userName: formData.userName,
+        userEmail: formData.userEmail,
+        userPassword: formData.userPassword,
+      };
+      const formDataToSubmit = new FormData();
+      formDataToSubmit.append(
+        "user",
+        new Blob([JSON.stringify(user)], { type: "application/json" })
+      );
+      formDataToSubmit.append("image", formData.image);
+      formDataToSubmit.append("role", formData.role);
 
-    try {
-      if (formData.role === "ROLE_CANDIDATE") {
-        // ✅ Candidate registration → /register
-        const candidateDto = {
-          userName: formData.userName,
-          userEmail: formData.userEmail,
-          userPassword: formData.userPassword,
-          candidateFirstName: formData.candidateFirstName,
-          candidateMiddleName: formData.candidateMiddleName,
-          candidateLastName: formData.candidateLastName,
-          candidateGender: formData.candidateGender,
-          candidateDateOfBirth: formData.candidateDateOfBirth,
-          candidateAddress: formData.candidateAddress,
-          candidateCity: formData.candidateCity,
-          candidateState: formData.candidateState,
-          candidateCountry: formData.candidateCountry,
-          candidateZipCode: formData.candidateZipCode,
-          candidatePhoneNumber: formData.candidatePhoneNumber,
-          candidateTotalExperienceInYears:
-            formData.candidateTotalExperienceInYears,
-        };
-
-        const submissionData = new FormData();
-        submissionData.append(
-          "candidate",
-          new Blob([JSON.stringify(candidateDto)], {
-            type: "application/json",
-          })
-        );
-        submissionData.append("image", formData.image);
-        submissionData.append("resume", formData.resume);
-
-        await axios.post(
-          "http://localhost:8080/candidate/register",
-          submissionData,
-          {
-            headers: { "Content-Type": "multipart/form-data" },
-          }
-        );
-
-        toast.success("Candidate Registered Successfully!", {
-          position: "top-right",
-          autoClose: 3000,
-        });
-      } else {
-        // ✅ All other roles → /authentication/register
-        const user = {
-          userName: formData.userName,
-          userEmail: formData.userEmail,
-          userPassword: formData.userPassword,
-        };
-
-        const submissionData = new FormData();
-        submissionData.append(
-          "user",
-          new Blob([JSON.stringify(user)], { type: "application/json" })
-        );
-        submissionData.append("image", formData.image);
-        submissionData.append("role", formData.role);
-
+      try {
         const response = await axios.post(
           "http://localhost:8080/authentication/register",
-          submissionData,
-          { headers: { "Content-Type": "multipart/form-data" } }
+          formDataToSubmit,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
         );
-
-        console.log(response);
-        
         toast.success("User Created Successfully!", {
           position: "top-right",
           autoClose: 3000,
         });
+        setTimeout(() => {
+          navigator("/login");
+          requestFormReset();
+        }, 3000);
+      } catch (error) {
+        toast.error(error?.response?.data?.message || "Registration failed!", {
+          position: "top-right",
+          autoClose: 3000,
+        });
       }
-
-      setTimeout(() => navigator("/login"), 3000);
-      requestFormReset();
-    } catch (error) {
-      toast.error(error?.response?.data?.message || "Registration failed!", {
-        position: "top-right",
-        autoClose: 3000,
-      });
     }
   };
-
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   if (validateForm()) {
-  //     const user = {
-  //       userName: formData.userName,
-  //       userEmail: formData.userEmail,
-  //       userPassword: formData.userPassword,
-  //     };
-  //     const formDataToSubmit = new FormData();
-  //     formDataToSubmit.append(
-  //       "user",
-  //       new Blob([JSON.stringify(user)], { type: "application/json" })
-  //     );
-  //     formDataToSubmit.append("image", formData.image);
-  //     formDataToSubmit.append("role", formData.role);
-
-  //     try {
-  //       const response = await axios.post(
-  //         "http://localhost:8080/authentication/register",
-  //         formDataToSubmit,
-  //         {
-  //           headers: {
-  //             "Content-Type": "multipart/form-data",
-  //           },
-  //         }
-  //       );
-  //       toast.success("User Created Successfully!", {
-  //         position: "top-right",
-  //         autoClose: 3000,
-  //       });
-  //       setTimeout(() => {
-  //         navigator("/login");
-  //       }, 3000);
-  //     } catch (error) {
-  //       toast.error(error?.response?.data?.message || "Registration failed!", {
-  //         position: "top-right",
-  //         autoClose: 3000,
-  //       });
-  //     } finally {
-  //       requestFormReset();
-  //     }
-  //   }
-  // };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-neutral-600">
@@ -498,7 +426,9 @@ function Register() {
             </label>
             <div className="space-y-2">
               <select
-                className={`bg-neutral-800 text-white w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.userPassword} ? 'border-red-500' : 'border-gray-300`}
+                className={`bg-neutral-800 text-white w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  errors.role ? "border-red-500" : "border-gray-300"
+                }`}
                 onChange={handleInputChange}
                 id="role"
                 name="role"
@@ -507,22 +437,22 @@ function Register() {
                 <option className="text-gray-200" value="">
                   -SELECT-
                 </option>
-                <option className="text-gray-200" value="ROLE_ADMIN">
+                <option className="text-gray-200" value="ADMIN">
                   ADMIN
                 </option>
-                <option className="text-gray-200" value="ROLE_NORMAL">
+                <option className="text-gray-200" value="NORMAL">
                   NORMAL
                 </option>
-                <option className="text-gray-200" value="ROLE_CANDIDATE">
+                <option className="text-gray-200" value="CANDIDATE">
                   CANDIDATE
                 </option>
-                <option className="text-gray-200" value="ROLE_RECRUITER">
+                <option className="text-gray-200" value="RECRUITER">
                   RECRUITER
                 </option>
-                <option className="text-gray-200" value="ROLE_INTERVIEWER">
+                <option className="text-gray-200" value="INTERVIEWER">
                   INTERVIEWER
                 </option>
-                <option className="text-gray-200" value="ROLE_HR">
+                <option className="text-gray-200" value="HR">
                   HR
                 </option>
               </select>
@@ -531,166 +461,6 @@ function Register() {
               <p className="text-red-500 text-xs mt-1">{errors.role}</p>
             )}
           </div>
-
-          {formData.role === "ROLE_CANDIDATE" && (
-            <>
-              <h3 className="text-lg text-white mt-4 mb-2">
-                Candidate Details
-              </h3>
-
-              {/* First Name */}
-              <input
-                type="text"
-                name="candidateFirstName"
-                placeholder="First Name"
-                value={formData.candidateFirstName}
-                onChange={handleInputChange}
-                className="text-white w-full px-3 py-2 border rounded-md mb-2"
-              />
-
-              {/* Middle Name */}
-              <input
-                type="text"
-                name="candidateMiddleName"
-                placeholder="Middle Name"
-                value={formData.candidateMiddleName}
-                onChange={handleInputChange}
-                className="text-white w-full px-3 py-2 border rounded-md mb-2"
-              />
-
-              {/* Last Name */}
-              <input
-                type="text"
-                name="candidateLastName"
-                placeholder="Last Name"
-                value={formData.candidateLastName}
-                onChange={handleInputChange}
-                className="text-white w-full px-3 py-2 border rounded-md mb-2"
-              />
-
-              {/* Gender Dropdown */}
-              <label className="block text-sm font-medium text-white mb-1">
-                Gender
-              </label>
-              <select
-                name="candidateGender"
-                value={formData.candidateGender}
-                onChange={handleInputChange}
-                className="bg-neutral-800 text-white w-full px-3 py-2 border rounded-md mb-2"
-              >
-                <option value="">-SELECT-</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-              </select>
-
-              {/* DOB */}
-              <input
-                type="date"
-                name="candidateDateOfBirth"
-                value={formData.candidateDateOfBirth}
-                onChange={handleInputChange}
-                className="text-white w-full px-3 py-2 border rounded-md mb-2"
-              />
-
-              {/* Address */}
-              <input
-                type="text"
-                name="candidateAddress"
-                placeholder="Address"
-                value={formData.candidateAddress}
-                onChange={handleInputChange}
-                className="text-white w-full px-3 py-2 border rounded-md mb-2"
-              />
-
-              {/* City */}
-              <input
-                type="text"
-                name="candidateCity"
-                placeholder="City"
-                value={formData.candidateCity}
-                onChange={handleInputChange}
-                className="text-white w-full px-3 py-2 border rounded-md mb-2"
-              />
-
-              {/* State */}
-              <input
-                type="text"
-                name="candidateState"
-                placeholder="State"
-                value={formData.candidateState}
-                onChange={handleInputChange}
-                className="text-white w-full px-3 py-2 border rounded-md mb-2"
-              />
-
-              {/* Country Dropdown */}
-              <label className="block text-sm font-medium text-white mb-1">
-                Country
-              </label>
-              <select
-                name="candidateCountry"
-                value={formData.candidateCountry}
-                onChange={handleInputChange}
-                className="bg-neutral-800 text-white w-full px-3 py-2 border rounded-md mb-2"
-              >
-                <option value="">-SELECT-</option>
-                <option value="India">India</option>
-                <option value="USA">USA</option>
-                <option value="UK">UK</option>
-                <option value="Canada">Canada</option>
-              </select>
-
-              {/* Zip Code */}
-              <input
-                type="text"
-                name="candidateZipCode"
-                placeholder="Zip Code"
-                value={formData.candidateZipCode}
-                onChange={handleInputChange}
-                className="text-white w-full px-3 py-2 border rounded-md mb-2"
-              />
-
-              {/* Phone Number */}
-              <input
-                type="text"
-                name="candidatePhoneNumber"
-                placeholder="Phone Number"
-                value={formData.candidatePhoneNumber}
-                onChange={handleInputChange}
-                className="text-white w-full px-3 py-2 border rounded-md mb-2"
-              />
-
-              {/* Years of Experience */}
-              <input
-                type="number"
-                name="candidateTotalExperienceInYears"
-                placeholder="Years of Experience"
-                value={formData.candidateTotalExperienceInYears}
-                onChange={handleInputChange}
-                className="text-white w-full px-3 py-2 border rounded-md mb-2"
-                min="0"
-              />
-
-              {/* Resume Upload */}
-              <label className="block text-sm font-medium text-white mb-1">
-                Upload Resume
-              </label>
-              <input
-                type="file"
-                name="resume"
-                accept=".pdf,.doc,.docx"
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    resume: e.target.files[0],
-                  }))
-                }
-                className="text-white w-full px-3 py-2 border rounded-md mb-2"
-              />
-              {errors.resume && (
-                <p className="text-red-500 text-xs mt-1">{errors.resume}</p>
-              )}
-            </>
-          )}
 
           <button
             type="submit"

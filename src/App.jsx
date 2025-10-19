@@ -4,7 +4,7 @@ import NotFound from './components/utility/NotFound';
 import Login from './components/Authentication/Login';
 import Home from './components/pages/Home';
 import Logout from './components/Authentication/Logout';
-import Profile from './components/pages/Profile';
+import Profile from './components/candidate/Profile';
 import Dashboard from './components/admin/Dashboard';
 import Degree from './components/admin/Degree/Degree';
 import User from './components/admin/users/User';

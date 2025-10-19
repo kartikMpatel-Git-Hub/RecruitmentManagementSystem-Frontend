@@ -1,6 +1,6 @@
 function UserList({ users, onUpdate, onDelete }) {
   const getRoleClasses = (role) => {
-    switch (role.substring(5).toLowerCase()) {
+    switch (role.toLowerCase()) {
       case "admin":
         return "bg-purple-100 text-purple-700";
       case "hr":
@@ -28,7 +28,7 @@ function UserList({ users, onUpdate, onDelete }) {
                 userId,
                 userName,
                 userEmail,
-                roles,
+                role,
                 userImageUrl,
                 userEnabled,
               } = user;
@@ -58,22 +58,13 @@ function UserList({ users, onUpdate, onDelete }) {
                   <p className="text-gray-600 text-sm">{userEmail}</p>
 
                   <p className="mt-2 text-sm">
-                    {roles?.length ? (
-                      roles.map((r, idx) => (
                         <span
-                          key={idx}
                           className={`px-3 py-1 rounded-full text-sm font-semibold ${getRoleClasses(
-                            r.role
+                            role.role
                           )}`}
                         >
-                          {r.role}
+                          {role.role}
                         </span>
-                      ))
-                    ) : (
-                      <span className="text-gray-500 px-2 py-1 rounded-full bg-gray-100">
-                        N/A
-                      </span>
-                    )}
                   </p>
 
                   <p

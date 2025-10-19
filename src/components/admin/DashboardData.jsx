@@ -5,7 +5,7 @@ function DashboardData({ users, degrees, skills }) {
   const navigate = useNavigate();
 
   const getRoleClasses = (role) => {
-    switch (role.substring(5).toLowerCase()) {
+    switch (role.toLowerCase()) {
       case "admin":
         return "bg-purple-100 text-purple-700";
       case "hr":
@@ -45,7 +45,7 @@ function DashboardData({ users, degrees, skills }) {
                 userId,
                 userName,
                 userEmail,
-                roles,
+                role,
                 userImageUrl,
                 userEnabled,
               } = user;
@@ -69,27 +69,20 @@ function DashboardData({ users, degrees, skills }) {
                     )}
                   </div>
 
-                  <h3 className="text-lg font-bold text-gray-800">{userName}</h3>
+                  <h3 className="text-lg font-bold text-gray-800">
+                    {userName}
+                  </h3>
                   <p className="text-gray-600 text-sm">{userEmail}</p>
 
                   {/* Role Badges */}
                   <div className="mt-2 flex gap-2 flex-wrap justify-center">
-                    {roles?.length
-                      ? roles.map((r, idx) => (
-                          <span
-                            key={idx}
-                            className={`px-3 py-1 rounded-full text-sm font-semibold ${getRoleClasses(
-                              r.role
-                            )}`}
-                          >
-                            {r.role}
-                          </span>
-                        ))
-                      : (
-                          <span className="text-gray-500 px-2 py-1 rounded-full bg-gray-100">
-                            N/A
-                          </span>
-                        )}
+                    <span
+                      className={`px-3 py-1 rounded-full text-sm font-semibold ${getRoleClasses(
+                        role.role
+                      )}`}
+                    >
+                      {role.role}
+                    </span>
                   </div>
 
                   {/* Active/Inactive */}
@@ -131,7 +124,9 @@ function DashboardData({ users, degrees, skills }) {
                 key={degree.degreeId}
                 className="bg-gray-50 p-4 rounded-lg shadow-sm flex flex-col items-center hover:shadow-md transition"
               >
-                <span className="text-gray-800 font-medium">{degree.degree}</span>
+                <span className="text-gray-800 font-medium">
+                  {degree.degree}
+                </span>
                 <span className="text-gray-500 text-sm">{degree.stream}</span>
               </div>
             ))}
