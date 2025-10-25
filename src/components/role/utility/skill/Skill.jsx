@@ -1,13 +1,13 @@
 import React, { useEffect, useState, useContext } from "react";
-import { AuthContext } from "../../context/AuthContext";
+import { AuthContext } from "../../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "../Sidebar";
-import Header from "../Header";
+import AdminLayout from "../../admin/AdminLayout";
 import SkillList from "./SkillList";
 import SkillForm from "./SkillForm";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { RecruiterLayout } from "../../recruiter/RecruiterComponents";
 
 function Skill() {
   const navigate = useNavigate();
@@ -15,11 +15,14 @@ function Skill() {
   const [skills, setSkills] = useState([]); // State to store all skills
   const [editingSkill, setEditingSkill] = useState(null); // State for editing a skill
 
-  // Add a new skill
   const addSkill = async (formData) => {
+    if(!authToken)
+      navigate("/login");
+    if(!formData)
+      return
     try {
       const response = await axios.post(
-        "http://localhost:8080/skill/",
+        "http://localhost:8080/skills/",
         formData,
         {
           headers: {
@@ -44,20 +47,24 @@ function Skill() {
 
   // Update an existing skill
   const updateSkill = async (updatedSkill) => {
-    setSkills((prev) =>
-      prev.map((skill) =>
-        skill.skillId === updatedSkill.skillId ? updatedSkill : skill
-      )
-    );
+    if(!authToken)
+      navigate("/login");
+    if(!updatedSkill)
+      return
     try {
       await axios.put(
-        `http://localhost:8080/skill/${updatedSkill.skillId}`,
+        `http://localhost:8080/skills/${updatedSkill.skillId}`,
         updatedSkill,
         {
           headers: {
             Authorization: `Bearer ${authToken}`,
           },
         }
+      );
+      setSkills((prev) =>
+        prev.map((skill) =>
+          skill.skillId === updatedSkill.skillId ? updatedSkill : skill
+        )
       );
       toast.success("Skill Updated Successfully!", {
         position: "top-right",
@@ -75,8 +82,12 @@ function Skill() {
 
   // Delete a skill
   const deleteSkill = async (id) => {
+    if(!authToken)
+      navigate("/login");
+    if(!id)
+      return
     try {
-      await axios.delete(`http://localhost:8080/skill/${id}`, {
+      await axios.delete(`http://localhost:8080/skills/${id}`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -85,30 +96,35 @@ function Skill() {
         position: "top-right",
         autoClose: 3000,
       });
+      setSkills((prev) => prev.filter((skill) => skill.skillId !== id));
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Skill Deleting failed!", {
+      toast.error(error?.response?.data?.data || "Skill Deleting failed!", {
         position: "top-right",
         autoClose: 3000,
       });
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 2000);
       console.error("Error deleting skill:", error);
     }
-    setSkills((prev) => prev.filter((skill) => skill.skillId !== id));
   };
 
   useEffect(() => {
-    if (userType !== "admin") {
-      navigate("/home");
+    if (userType !== "admin" && userType !== "recruiter") {
+      navigate("/");
     }
   }, [userType]);
 
   const fetchSkills = async () => {
+    if(!authToken)
+      navigate("/login");
     try {
-      const response = await axios.get("http://localhost:8080/skill/", {
+      const response = await axios.get("http://localhost:8080/skills", {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
       });
-      setSkills(response.data || []);
+      setSkills(response.data.data || []);
     } catch (error) {
       console.error("Error fetching skills:", error);
     }
@@ -119,35 +135,36 @@ function Skill() {
   }, []);
 
   return (
-    <div className="flex h-screen bg-gray-100 font-mono">
-      {/* Sidebar */}
-      <Sidebar />
+    userType === "admin" ? (
+      <AdminLayout>
+          <SkillForm
+            addSkill={addSkill}
+            updateSkill={updateSkill}
+            editingSkill={editingSkill}
+          />
+          <SkillList
+            skills={skills}
+            setEditingSkill={setEditingSkill}
+            deleteSkill={deleteSkill}
+          />
+      </AdminLayout>
+    ) :
+    userType === "recruiter" && (
+      <RecruiterLayout>
+          <SkillForm
+            addSkill={addSkill}
+            updateSkill={updateSkill}
+            editingSkill={editingSkill}
+          />
+          <SkillList
+            skills={skills}
+            setEditingSkill={setEditingSkill}
+            deleteSkill={deleteSkill}
+          />
+      </RecruiterLayout>
+    )
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col min-h-screen">
-        {/* Header */}
-        <Header />
-
-        {/* Main Content Area */}
-        <main className="flex-1 p-6 overflow-auto">
-          <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-            {/* Skill Form */}
-            <SkillForm
-              addSkill={addSkill}
-              updateSkill={updateSkill}
-              editingSkill={editingSkill}
-            />
-
-            {/* Skill List */}
-            <SkillList
-              skills={skills}
-              setEditingSkill={setEditingSkill}
-              deleteSkill={deleteSkill}
-            />
-          </div>
-        </main>
-      </div>
-    </div>
+    
   );
 }
 
