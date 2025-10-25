@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { UserPlus, Plus, AlertCircle, User, Mail, Lock, CheckCircle, Eye, EyeOff, Briefcase } from "lucide-react";
 
 function Register() {
   const navigator = useNavigate();
@@ -19,6 +20,7 @@ function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const requestFormReset = () => {
     setFormData({
@@ -167,6 +169,7 @@ function Register() {
     e.preventDefault();
 
     if (validateForm()) {
+      setLoading(true);
       const user = {
         userName: formData.userName,
         userEmail: formData.userEmail,
@@ -199,35 +202,41 @@ function Register() {
           requestFormReset();
         }, 3000);
       } catch (error) {
-        toast.error(error?.response?.data?.message || "Registration failed!", {
+        console.log(error.response.data);
+        toast.error(error?.response?.data || "Registration failed!", {
           position: "top-right",
           autoClose: 3000,
         });
+      } finally {
+        setLoading(false);
       }
     }
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-neutral-600">
-      <div className="bg-neutral-800 p-8 rounded-lg shadow-lg w-screen mx-10">
-        <h2 className="text-3xl font-bold text-center mb-6 text-white">
-          Register
-        </h2>
-        <hr className="text-white p-1" />
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <div className="flex flex-col items-center space-y-4">
-              <label htmlFor="image" className="relative cursor-pointer">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 flex items-center justify-center px-4 py-8">
+      <div className="w-full max-w-2xl">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl mb-4 shadow-lg">
+            <UserPlus className="w-8 h-8 text-white" />
+          </div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h1>
+          <p className="text-gray-600">Join us today and get started</p>
+        </div>
+        
+        <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-8">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="flex justify-center mb-6">
+              <label htmlFor="image" className="relative cursor-pointer group">
                 {imagePreview ? (
                   <img
                     src={imagePreview}
                     alt="Preview"
-                    className="w-24 h-24 object-cover rounded-full border border-gray-300"
+                    className="w-24 h-24 object-cover rounded-full border-4 border-gray-200 group-hover:border-slate-400 transition-colors"
                   />
                 ) : (
-                  <div className="w-24 h-24 flex items-center justify-center bg-gray-100 text-black rounded-full border border-gray-300">
-                    <span className="text-sm">No Image</span>
+                  <div className="w-24 h-24 flex items-center justify-center bg-gray-100 rounded-full border-4 border-gray-200 group-hover:border-slate-400 transition-colors">
+                    <Plus className="w-8 h-8 text-gray-400" />
                   </div>
                 )}
                 <input
@@ -239,249 +248,211 @@ function Register() {
                   className="hidden"
                 />
               </label>
-              {errors.image && (
-                <p className="text-red-500 text-xs mt-1">{errors.image}</p>
-              )}
             </div>
-          </div>
-
-          <div>
-            <label
-              htmlFor="userName"
-              className="block text-sm font-medium text-white mb-1"
-            >
-              Username
-            </label>
-            <input
-              type="text"
-              id="userName"
-              name="userName"
-              value={formData.userName}
-              onChange={handleInputChange}
-              className={`text-white w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.userName ? "border-red-500" : "border-gray-300"
-              }`}
-              placeholder="Enter your username"
-            />
-            {errors.userName && (
-              <p className="text-red-500 text-xs mt-1">{errors.userName}</p>
-            )}
-          </div>
-
-          <div>
-            <label
-              htmlFor="userEmail"
-              className="block text-sm font-medium text-white mb-1"
-            >
-              Email
-            </label>
-            <input
-              type="email"
-              id="userEmail"
-              name="userEmail"
-              value={formData.userEmail}
-              onChange={handleInputChange}
-              className={`text-white w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.userEmail ? "border-red-500" : "border-gray-300"
-              }`}
-              placeholder="Enter your email"
-            />
-            {errors.userEmail && (
-              <p className="text-red-500 text-xs mt-1">{errors.userEmail}</p>
-            )}
-          </div>
-
-          <div>
-            <label
-              htmlFor="userPassword"
-              className="block text-sm font-medium text-white mb-1"
-            >
-              Password
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                id="userPassword"
-                name="userPassword"
-                value={formData.userPassword}
-                onChange={handleInputChange}
-                className={`text-white w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.userPassword ? "border-red-500" : "border-gray-300"
-                }`}
-                placeholder="Enter your password"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-200"
-              >
-                {showPassword ? (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2}
-                    stroke="currentColor"
-                    className="w-5 h-5"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M15 12h.01M9 12h.01M12 12h.01M4.5 12a7.5 7.5 0 0115 0m-15 0a7.5 7.5 0 0115 0m-15 0a7.5 7.5 0 0115 0"
-                    />
-                  </svg>
-                ) : (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2}
-                    stroke="currentColor"
-                    className="w-5 h-5"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M3.98 8.223a10.477 10.477 0 0116.04 0m-16.04 0a10.477 10.477 0 0116.04 0m-16.04 0a10.477 10.477 0 0116.04 0M12 15.5a3.5 3.5 0 100-7 3.5 3.5 0 000 7z"
-                    />
-                  </svg>
-                )}
-              </button>
-            </div>
-            {errors.userPassword && (
-              <p className="text-red-500 text-xs mt-1">{errors.userPassword}</p>
-            )}
-          </div>
-
-          <div>
-            <label
-              htmlFor="confirmPassword"
-              className="block text-sm font-medium text-white mb-1"
-            >
-              Confirm Password
-            </label>
-            <div className="relative">
-              <input
-                type={showConfirmPassword ? "text" : "password"}
-                id="confirmPassword"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleInputChange}
-                className={`text-white w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.confirmPassword ? "border-red-500" : "border-gray-300"
-                }`}
-                placeholder="Re-enter your password"
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword((prev) => !prev)}
-                className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-200"
-              >
-                {showConfirmPassword ? (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2}
-                    stroke="currentColor"
-                    className="w-5 h-5"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M15 12h.01M9 12h.01M12 12h.01M4.5 12a7.5 7.5 0 0115 0m-15 0a7.5 7.5 0 0115 0m-15 0a7.5 7.5 0 0115 0"
-                    />
-                  </svg>
-                ) : (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2}
-                    stroke="currentColor"
-                    className="w-5 h-5"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M3.98 8.223a10.477 10.477 0 0116.04 0m-16.04 0a10.477 10.477 0 0116.04 0m-16.04 0a10.477 10.477 0 0116.04 0M12 15.5a3.5 3.5 0 100-7 3.5 3.5 0 000 7z"
-                    />
-                  </svg>
-                )}
-              </button>
-            </div>
-            {errors.confirmPassword && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.confirmPassword}
+            {errors.image && (
+              <p className="text-red-600 text-sm text-center flex items-center justify-center font-medium">
+                <AlertCircle className="w-4 h-4 mr-2" />
+                {errors.image}
               </p>
             )}
-          </div>
 
-          <div>
-            <label
-              htmlFor="role"
-              className="block text-sm font-medium text-white mb-1"
-            >
-              Role
-            </label>
-            <div className="space-y-2">
-              <select
-                className={`bg-neutral-800 text-white w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.role ? "border-red-500" : "border-gray-300"
-                }`}
-                onChange={handleInputChange}
-                id="role"
-                name="role"
-                value={formData.role}
-              >
-                <option className="text-gray-200" value="">
-                  -SELECT-
-                </option>
-                <option className="text-gray-200" value="ADMIN">
-                  ADMIN
-                </option>
-                <option className="text-gray-200" value="NORMAL">
-                  NORMAL
-                </option>
-                <option className="text-gray-200" value="CANDIDATE">
-                  CANDIDATE
-                </option>
-                <option className="text-gray-200" value="RECRUITER">
-                  RECRUITER
-                </option>
-                <option className="text-gray-200" value="INTERVIEWER">
-                  INTERVIEWER
-                </option>
-                <option className="text-gray-200" value="HR">
-                  HR
-                </option>
-              </select>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label htmlFor="userName" className="block text-sm font-medium text-gray-900 mb-3">
+                  Username
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <User className="w-5 h-5 text-gray-400" />
+                  </div>
+                  <input
+                    type="text"
+                    id="userName"
+                    name="userName"
+                    value={formData.userName}
+                    onChange={handleInputChange}
+                    className={`w-full pl-12 pr-4 py-4 border-2 rounded-2xl focus:outline-none focus:ring-0 transition-all duration-300 text-gray-900 placeholder-gray-500 ${
+                      errors.userName 
+                        ? "border-red-300 bg-red-50 focus:border-red-400" 
+                        : "border-gray-200 bg-gray-50 focus:border-slate-400 focus:bg-white"
+                    }`}
+                    placeholder="Enter username"
+                  />
+                </div>
+                {errors.userName && (
+                  <p className="text-red-600 text-sm mt-2 flex items-center font-medium">
+                    <AlertCircle className="w-4 h-4 mr-2" />
+                    {errors.userName}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label htmlFor="userEmail" className="block text-sm font-medium text-gray-900 mb-3">
+                  Email
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Mail className="w-5 h-5 text-gray-400" />
+                  </div>
+                  <input
+                    type="email"
+                    id="userEmail"
+                    name="userEmail"
+                    value={formData.userEmail}
+                    onChange={handleInputChange}
+                    className={`w-full pl-12 pr-4 py-4 border-2 rounded-2xl focus:outline-none focus:ring-0 transition-all duration-300 text-gray-900 placeholder-gray-500 ${
+                      errors.userEmail 
+                        ? "border-red-300 bg-red-50 focus:border-red-400" 
+                        : "border-gray-200 bg-gray-50 focus:border-slate-400 focus:bg-white"
+                    }`}
+                    placeholder="Enter email"
+                  />
+                </div>
+                {errors.userEmail && (
+                  <p className="text-red-600 text-sm mt-2 flex items-center font-medium">
+                    <AlertCircle className="w-4 h-4 mr-2" />
+                    {errors.userEmail}
+                  </p>
+                )}
+              </div>
             </div>
-            {errors.role && (
-              <p className="text-red-500 text-xs mt-1">{errors.role}</p>
-            )}
-          </div>
 
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 font-medium"
-          >
-            Register
-          </button>
-        </form>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label htmlFor="userPassword" className="block text-sm font-medium text-gray-900 mb-3">
+                  Password
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Lock className="w-5 h-5 text-gray-400" />
+                  </div>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="userPassword"
+                    name="userPassword"
+                    value={formData.userPassword}
+                    onChange={handleInputChange}
+                    className={`w-full pl-12 pr-14 py-4 border-2 rounded-2xl focus:outline-none focus:ring-0 transition-all duration-300 text-gray-900 placeholder-gray-500 ${
+                      errors.userPassword 
+                        ? "border-red-300 bg-red-50 focus:border-red-400" 
+                        : "border-gray-200 bg-gray-50 focus:border-slate-400 focus:bg-white"
+                    }`}
+                    placeholder="Enter password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
+                {errors.userPassword && (
+                  <p className="text-red-600 text-sm mt-2 flex items-center font-medium">
+                    <AlertCircle className="w-4 h-4 mr-2" />
+                    {errors.userPassword}
+                  </p>
+                )}
+              </div>
 
-        <div className="mt-6 text-center">
-          <p className="text-sm text-white">
-            Already have an account?{" "}
-            <a
-              href="/login"
-              className="text-blue-600 hover:text-blue-800 font-medium"
+              <div>
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-900 mb-3">
+                  Confirm Password
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <CheckCircle className="w-5 h-5 text-gray-400" />
+                  </div>
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleInputChange}
+                    className={`w-full pl-12 pr-14 py-4 border-2 rounded-2xl focus:outline-none focus:ring-0 transition-all duration-300 text-gray-900 placeholder-gray-500 ${
+                      errors.confirmPassword 
+                        ? "border-red-300 bg-red-50 focus:border-red-400" 
+                        : "border-gray-200 bg-gray-50 focus:border-slate-400 focus:bg-white"
+                    }`}
+                    placeholder="Confirm password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword((prev) => !prev)}
+                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
+                {errors.confirmPassword && (
+                  <p className="text-red-600 text-sm mt-2 flex items-center font-medium">
+                    <AlertCircle className="w-4 h-4 mr-2" />
+                    {errors.confirmPassword}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="role" className="block text-sm font-medium text-gray-900 mb-3">
+                Role
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Briefcase className="w-5 h-5 text-gray-400" />
+                </div>
+                <select
+                  className={`w-full pl-12 pr-4 py-4 border-2 rounded-2xl focus:outline-none focus:ring-0 transition-all duration-300 text-gray-900 bg-gray-50 ${
+                    errors.role 
+                      ? "border-red-300 bg-red-50 focus:border-red-400" 
+                      : "border-gray-200 focus:border-slate-400 focus:bg-white"
+                  }`}
+                  onChange={handleInputChange}
+                  id="role"
+                  name="role"
+                  value={formData.role}
+                >
+                  <option value="">Select Role</option>
+                  <option value="ADMIN">Admin</option>
+                  <option value="NORMAL">Normal</option>
+                  <option value="CANDIDATE">Candidate</option>
+                  <option value="RECRUITER">Recruiter</option>
+                  <option value="INTERVIEWER">Interviewer</option>
+                  <option value="HR">HR</option>
+                </select>
+              </div>
+              {errors.role && (
+                <p className="text-red-600 text-sm mt-2 flex items-center font-medium">
+                  <AlertCircle className="w-4 h-4 mr-2" />
+                  {errors.role}
+                </p>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className={`w-full py-4 px-6 rounded-2xl focus:outline-none focus:ring-4 focus:ring-slate-300 transition-all duration-300 font-semibold text-lg shadow-lg ${
+                loading 
+                  ? "bg-gray-400 cursor-not-allowed" 
+                  : "bg-gradient-to-r from-slate-800 to-slate-900 text-white hover:from-slate-900 hover:to-black hover:shadow-2xl transform hover:-translate-y-1"
+              }`}
             >
-              Sign in here
-            </a>
-          </p>
-          <ToastContainer />
+              {loading ? "Creating Account..." : "Create Account"}
+            </button>
+          </form>
+          
+          <div className="mt-8 pt-6 border-t border-gray-200 text-center">
+            <p className="text-gray-600">
+              Already have an account?{" "}
+              <a href="/login" className="text-slate-800 hover:text-slate-900 font-semibold transition-colors underline decoration-2 underline-offset-2">
+                Sign In
+              </a>
+            </p>
+          </div>
         </div>
+        <ToastContainer />
       </div>
     </div>
   );

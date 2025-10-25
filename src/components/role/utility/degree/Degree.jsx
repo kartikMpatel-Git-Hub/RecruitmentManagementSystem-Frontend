@@ -1,13 +1,13 @@
 import React, { useEffect, useState, useContext } from "react";
-import { AuthContext } from "../../context/AuthContext";
+import { AuthContext } from "../../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "../Sidebar";
-import Header from "../Header";
+import { AdminLayout } from "../../admin/AdminComponents";
 import DegreeList from "./DegreeList";
 import DegreeForm from "./DegreeForm";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { RecruiterLayout } from "../../recruiter/RecruiterComponents";
 
 function Degree() {
   const navigate = useNavigate();
@@ -15,11 +15,14 @@ function Degree() {
   const [degrees, setDegrees] = useState([]); // State to store all degrees
   const [editingDegree, setEditingDegree] = useState(null); // State for editing a degree
 
-  // Add a new degree
   const addDegree = async (formData) => {
+    if(!authToken)
+      navigate("/login");
+    if(!formData)
+      return
     try {
       const response = await axios.post(
-        "http://localhost:8080/degree/",
+        "http://localhost:8080/degrees/",
         formData,
         {
           headers: {
@@ -39,25 +42,28 @@ function Degree() {
       });
       console.error("Error adding degree:", error);
     }
-    setEditingDegree(null); 
+    setEditingDegree(null);
   };
 
-  // Update an existing degree
   const updateDegree = async (updatedDegree) => {
-    setDegrees((prev) =>
-      prev.map((degree) =>
-        degree.degreeId === updatedDegree.degreeId ? updatedDegree : degree
-      )
-    );
+    if(!authToken)
+      navigate("/login");
+    if(!updatedDegree)
+      return
     try {
       await axios.put(
-        `http://localhost:8080/degree/${updatedDegree.degreeId}`,
+        `http://localhost:8080/degrees/${updatedDegree.degreeId}`,
         updatedDegree,
         {
           headers: {
             Authorization: `Bearer ${authToken}`,
           },
         }
+      );
+      setDegrees((prev) =>
+        prev.map((degree) =>
+          degree.degreeId === updatedDegree.degreeId ? updatedDegree : degree
+        )
       );
       toast.success("Degree Updated Successfully!", {
         position: "top-right",
@@ -73,10 +79,13 @@ function Degree() {
     setEditingDegree(null); // Clear editing state
   };
 
-  // Delete a degree
   const deleteDegree = async (id) => {
+    if(!authToken)
+      navigate("/login");
+    if(!id)
+      return
     try {
-      await axios.delete(`http://localhost:8080/degree/${id}`, {
+      await axios.delete(`http://localhost:8080/degrees/${id}`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -96,19 +105,19 @@ function Degree() {
   };
 
   useEffect(() => {
-    if (userType !== "admin") {
-      navigate("/home");
+    if (userType !== "admin" && userType !== "recruiter") {
+      navigate("/");
     }
   }, [userType]);
 
   const fetchDegrees = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/degree/", {
+      const response = await axios.get("http://localhost:8080/degrees", {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
       });
-      setDegrees(response.data || []);
+      setDegrees(response.data.data || []);
     } catch (error) {
       console.error("Error fetching degrees:", error);
     }
@@ -119,35 +128,34 @@ function Degree() {
   }, []);
 
   return (
-    <div className="flex h-screen bg-gray-100 font-mono">
-      {/* Sidebar */}
-      <Sidebar />
-
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col min-h-screen">
-        {/* Header */}
-        <Header />
-
-        {/* Main Content Area */}
-        <main className="flex-1 p-6 overflow-auto">
-          <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-            {/* Degree Form */}
-            <DegreeForm
-              addDegree={addDegree}
-              updateDegree={updateDegree}
-              editingDegree={editingDegree}
-            />
-
-            {/* Degree List */}
-            <DegreeList
-              degrees={degrees}
-              setEditingDegree={setEditingDegree}
-              deleteDegree={deleteDegree}
-            />
-          </div>
-        </main>
-      </div>
-    </div>
+      userType === "admin" ? (
+      <AdminLayout>
+          <DegreeForm
+            addDegree={addDegree}
+            updateDegree={updateDegree}
+            editingDegree={editingDegree}
+          />
+          <DegreeList
+            degrees={degrees}
+            setEditingDegree={setEditingDegree}
+            deleteDegree={deleteDegree}
+          />
+      </AdminLayout>
+      ):
+      userType === 'recruiter' ? (
+        <RecruiterLayout>
+          <DegreeForm
+            addDegree={addDegree}
+            updateDegree={updateDegree}
+            editingDegree={editingDegree}
+          />
+          <DegreeList
+            degrees={degrees}
+            setEditingDegree={setEditingDegree}
+            deleteDegree={deleteDegree}
+          />
+        </RecruiterLayout>
+      ): null
   );
 }
 
