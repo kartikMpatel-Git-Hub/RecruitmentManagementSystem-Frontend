@@ -16,7 +16,7 @@ function User() {
     if(!authToken)
       navigate("/login");
     
-    if(!status || !userId)
+    if(status == undefined || status == null || !userId)
       return
     if (!window.confirm("Are you sure you want to change this user's status?")) return;
     try {

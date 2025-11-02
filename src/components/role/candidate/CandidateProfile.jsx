@@ -3,6 +3,9 @@ import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
+import { User } from "lucide-react";
+import Header from "./Header";
+import Footer from "./Footer";
 import "react-toastify/dist/ReactToastify.css";
 
 function CandidateProfile() {
@@ -32,14 +35,14 @@ function CandidateProfile() {
     contact: false,
     professional: true,
     skills: true,
-    education: true
+    education: true,
   });
   const [loading, setLoading] = useState(false);
 
   const toggleSection = (section) => {
-    setCollapsedSections(prev => ({
+    setCollapsedSections((prev) => ({
       ...prev,
-      [section]: !prev[section]
+      [section]: !prev[section],
     }));
   };
 
@@ -49,6 +52,34 @@ function CandidateProfile() {
       ...prevUser,
       [name]: value,
     }));
+  };
+
+  const handleDownload = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/candidates/resume/download/vv21dvtsjazpd5vto3dj.pdf`,
+        {
+          headers: { Authorization: `Bearer ${authToken}` },
+        }
+      );
+      console.log(response);
+
+      if (!response.ok) throw new Error("Download failed");
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error(error);
+      alert("Failed to download file");
+    }
   };
 
   const getUserProfile = async () => {
@@ -65,20 +96,23 @@ function CandidateProfile() {
   const getCandidateSkills = async () => {
     if (!user.candidateId) return;
     try {
-      const response = await axios.get(`http://localhost:8080/candidate-skills/candidate/${user.candidateId}`, {
-        headers: { Authorization: `Bearer ${authToken}` },
-      });
+      const response = await axios.get(
+        `http://localhost:8080/candidate-skills/candidate/${user.candidateId}`,
+        {
+          headers: { Authorization: `Bearer ${authToken}` },
+        }
+      );
       const skills = response.data.data || [];
       setCandidateSkills(skills);
       setSelectedSkills(skills.map((s) => s.skill)); // Backend returns skill ID in 'skill' field
-      
+
       // Set skill details for existing skills
       const details = {};
-      skills.forEach(skill => {
+      skills.forEach((skill) => {
         details[skill.skill] = {
           candidateSkillId: skill.candidateSkillId,
           proficiencyLevel: skill.proficiencyLevel || "BEGINNER",
-          yearsOfExperience: skill.yearsOfExperience || 0
+          yearsOfExperience: skill.yearsOfExperience || 0,
         };
       });
       setSkillDetails(details);
@@ -177,12 +211,17 @@ function CandidateProfile() {
         // Find and delete the candidate skill using skillDetails
         const skillDetail = skillDetails[skillId];
         if (skillDetail && skillDetail.candidateSkillId) {
-          await axios.delete(`http://localhost:8080/candidate-skills/${skillDetail.candidateSkillId}`, {
-            headers: { Authorization: `Bearer ${authToken}` },
-          });
+          await axios.delete(
+            `http://localhost:8080/candidate-skills/${skillDetail.candidateSkillId}`,
+            {
+              headers: { Authorization: `Bearer ${authToken}` },
+            }
+          );
         }
         setSelectedSkills(selectedSkills.filter((id) => id !== skillId));
-        setCandidateSkills(candidateSkills.filter(cs => cs.skill !== skillId));
+        setCandidateSkills(
+          candidateSkills.filter((cs) => cs.skill !== skillId)
+        );
         const newSkillDetails = { ...skillDetails };
         delete newSkillDetails[skillId];
         setSkillDetails(newSkillDetails);
@@ -203,20 +242,24 @@ function CandidateProfile() {
           candidate: user.candidateId,
           skill: skillId,
           proficiencyLevel: "BEGINNER",
-          yearsOfExperience: 0
+          yearsOfExperience: 0,
         };
-        const response = await axios.post(`http://localhost:8080/candidate-skills/`, skillData, {
-          headers: { Authorization: `Bearer ${authToken}` },
-        });
+        const response = await axios.post(
+          `http://localhost:8080/candidate-skills/`,
+          skillData,
+          {
+            headers: { Authorization: `Bearer ${authToken}` },
+          }
+        );
         setSelectedSkills([...selectedSkills, skillId]);
         setCandidateSkills([...candidateSkills, response.data]);
         setSkillDetails({
           ...skillDetails,
-          [skillId]: { 
+          [skillId]: {
             candidateSkillId: response.data.candidateSkillId,
-            proficiencyLevel: "BEGINNER", 
-            yearsOfExperience: 0 
-          }
+            proficiencyLevel: "BEGINNER",
+            yearsOfExperience: 0,
+          },
         });
         toast.success("Skill added successfully!", {
           position: "top-right",
@@ -240,20 +283,24 @@ function CandidateProfile() {
   const updateSkillDetail = async (skillId) => {
     try {
       setLoadingSkills(true);
-      
+
       const skillDetail = skillDetails[skillId];
       if (skillDetail && skillDetail.candidateSkillId) {
         const updatedData = {
           candidate: user.candidateId,
           skill: skillId,
           proficiencyLevel: skillDetail.proficiencyLevel || "BEGINNER",
-          yearsOfExperience: skillDetail.yearsOfExperience || 0
+          yearsOfExperience: skillDetail.yearsOfExperience || 0,
         };
-        
-        await axios.put(`http://localhost:8080/candidate-skills/${skillDetail.candidateSkillId}`, updatedData, {
-          headers: { Authorization: `Bearer ${authToken}` },
-        });
-        
+
+        await axios.put(
+          `http://localhost:8080/candidate-skills/${skillDetail.candidateSkillId}`,
+          updatedData,
+          {
+            headers: { Authorization: `Bearer ${authToken}` },
+          }
+        );
+
         toast.success("Skill updated successfully!", {
           position: "top-right",
           autoClose: 2000,
@@ -400,6 +447,8 @@ function CandidateProfile() {
         autoClose: 3000,
       });
     } catch (error) {
+      console.log(error.response);
+
       toast.error(
         error?.response?.data?.message || "Failed to update profile!",
         { position: "top-right", autoClose: 3000 }
@@ -435,46 +484,17 @@ function CandidateProfile() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 flex items-center justify-center px-4 py-8">
-      <div className="w-full max-w-4xl">
-        <div className="text-center mb-8">
-          <button
-            onClick={() => navigate("/candidate")}
-            className="inline-flex items-center px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors mb-4"
-          >
-            <svg
-              className="w-4 h-4 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-              />
-            </svg>
-            Back to Home
-          </button>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 flex flex-col">
+      <Header title="My Profile" showBackButton={true} />
+
+      <div className="max-w-7xl mx-100 px-4 py-8">
+        {/* <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl mb-4 shadow-lg">
-            <svg
-              className="w-8 h-8 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-              />
-            </svg>
+            <User className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">My Profile</h1>
           <p className="text-gray-600">Manage your profile information</p>
-        </div>
+        </div> */}
 
         <div className="bg-white rounded-3xl shadow-xl border border-gray-200 overflow-hidden">
           <div className="bg-gradient-to-r from-slate-800 to-slate-900 p-6 flex flex-col md:flex-row items-center md:items-start gap-6">
@@ -491,10 +511,10 @@ function CandidateProfile() {
 
           <div className="p-8 space-y-8">
             {/* Personal Info */}
-            <Section 
-              title="Personal Information" 
+            <Section
+              title="Personal Information"
               isCollapsed={collapsedSections.personal}
-              onToggle={() => toggleSection('personal')}
+              onToggle={() => toggleSection("personal")}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <InputField
@@ -531,10 +551,10 @@ function CandidateProfile() {
             </Section>
 
             {/* Contact Info */}
-            <Section 
-              title="Contact Information" 
+            <Section
+              title="Contact Information"
               isCollapsed={collapsedSections.contact}
-              onToggle={() => toggleSection('contact')}
+              onToggle={() => toggleSection("contact")}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <InputField
@@ -577,10 +597,10 @@ function CandidateProfile() {
             </Section>
 
             {/* Professional Info */}
-            <Section 
-              title="Professional Information" 
+            <Section
+              title="Professional Information"
               isCollapsed={collapsedSections.professional}
-              onToggle={() => toggleSection('professional')}
+              onToggle={() => toggleSection("professional")}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <InputField
@@ -604,14 +624,17 @@ function CandidateProfile() {
             </Section>
 
             {/* Skills Section */}
-            <Section 
-              title="Skills" 
+            <Section
+              title="Skills"
               isCollapsed={collapsedSections.skills}
-              onToggle={() => toggleSection('skills')}
+              onToggle={() => toggleSection("skills")}
             >
               <div className="space-y-4">
                 {allSkills.map((skill) => (
-                  <div key={skill.skillId} className="border border-gray-200 rounded-lg p-4">
+                  <div
+                    key={skill.skillId}
+                    className="border border-gray-200 rounded-lg p-4"
+                  >
                     <label className="flex items-center gap-3 cursor-pointer group mb-3">
                       <input
                         type="checkbox"
@@ -621,8 +644,18 @@ function CandidateProfile() {
                       />
                       <div className="w-5 h-5 border-2 border-gray-300 rounded flex-shrink-0 flex justify-center items-center transition-all duration-300 peer-checked:bg-slate-600 peer-checked:border-slate-600 group-hover:border-slate-500">
                         {selectedSkills.includes(skill.skillId) && (
-                          <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          <svg
+                            className="h-4 w-4 text-white"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={3}
+                              d="M5 13l4 4L19 7"
+                            />
                           </svg>
                         )}
                       </div>
@@ -630,7 +663,7 @@ function CandidateProfile() {
                         {skill.skill}
                       </span>
                     </label>
-                    
+
                     {selectedSkills.includes(skill.skillId) && (
                       <div className="mt-3">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -639,14 +672,19 @@ function CandidateProfile() {
                               Proficiency Level
                             </label>
                             <select
-                              value={skillDetails[skill.skillId]?.proficiencyLevel || "BEGINNER"}
-                              onChange={(e) => setSkillDetails({
-                                ...skillDetails,
-                                [skill.skillId]: {
-                                  ...skillDetails[skill.skillId],
-                                  proficiencyLevel: e.target.value
-                                }
-                              })}
+                              value={
+                                skillDetails[skill.skillId]?.proficiencyLevel ||
+                                "BEGINNER"
+                              }
+                              onChange={(e) =>
+                                setSkillDetails({
+                                  ...skillDetails,
+                                  [skill.skillId]: {
+                                    ...skillDetails[skill.skillId],
+                                    proficiencyLevel: e.target.value,
+                                  },
+                                })
+                              }
                               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500"
                             >
                               <option value="BEGINNER">Beginner</option>
@@ -663,14 +701,19 @@ function CandidateProfile() {
                               type="number"
                               min="0"
                               max="50"
-                              value={skillDetails[skill.skillId]?.yearsOfExperience || 0}
-                              onChange={(e) => setSkillDetails({
-                                ...skillDetails,
-                                [skill.skillId]: {
-                                  ...skillDetails[skill.skillId],
-                                  yearsOfExperience: parseInt(e.target.value)
-                                }
-                              })}
+                              value={
+                                skillDetails[skill.skillId]
+                                  ?.yearsOfExperience || 0
+                              }
+                              onChange={(e) =>
+                                setSkillDetails({
+                                  ...skillDetails,
+                                  [skill.skillId]: {
+                                    ...skillDetails[skill.skillId],
+                                    yearsOfExperience: parseInt(e.target.value),
+                                  },
+                                })
+                              }
                               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500"
                             />
                           </div>
@@ -698,10 +741,10 @@ function CandidateProfile() {
               )}
             </Section>
 
-            <Section 
-              title="Education" 
+            <Section
+              title="Education"
               isCollapsed={collapsedSections.education}
-              onToggle={() => toggleSection('education')}
+              onToggle={() => toggleSection("education")}
             >
               <div className="space-y-6">
                 {allEducations.map((education) => (
@@ -848,7 +891,16 @@ function CandidateProfile() {
                     ) : (
                       <div className="flex gap-3 mt-4">
                         <button
-                          onClick={() => {if (window.confirm("Are you sure you want to delete this education record?")) handleDeleteCandidateEducation(education.candidateEducationId);}}
+                          onClick={() => {
+                            if (
+                              window.confirm(
+                                "Are you sure you want to delete this education record?"
+                              )
+                            )
+                              handleDeleteCandidateEducation(
+                                education.candidateEducationId
+                              );
+                          }}
                           className="py-2 px-4 rounded-xl font-semibold bg-red-500 hover:bg-red-600 text-white"
                         >
                           Delete
@@ -990,6 +1042,7 @@ function CandidateProfile() {
         </div>
         <ToastContainer />
       </div>
+      <Footer />
     </div>
   );
 }
@@ -1003,19 +1056,22 @@ const Section = ({ title, children, isCollapsed, onToggle }) => (
     >
       <h3 className="text-xl font-bold text-gray-900">{title}</h3>
       <svg
-        className={`w-5 h-5 text-gray-600 transition-transform duration-200 ${isCollapsed ? 'rotate-180' : ''}`}
+        className={`w-5 h-5 text-gray-600 transition-transform duration-200 ${
+          isCollapsed ? "rotate-180" : ""
+        }`}
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
       >
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M19 9l-7 7-7-7"
+        />
       </svg>
     </button>
-    {!isCollapsed && (
-      <div className="px-6 pb-6 space-y-6">
-        {children}
-      </div>
-    )}
+    {!isCollapsed && <div className="px-6 pb-6 space-y-6">{children}</div>}
   </div>
 );
 
