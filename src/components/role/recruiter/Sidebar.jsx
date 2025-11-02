@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Users, Award, GraduationCap, Building2, LayoutDashboard } from "lucide-react";
+import { Users, Award, GraduationCap, Building2, LayoutDashboard ,Briefcase} from "lucide-react";
 
 function Sidebar() {
   const navigate = useNavigate();
@@ -43,6 +43,13 @@ function Sidebar() {
         >
           <Building2 className="w-5 h-5" />
           <span>Manage Universities</span>
+        </button>
+        <button
+          onClick={() => navigate("/recruiter/positions")}
+          className="flex items-center space-x-3 w-full text-left px-4 py-3 rounded-xl hover:bg-slate-700 transition-colors duration-200"
+        >
+          <Briefcase className="w-5 h-5" />
+          <span>Manage Positions</span>
         </button>
       </nav>
     </aside>

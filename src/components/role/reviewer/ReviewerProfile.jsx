@@ -12,11 +12,9 @@ import {
   AlertCircle,
 } from "lucide-react";
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Sidebar from "./Sidebar";
-import Header from "./Header";
-import RecruiterLayout from "./RecruiterLayout";
+import ReviewerLayout from "./ReviewerLayout";
 
 function RecruiterProfile() {
   const navigate = useNavigate();
@@ -254,7 +252,7 @@ function RecruiterProfile() {
   };
 
   return (
-    <RecruiterLayout>
+    <ReviewerLayout>
       <main className="flex-1 p-8 overflow-auto">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-8">
@@ -544,7 +542,7 @@ function RecruiterProfile() {
           </div>
         </div>
       </main>
-    </RecruiterLayout>
+    </ReviewerLayout>
   );
 }
 

@@ -2,7 +2,7 @@ import { ToastContainer } from "react-toastify";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 
-function RecruiterLayout({ children }) {
+function ReviewerLayout({ children }) {
   return (
     <div className="flex h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
       <Sidebar />
@@ -17,4 +17,4 @@ function RecruiterLayout({ children }) {
   );
 }
 
-export default RecruiterLayout;
+export default ReviewerLayout;

@@ -415,10 +415,10 @@ function Register() {
                 >
                   <option value="">Select Role</option>
                   <option value="ADMIN">Admin</option>
-                  <option value="NORMAL">Normal</option>
                   <option value="CANDIDATE">Candidate</option>
                   <option value="RECRUITER">Recruiter</option>
                   <option value="INTERVIEWER">Interviewer</option>
+                  <option value="REVIEWER">Reviewer</option>
                   <option value="HR">HR</option>
                 </select>
               </div>
