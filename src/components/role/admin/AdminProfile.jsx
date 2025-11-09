@@ -188,7 +188,6 @@ function AdminProfile() {
           }
         );
 
-        // Update local state with new data
         setProfileData({
           userId: response.data.userId,
           userName: response.data.userName,
@@ -204,7 +203,6 @@ function AdminProfile() {
           autoClose: 3000,
         });
         
-        // Logout user after username change to refresh token
         setTimeout(() => {
           navigate("/logout");
         }, 3000);

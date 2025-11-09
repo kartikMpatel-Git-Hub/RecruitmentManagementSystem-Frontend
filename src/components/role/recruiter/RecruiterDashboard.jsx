@@ -9,11 +9,11 @@ function RecruiterDashboard() {
   const navigate = useNavigate();
   const { userType } = useContext(AuthContext);
   const { authToken } = useContext(AuthContext);
-  const [users, setUsers] = useState([]); // State to store all users
-  const [candidates, setCandidates] = useState([]); // State to store all users
-  const [degrees, setDegrees] = useState([]); // State to store all degrees
-  const [skills, setSkills] = useState([]); // State to store all skills
-  const [universities, setUniversities] = useState([]); // State to store all skills
+  const [users, setUsers] = useState([]); 
+  const [candidates, setCandidates] = useState([]);
+  const [degrees, setDegrees] = useState([]); 
+  const [skills, setSkills] = useState([]);
+  const [universities, setUniversities] = useState([]);
 
   useEffect(() => {
     if (!authToken || userType !== "recruiter") {

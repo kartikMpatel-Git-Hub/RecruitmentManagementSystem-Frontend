@@ -15,6 +15,7 @@ import PositionApplications from "./position/PositionApplications";
 import PositionShortlistedApplications from "./position/PositionShortlistedApplications";
 import AllApplications from "./position/AllPllications";
 import AllShortlistedApplications from "./position/AllShortlistsApplications";
+import Interview from "./interview/Interview";
 
 export {
   Degree,
@@ -33,5 +34,6 @@ export {
   PositionApplications,
   PositionShortlistedApplications,
   AllApplications,
-  AllShortlistedApplications
+  AllShortlistedApplications,
+  Interview
 };

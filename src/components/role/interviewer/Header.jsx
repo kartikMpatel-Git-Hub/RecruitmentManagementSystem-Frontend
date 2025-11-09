@@ -1,6 +1,6 @@
 import { useState ,useContext} from "react";
 import { useNavigate } from "react-router-dom";
-import {  User, LogOut } from "lucide-react";
+import { ChevronDown, User, LogOut } from "lucide-react";
 import { AuthContext } from "../../context/AuthContext";
 
 function Header() {
@@ -13,13 +13,13 @@ function Header() {
   };
 
   const goToProfile = () => {
-    navigate("/reviewer/profile");
+    navigate("/interviewer/profile");
   };
 
   return (
     <header className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center shadow-sm">
       <h1 className="text-2xl font-bold bg-gradient-to-r from-slate-800 to-slate-900 bg-clip-text text-transparent">
-        Reviewer Dashboard
+        Interviewer Dashboard
       </h1>
       <div className="relative">
         <button

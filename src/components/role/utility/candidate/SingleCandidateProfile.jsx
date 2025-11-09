@@ -55,18 +55,11 @@ function SingleCandidateProfile() {
   };
 
   useEffect(() => {
-    if (userType !== "admin" && userType !== "recruiter") navigate("/");
-  }, [userType]);
-
-  useEffect(() => {
-    if (id) fetchCandidate();
+    if (id) 
+      fetchCandidate();
   }, [id]);
 
-  // if (!candidate) {
-  //   return (
-  //
-  //   );
-  // }
+ 
 
   const formatDate = (dateArray) => {
     if (!dateArray || dateArray.length !== 3) return "N/A";
