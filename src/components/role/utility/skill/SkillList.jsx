@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import Layout from "../Layout";
 
 const SkillList = () => {
-  const { authToken, userType } = useContext(AuthContext);
+  const { authToken } = useContext(AuthContext);
   const navigate = useNavigate();
   const [skills, setSkills] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -49,14 +49,6 @@ const SkillList = () => {
     if (!authToken) return navigate("/login");
     fetchSkills();
   }, [authToken]);
-
-  // if (loading) {
-  //   return (
-  //     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 flex items-center justify-center">
-  //       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800"></div>
-  //     </div>
-  //   );
-  // }
 
   const SkillContent = () => (
     <div className="max-w-7xl mx-auto">

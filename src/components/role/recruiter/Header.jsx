@@ -27,7 +27,6 @@ function Header() {
           className="flex items-center space-x-3 px-4 py-2 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-slate-300"
         >
           <div className="w-8 h-8 bg-gradient-to-r from-slate-800 to-slate-900 rounded-full flex items-center justify-center">
-            {/* <User className="w-4 h-4 text-white" /> */}
             {profileData.image ? (
               <img
                 src={`${profileData.image}`}

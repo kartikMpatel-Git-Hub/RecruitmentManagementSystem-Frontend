@@ -91,6 +91,11 @@ const PositionList = () => {
     }
   };
 
+  const allowAction = ()=>{
+    if(userType === "admin" || userType === "recruiter")
+      return true
+    return false
+  }
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
       case "open":
@@ -128,8 +133,7 @@ const PositionList = () => {
                     </p>
                   </div>
                 </div>
-                {userType === "admin" ||
-                  (userType === "recruiter" && (
+                {allowAction() && (
                     <button
                       onClick={() => {
                         navigate(`new`);
@@ -139,7 +143,7 @@ const PositionList = () => {
                       <Plus className="w-5 h-5" />
                       Create New Position
                     </button>
-                  ))}
+                  )}
               </div>
             </div>
           </div>
@@ -214,6 +218,10 @@ const PositionList = () => {
                               <Wallet2Icon className="w-4 h-4" />₹
                               {currencyCalculate(position.positionSalary) ||
                                 "N/A"}
+                            </div>
+                            <div className="flex items-center gap-2 text-slate-200 text-sm">
+                              <Clock className="w-4 h-4" />
+                              {position.positionRounds?.length || 0} Rounds
                             </div>
                           </div>
                         </div>

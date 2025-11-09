@@ -18,14 +18,16 @@ const Position = () => {
     positionType:"",
     positionSalary:"",
     positionLocation:"",
+    positionLanguage: "",
     positionStatus: {
       status: "",
       positionStatusReason: ""
     },
     positionRequirements: [
-      { positionSkill: { skillId: "" }, positionRequirement: "" ,positionLanguage : ""}
     ],
-    positionRequiredEducations: []
+    positionRequiredEducations: [],
+    positionRounds: [
+    ]
   });
 
   const [skills, setSkills] = useState([]);
@@ -78,6 +80,7 @@ const Position = () => {
 
     if (name === "skillId") newRequirements[index].positionSkill.skillId = parseInt(value);
     if (name === "positionRequirement") newRequirements[index].positionRequirement = value;
+    if (name === "position") newRequirements[index].position = parseInt(value) || 1;
 
     setPosition({ ...position, positionRequirements: newRequirements });
   };
@@ -87,7 +90,7 @@ const Position = () => {
       ...position,
       positionRequirements: [
         ...position.positionRequirements,
-        { positionSkill: { skillId: "" }, positionRequirement: "" }
+        { positionSkill: { skillId: "" }, position: position.positionRequirements.length + 1, positionRequirement: "" }
       ],
     });
   };
@@ -96,6 +99,33 @@ const Position = () => {
     const newRequirements = [...position.positionRequirements];
     newRequirements.splice(index, 1);
     setPosition({ ...position, positionRequirements: newRequirements });
+  };
+
+  const addRound = () => {
+    setPosition({
+      ...position,
+      positionRounds: [
+        ...position.positionRounds,
+        { positionRoundType: "", positionRoundSequence: position.positionRounds.length + 1, positionRoundExpectedDate: "", positionRoundExpectedStartTime: "" }
+      ]
+    });
+  };
+
+  const removeRound = (index) => {
+    const newRounds = [...position.positionRounds];
+    newRounds.splice(index, 1);
+    setPosition({ ...position, positionRounds: newRounds });
+  };
+
+  const handleRoundChange = (index, e) => {
+    const { name, value } = e.target;
+    const newRounds = [...position.positionRounds];
+    if (name === 'positionRoundSequence') {
+      newRounds[index][name] = parseInt(value) || 1;
+    } else {
+      newRounds[index][name] = value;
+    }
+    setPosition({ ...position, positionRounds: newRounds });
   };
 
   const handleEducationChange = (degreeId, isChecked) => {
@@ -146,6 +176,9 @@ const Position = () => {
             handleEducationChange={handleEducationChange}
             skills={skills}
             degrees={degrees}
+            addRound={addRound}
+            removeRound={removeRound}
+            handleRoundChange={handleRoundChange}
           />
       </Layout>
   );

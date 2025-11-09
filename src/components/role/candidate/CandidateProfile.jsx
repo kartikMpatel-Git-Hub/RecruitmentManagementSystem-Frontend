@@ -3,7 +3,6 @@ import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
-import { User } from "lucide-react";
 import Header from "./Header";
 import Footer from "./Footer";
 import "react-toastify/dist/ReactToastify.css";
@@ -14,10 +13,10 @@ function CandidateProfile() {
 
   const [user, setUser] = useState({});
   const [resumeFile, setResumeFile] = useState(null);
-  const [allSkills, setAllSkills] = useState([]); // Skills from DB
-  const [candidateSkills, setCandidateSkills] = useState([]); // Candidate's skills
-  const [selectedSkills, setSelectedSkills] = useState([]); // Selected skill IDs
-  const [skillDetails, setSkillDetails] = useState({}); // Skill proficiency and experience
+  const [allSkills, setAllSkills] = useState([]); 
+  const [candidateSkills, setCandidateSkills] = useState([]); 
+  const [selectedSkills, setSelectedSkills] = useState([]); 
+  const [skillDetails, setSkillDetails] = useState({});
   const [loadingSkills, setLoadingSkills] = useState(false);
   const [allEducations, setAllEducations] = useState([]);
   const [loadingEducations, setLoadingEducations] = useState(false);
@@ -89,7 +88,6 @@ function CandidateProfile() {
       });
       setUser(response.data);
     } catch (error) {
-      // console.error("Error fetching user profile:", error);
     }
   };
 
@@ -104,9 +102,8 @@ function CandidateProfile() {
       );
       const skills = response.data.data || [];
       setCandidateSkills(skills);
-      setSelectedSkills(skills.map((s) => s.skill)); // Backend returns skill ID in 'skill' field
+      setSelectedSkills(skills.map((s) => s.skill));
 
-      // Set skill details for existing skills
       const details = {};
       skills.forEach((skill) => {
         details[skill.skill] = {
@@ -129,7 +126,6 @@ function CandidateProfile() {
       });
       setAllSkills(response.data.data || response.data);
     } catch (error) {
-      // console.error("Error fetching skills:", error);
     } finally {
       setLoadingSkills(false);
     }
@@ -152,7 +148,6 @@ function CandidateProfile() {
       setUniversities(response.data.data);
     } catch (error) {
       console.log(error);
-      // console.error("Error fetching Universities:", error);
     }
   };
 
@@ -170,7 +165,6 @@ function CandidateProfile() {
       );
       setAllEducations(response.data.data);
     } catch (error) {
-      // console.log(error);
     } finally {
       setLoadingEducations(false);
     }
@@ -179,7 +173,7 @@ function CandidateProfile() {
   const formatDateForInput = (date) => {
     if (!date) return "";
     const d = new Date(date);
-    const month = String(d.getMonth() + 1).padStart(2, "0"); // months are 0-based
+    const month = String(d.getMonth() + 1).padStart(2, "0"); 
     const day = String(d.getDate()).padStart(2, "0");
     return `${d.getFullYear()}-${month}-${day}`;
   };
@@ -208,7 +202,6 @@ function CandidateProfile() {
     setLoadingSkills(true);
     if (selectedSkills.includes(skillId)) {
       try {
-        // Find and delete the candidate skill using skillDetails
         const skillDetail = skillDetails[skillId];
         if (skillDetail && skillDetail.candidateSkillId) {
           await axios.delete(
@@ -237,7 +230,6 @@ function CandidateProfile() {
       }
     } else {
       try {
-        // Add new candidate skill with default values
         const skillData = {
           candidate: user.candidateId,
           skill: skillId,
@@ -321,7 +313,6 @@ function CandidateProfile() {
     }
   };
 
-  // Remove the handleSkillsSubmit function since skills are now updated individually
 
   const handleAddEducation = async () => {
     if (!newEducation.degree || !newEducation.university) {
@@ -510,7 +501,6 @@ function CandidateProfile() {
           </div>
 
           <div className="p-8 space-y-8">
-            {/* Personal Info */}
             <Section
               title="Personal Information"
               isCollapsed={collapsedSections.personal}
@@ -550,7 +540,6 @@ function CandidateProfile() {
               </div>
             </Section>
 
-            {/* Contact Info */}
             <Section
               title="Contact Information"
               isCollapsed={collapsedSections.contact}
@@ -596,7 +585,6 @@ function CandidateProfile() {
               </div>
             </Section>
 
-            {/* Professional Info */}
             <Section
               title="Professional Information"
               isCollapsed={collapsedSections.professional}
@@ -623,7 +611,6 @@ function CandidateProfile() {
               </div>
             </Section>
 
-            {/* Skills Section */}
             <Section
               title="Skills"
               isCollapsed={collapsedSections.skills}
@@ -910,7 +897,6 @@ function CandidateProfile() {
                   </div>
                 ))}
 
-                {/* Add New Education Form */}
                 <div className="bg-slate-50 p-6 rounded-2xl border-2 border-dashed border-slate-300">
                   <h4 className="text-lg font-semibold text-gray-900 mb-4">
                     Add New Education
@@ -1047,7 +1033,6 @@ function CandidateProfile() {
   );
 }
 
-// Reusable components
 const Section = ({ title, children, isCollapsed, onToggle }) => (
   <div className="bg-gray-50 rounded-2xl border border-gray-200 overflow-hidden">
     <button

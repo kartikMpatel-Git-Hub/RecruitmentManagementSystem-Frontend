@@ -3,9 +3,17 @@ import React, { useState, useEffect, useContext, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "../../../context/AuthContext";
-import { User, Eye, Edit, Users, X, Download, ArrowLeft, List, Star } from "lucide-react";
+import {
+  User,
+  Users,
+  ArrowLeft,
+  Star,
+} from "lucide-react";
 import Layout from "../Layout";
 import { toast } from "react-toastify";
+import ProfileModal from "./modal/ProfileModal";
+import StatusModal from "./modal/StatusModal";
+import Applications from "./modal/Applications";
 
 function PositionApplications() {
   const { positionId } = useParams();
@@ -34,10 +42,29 @@ function PositionApplications() {
         { headers: { Authorization: `Bearer ${authToken}` } }
       );
       setApplications(response.data.data || []);
+      
     } catch (error) {
       console.error("Error fetching applications:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleShortlistApplication =async (applicationId) => {
+    if (!applicationId) return;
+    try {
+      await axios.patch(
+        `http://localhost:8080/applications/${applicationId}/shortlist`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${authToken}` },
+        }
+      );
+      toast.success("Application Shortlisted Successfully!");
+      fetchApplications();
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to shortlist application");
     }
   };
 
@@ -156,9 +183,8 @@ function PositionApplications() {
   return (
     <Layout>
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-8 mb-8">
-          <div className="flex items-center gap-4" >
+          <div className="flex items-center gap-4">
             <button
               onClick={() => navigate(-1)}
               className="p-3 hover:bg-gray-100 rounded-2xl transition-colors"
@@ -199,428 +225,38 @@ function PositionApplications() {
           </div>
         ) : (
           <>
-            <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-6 mb-8">
-              <div className="flex items-center justify-between">
-                <p className="text-gray-600 text-lg">
-                  <span className="font-bold text-gray-900">
-                    {applications.filter(app => !statusFilter || app.applicationStatus?.applicationStatus === statusFilter).length}
-                  </span>{" "}
-                  application{applications.filter(app => !statusFilter || app.applicationStatus?.applicationStatus === statusFilter).length !== 1 ? "s" : ""} found
-                </p>
-                <div className="flex items-center gap-3">
-                  <label className="text-sm font-medium text-gray-700">Filter by Status:</label>
-                  <select
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    className="px-4 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-slate-400 bg-gray-50 focus:bg-white text-sm"
-                  >
-                    <option value="">All Status</option>
-                    <option value="PENDING">Pending</option>
-                    <option value="UNDERPROCESS">Under Process</option>
-                    <option value="ACCEPTED">Shortlisted</option>
-                    <option value="REJECTED">Rejected</option>
-                  </select>
-                </div>
-              </div>
-            </div>
 
-            <div className="bg-white rounded-3xl shadow-xl border border-gray-200 overflow-hidden">
-              <table className="w-full">
-                <thead className="bg-gradient-to-r from-slate-800 to-slate-900">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-white">
-                      Application ID
-                    </th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-white">
-                      Candidate ID
-                    </th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-white">
-                      Status
-                    </th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-white">
-                      Feedback
-                    </th>
-                    <th className="px-6 py-4 text-center text-sm font-semibold text-white">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {applications
-                    .filter(app => !statusFilter || app.applicationStatus?.applicationStatus === statusFilter)
-                    .map((app) => (
-                    <tr
-                      key={app.applicationId}
-                      className="hover:bg-gray-50 transition-colors"
-                    >
-                      <td className="px-6 py-4">
-                        <span className="font-semibold text-gray-900">
-                          #{app.applicationId}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="text-gray-900 font-medium">
-                          {app.candidateId}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadge(
-                            app.applicationStatus?.applicationStatus
-                          )}`}
-                        >
-                          {app.applicationStatus?.applicationStatus !==
-                          "ACCEPTED"
-                            ? app.applicationStatus?.applicationStatus
-                            : "Shortlisted"}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="max-w-xs">
-                          {app.applicationStatus?.applicationFeedback ? (
-                            <p
-                              className="text-sm text-gray-600 truncate"
-                              title={app.applicationStatus.applicationFeedback}
-                            >
-                              {app.applicationStatus.applicationFeedback}
-                            </p>
-                          ) : (
-                            <span className="text-sm text-gray-400">
-                              No feedback
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-center">
-                        <button
-                          onClick={() => openProfileModal(app.candidateId)}
-                          className="m-1 inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-lg hover:from-slate-700 hover:to-slate-800 transition-all font-medium shadow-sm"
-                        >
-                          <Eye className="w-4 h-4" />
-                          View Profile
-                        </button>
-                        <button
-                          onClick={() => openStatusModal(app)}
-                          className={`m-1 inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-lg hover:from-slate-700 hover:to-slate-800 transition-all font-medium shadow-sm`}
-                        >
-                          <Edit className="w-4 h-4" />
-                          Change Status
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <Applications 
+                applications={applications}
+                getStatusBadge={getStatusBadge}
+                statusFilter={statusFilter}
+                openProfileModal={openProfileModal}
+                openStatusModal={openStatusModal}
+                handleShortlistApplication={handleShortlistApplication}
+            />
           </>
         )}
 
-        {/* Status Update Modal */}
-        {showStatusModal && (
-          <div className="fixed inset-0 z-50 overflow-y-auto">
-            <div
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm"
-              onClick={closeStatusModal}
-            ></div>
-            <div className="flex min-h-full items-center justify-center p-4">
-              <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-md">
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-2xl font-bold text-gray-900">
-                      Update Application Status
-                    </h3>
-                    <button
-                      onClick={closeStatusModal}
-                      className="p-2 hover:bg-gray-100 rounded-full"
-                    >
-                      <X className="w-6 h-6 text-gray-500" />
-                    </button>
-                  </div>
-
-                  <form onSubmit={handleStatusUpdate} className="space-y-6">
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-3">
-                        Application Status
-                      </label>
-                      <select
-                        name="applicationStatus"
-                        value={statusForm.applicationStatus}
-                        disabled={statusForm.currentStatus === "ACCEPTED"}
-                        onChange={handleStatusChange}
-                        className={`w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-slate-400 bg-gray-50 focus:bg-white ${
-                          statusForm.currentStatus === "ACCEPTED" &&
-                          "opacity-50 cursor-not-allowed"
-                        }`}
-                        required
-                      >
-                        <option value="">Select Status</option>
-                        <option value="UNDERPROCESS">Under Process</option>
-                        <option value="ACCEPTED">Accepted</option>
-                        <option value="REJECTED">Rejected</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-3">
-                        Feedback
-                      </label>
-                      <textarea
-                        name="applicationFeedback"
-                        value={statusForm.applicationFeedback}
-                        onChange={handleStatusChange}
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-slate-400 bg-gray-50 focus:bg-white resize-none"
-                        rows="4"
-                        placeholder="Enter feedback for the candidate..."
-                      />
-                    </div>
-
-                    <div className="flex gap-4">
-                      <button
-                        type="button"
-                        onClick={closeStatusModal}
-                        className="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 font-semibold"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        type="submit"
-                        className="flex-1 px-6 py-3 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-xl hover:from-slate-700 hover:to-slate-800 font-semibold shadow-lg"
-                      >
-                        Update Status
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
+         {showStatusModal && (
+          <StatusModal
+            closeStatusModal={closeStatusModal}
+            statusForm={statusForm}
+            handleStatusChange={handleStatusChange}
+            handleStatusUpdate={handleStatusUpdate}
+            selectedApplication={selectedApplication}
+          />
         )}
 
-        {/* Candidate Profile Modal */}
         {showProfileModal && (
-          <div className="fixed inset-0 z-50 overflow-y-auto">
-            <div
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm"
-              onClick={closeProfileModal}
-            ></div>
-            <div className="flex min-h-full items-center justify-center p-4">
-              <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-                {profileLoading ? (
-                  <div className="p-12 text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800 mx-auto mb-4"></div>
-                    <p className="text-gray-600">
-                      Loading candidate profile...
-                    </p>
-                  </div>
-                ) : candidateProfile ? (
-                  <div>
-                    <div className="bg-gradient-to-r from-slate-800 to-slate-900 p-6 flex items-center justify-between rounded-t-3xl">
-                      <div className="flex items-center gap-4">
-                        <img
-                          src={
-                            candidateProfile.userImageUrl ||
-                            "/default-avatar.png"
-                          }
-                          alt="Profile"
-                          className="w-16 h-16 rounded-full border-4 border-white shadow-lg object-cover"
-                        />
-                        <div>
-                          <h2 className="text-xl font-bold text-white">
-                            {candidateProfile.candidateFirstName}{" "}
-                            {candidateProfile.candidateLastName}
-                          </h2>
-                          <p className="text-slate-200">
-                            @{candidateProfile.userName}
-                          </p>
-                          <p className="text-slate-200">
-                            {candidateProfile.userEmail}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        {candidateProfile.candidateResumeUrl && (
-                          <a
-                            href={candidateProfile.candidateResumeUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-2 bg-white text-slate-800 px-3 py-2 rounded-lg hover:bg-gray-100 text-sm font-medium"
-                          >
-                            <Download className="w-4 h-4" />
-                            Resume
-                          </a>
-                        )}
-                        <button
-                          onClick={closeProfileModal}
-                          className="p-2 hover:bg-slate-700 rounded-full"
-                        >
-                          <X className="w-6 h-6 text-white" />
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="p-6 space-y-6">
-                      <div className="bg-gray-50 p-4 rounded-2xl">
-                        <h3 className="text-lg font-bold text-gray-900 mb-4">
-                          Personal Information
-                        </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <p className="text-sm font-medium text-gray-600">
-                              First Name
-                            </p>
-                            <p className="font-semibold text-gray-900">
-                              {candidateProfile.candidateFirstName ||
-                                "Not provided"}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-gray-600">
-                              Last Name
-                            </p>
-                            <p className="font-semibold text-gray-900">
-                              {candidateProfile.candidateLastName ||
-                                "Not provided"}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-gray-600">
-                              Gender
-                            </p>
-                            <p className="font-semibold text-gray-900">
-                              {candidateProfile.candidateGender ||
-                                "Not provided"}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-gray-600">
-                              Experience
-                            </p>
-                            <p className="font-semibold text-gray-900">
-                              {candidateProfile.candidateTotalExperienceInYears ||
-                                0}{" "}
-                              Years
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      {candidateSkills?.length > 0 && (
-                        <div className="bg-gray-50 p-4 rounded-2xl">
-                          <h3 className="text-lg font-bold text-gray-900 mb-4">
-                            Skills
-                          </h3>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            {candidateSkills.map((skill, index) => (
-                              <div
-                                key={index}
-                                className="bg-white rounded-lg p-3 border"
-                              >
-                                <div className="flex items-center justify-between mb-1">
-                                  <h4 className="font-semibold text-gray-900 text-sm">
-                                    {skill.skillName}
-                                  </h4>
-                                  <span
-                                    className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                      skill.proficiencyLevel === "EXPERT"
-                                        ? "bg-green-100 text-green-800"
-                                        : skill.proficiencyLevel === "ADVANCED"
-                                        ? "bg-blue-100 text-blue-800"
-                                        : skill.proficiencyLevel ===
-                                          "INTERMEDIATE"
-                                        ? "bg-yellow-100 text-yellow-800"
-                                        : "bg-gray-100 text-gray-800"
-                                    }`}
-                                  >
-                                    {skill.proficiencyLevel}
-                                  </span>
-                                </div>
-                                <p className="text-xs text-gray-600">
-                                  {skill.yearsOfExperience} years experience
-                                </p>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {candidateEducations?.length > 0 && (
-                        <div className="bg-gray-50 p-4 rounded-2xl">
-                          <h3 className="text-lg font-bold text-gray-900 mb-4">
-                            Education
-                          </h3>
-                          <div className="space-y-4">
-                            {candidateEducations.map((education, index) => (
-                              <div
-                                key={index}
-                                className="bg-white rounded-lg p-4 border border-l-4 border-l-blue-500"
-                              >
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                                  <div>
-                                    <p className="text-sm font-medium text-gray-600">
-                                      Degree
-                                    </p>
-                                    <p className="font-semibold text-gray-900 text-sm">
-                                      {education.degreeName}
-                                    </p>
-                                  </div>
-                                  <div>
-                                    <p className="text-sm font-medium text-gray-600">
-                                      University
-                                    </p>
-                                    <p className="font-semibold text-gray-900 text-sm">
-                                      {education.universityName}
-                                    </p>
-                                  </div>
-                                  <div>
-                                    <p className="text-sm font-medium text-gray-600">
-                                      Percentage
-                                    </p>
-                                    <p className="font-semibold text-gray-900 text-sm">
-                                      {education.percentage}%
-                                    </p>
-                                  </div>
-                                  <div>
-                                    <p className="text-sm font-medium text-gray-600">
-                                      Year
-                                    </p>
-                                    <p className="font-semibold text-gray-900 text-sm">
-                                      {education.passingYear}
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex justify-center gap-4">
-                      <button
-                        onClick={() => {
-                          const basePath = window.location.pathname.includes(
-                            "/admin/"
-                          )
-                            ? "/admin"
-                            : "/recruiter";
-                          navigate(
-                            `${basePath}/candidates/${candidateProfile.candidateId}?page=applications`
-                          );
-                        }}
-                        className="flex py-5 px-8 m-3 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-xl hover:from-slate-700 hover:to-slate-800 font-semibold shadow-lg"
-                      >
-                        View Full Profile
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="p-8 text-center">
-                    <p className="text-gray-600">Candidate profile not found</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+          <ProfileModal
+            closeProfileModal={closeProfileModal}
+            profileLoading={profileLoading}
+            candidateProfile={candidateProfile}
+            candidateSkills={candidateSkills}
+            candidateEducations={candidateEducations}
+          />
         )}
+
       </div>
     </Layout>
   );

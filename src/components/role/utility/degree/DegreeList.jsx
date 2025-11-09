@@ -53,13 +53,6 @@ const DegreeList = () => {
     fetchDegrees();
   }, [authToken]);
 
-  // if (loading) {
-  //   return (
-  //     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 flex items-center justify-center">
-  //       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800"></div>
-  //     </div>
-  //   );
-  // }
 
   const DegreeContent = () => (
     <div className="max-w-7xl mx-auto">

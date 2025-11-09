@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../context/AuthContext";
+import { toast } from "react-toastify";
 import {
   Briefcase,
   ArrowLeft,
@@ -43,6 +44,20 @@ const SinglePosition = () => {
   const [degrees, setDegrees] = useState([]);
   const [editingEducation, setEditingEducation] = useState(false);
   const [selectedEducations, setSelectedEducations] = useState([]);
+  const [showAddRoundForm, setShowAddRoundForm] = useState(false);
+  const [editingRound, setEditingRound] = useState(null);
+  const [newRound, setNewRound] = useState({
+    positionRoundType: "",
+    positionRoundSequence: 1,
+    positionRoundExpectedDate: "",
+    positionRoundExpectedStartTime: "",
+  });
+
+  const allowAction = ()=>{
+    if(userType==="admin" || userType==="recruiter")
+      return true
+    return false
+  }
 
   const fetchPosition = async () => {
     try {
@@ -53,6 +68,10 @@ const SinglePosition = () => {
         }
       );
       setPosition(response.data);
+      setNewRound((prev) => ({
+        ...prev,
+        positionRoundSequence: response.data.positionRounds.length + 1,
+      }));
     } catch (error) {
       console.error("Error fetching position:", error);
     } finally {
@@ -135,7 +154,7 @@ const SinglePosition = () => {
       navigate(-1);
     } catch (error) {
       console.error("Error deleting position:", error);
-      alert("Failed to delete position");
+      toast.error("Failed to delete position");
     } finally {
       setDeleting(false);
     }
@@ -153,6 +172,7 @@ const SinglePosition = () => {
           positionType: position.positionType,
           positionSalary: parseFloat(position.positionSalary) || 0,
           positionLocation: position.positionLocation,
+          positionLanguage: position.positionLanguage,
           positionStatus: {
             status: position.positionStatus.status,
             positionStatusReason: position.positionStatus.positionStatusReason,
@@ -163,9 +183,10 @@ const SinglePosition = () => {
         }
       );
       setEditingPosition(false);
+      toast.success("Position updated successfully!");
     } catch (error) {
       console.error("Error updating position:", error);
-      alert("Failed to update position");
+      toast.error("Failed to update position");
     }
   };
 
@@ -184,9 +205,10 @@ const SinglePosition = () => {
       setNewReq({ skillId: "", requirement: "MANDATORY" });
       setShowAddForm(false);
       fetchPosition();
+      toast.success("Requirement added successfully!");
     } catch (error) {
       console.error("Error adding requirement:", error);
-      alert("Failed to add requirement");
+      toast.error("Failed to add requirement");
     }
   };
 
@@ -200,9 +222,10 @@ const SinglePosition = () => {
         }
       );
       fetchPosition();
+      toast.success("Requirement deleted successfully!");
     } catch (error) {
       console.error("Error deleting requirement:", error);
-      alert("Failed to delete requirement");
+      toast.error("Failed to delete requirement");
     }
   };
 
@@ -220,10 +243,90 @@ const SinglePosition = () => {
       );
       setEditingReq(null);
       fetchPosition();
+      toast.success("Requirement updated successfully!");
     } catch (error) {
       console.error("Error updating requirement:", error);
-      alert("Failed to update requirement");
+      toast.error("Failed to update requirement");
     }
+  };
+
+  const handleAddRound = async () => {
+    
+    try {
+      await axios.patch(
+        `http://localhost:8080/positions/${id}/rounds`,
+        newRound,
+        {
+          headers: { Authorization: `Bearer ${authToken}` },
+        }
+      );
+      setNewRound({ positionRoundType: "", positionRoundSequence: 1, positionRoundExpectedDate: "", positionRoundExpectedStartTime: "" });
+      setShowAddRoundForm(false);
+      fetchPosition();
+      toast.success("Round added successfully!");
+    } catch (error) {
+      console.error("Error adding round:", error);
+      toast.error("Failed to add round");
+    }
+  };
+
+  const handleUpdateRound = async (roundId) => {
+    try {
+      await axios.patch(
+        `http://localhost:8080/positions/${id}/rounds/${roundId}`,
+        editingRound,
+        {
+          headers: { Authorization: `Bearer ${authToken}` },
+        }
+      );
+      setEditingRound(null);
+      fetchPosition();
+      toast.success("Round updated successfully!");
+    } catch (error) {
+      console.error("Error updating round:", error);
+      toast.error("Failed to update round");
+    }
+  };
+
+  const handleDeleteRound = async (roundId) => {
+    if (!window.confirm("Delete this round?")) return;
+    try {
+      await axios.delete(
+        `http://localhost:8080/positions/${id}/rounds/${roundId}`,
+        {
+          headers: { Authorization: `Bearer ${authToken}` },
+        }
+      );
+      fetchPosition();
+      toast.success("Round deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting round:", error);
+      toast.error("Failed to delete round");
+    }
+  };
+
+  const formatDate = (dateArray) => {
+    if (!Array.isArray(dateArray) || dateArray.length !== 3) return "Not Set";
+    const [year, month, day] = dateArray;
+    return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
+  };
+
+  const formatTime = (timeArray) => {
+    if (!Array.isArray(timeArray) || timeArray.length !== 2) return "Not Set";
+    const [hour, minute] = timeArray;
+    return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+  };
+
+  const formatDateForInput = (dateArray) => {
+    if (!Array.isArray(dateArray) || dateArray.length !== 3) return "";
+    const [year, month, day] = dateArray;
+    return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+  };
+
+  const formatTimeForInput = (timeArray) => {
+    if (!Array.isArray(timeArray) || timeArray.length !== 2) return "";
+    const [hour, minute] = timeArray;
+    return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
   };
 
   if (loading) {
@@ -266,7 +369,6 @@ const SinglePosition = () => {
   return (
     <Layout>
       <div className="min-h-screen">
-        {/* Header */}
         <div className="max-w-7xl mx-auto px-6 py-4">
           <button
             onClick={() => navigate(-1)}
@@ -278,7 +380,6 @@ const SinglePosition = () => {
         </div>
 
         <div className="max-w-7xl mx-auto px-6 py-8">
-          {/* Position Header Card */}
           <div className="bg-white rounded-3xl shadow-xl border border-gray-200 overflow-hidden mb-8">
             <div className="bg-gradient-to-r from-slate-800 to-slate-900 p-8">
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
@@ -307,7 +408,7 @@ const SinglePosition = () => {
                     <p className="text-slate-300">
                       Created by{" "}
                       <span className="font-semibold text-white">
-                        {position.createdByName}
+                        {position.createdBy.userName}
                       </span>
                     </p>
                   </div>
@@ -328,31 +429,29 @@ const SinglePosition = () => {
                     <Star className="w-4 h-4" />
                     Shortlisted
                   </button>
-                  {userType === "admin" ||
-                    (userType === "recruiter" && (
-                      <>
-                        <button
-                          onClick={() => setEditingPosition(!editingPosition)}
-                          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl transition-all font-medium shadow-lg"
-                        >
-                          <Edit className="w-4 h-4" />
-                          {editingPosition ? "Cancel" : "Edit"}
-                        </button>
-                        <button
-                          onClick={handleDelete}
-                          disabled={deleting}
-                          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 disabled:from-red-400 disabled:to-red-500 text-white rounded-xl transition-all font-medium shadow-lg"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                          {deleting ? "Deleting..." : "Delete"}
-                        </button>
-                      </>
-                    ))}
+                  {allowAction() &&
+                    <>
+                      <button
+                        onClick={() => setEditingPosition(!editingPosition)}
+                        className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl transition-all font-medium shadow-lg"
+                      >
+                        <Edit className="w-4 h-4" />
+                        {editingPosition ? "Cancel" : "Edit"}
+                      </button>
+                      <button
+                        onClick={handleDelete}
+                        disabled={deleting}
+                        className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 disabled:from-red-400 disabled:to-red-500 text-white rounded-xl transition-all font-medium shadow-lg"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        {deleting ? "Deleting..." : "Delete"}
+                      </button>
+                    </>
+                  }
                 </div>
               </div>
             </div>
 
-            {/* Quick Stats */}
             <div className="p-8 bg-gray-50 border-b">
               <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
                 <div className="text-center">
@@ -396,7 +495,6 @@ const SinglePosition = () => {
               </div>
             </div>
 
-            {/* Position Details */}
             <div className="p-8">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-6">
@@ -452,7 +550,6 @@ const SinglePosition = () => {
             </div>
           </div>
 
-          {/* Edit Form */}
           {editingPosition && (
             <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-8 mb-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">
@@ -560,9 +657,8 @@ const SinglePosition = () => {
                       }
                       className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-slate-400 bg-gray-50 focus:bg-white"
                     >
-                      <option value="FULL_TIME">FULL_TIME</option>
-                      <option value="PART_TIME">PART_TIME</option>
-                      <option value="CONTRACT">CONTRACT</option>
+                      <option value="FULLTIME">FULL_TIME</option>
+                      <option value="PARTTIME">PART_TIME</option>
                       <option value="INTERNSHIP">INTERNSHIP</option>
                     </select>
                   </div>
@@ -601,7 +697,7 @@ const SinglePosition = () => {
                     >
                       <option value="OPEN">OPEN</option>
                       <option value="CLOSED">CLOSED</option>
-                      <option value="ON_HOLD">ON_HOLD</option>
+                      <option value="ONHOLD">ON_HOLD</option>
                     </select>
                   </div>
                 </div>
@@ -649,17 +745,271 @@ const SinglePosition = () => {
             </div>
           )}
 
-          {/* Requirements and Education Grid */}
+          <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-8 mb-8">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+                <Clock className="w-6 h-6 text-slate-600" />
+                Position Rounds ({position.positionRounds?.length || 0})
+              </h3>
+              {allowAction() && (
+                  <button
+                    onClick={() => setShowAddRoundForm(true)}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-xl hover:from-slate-700 hover:to-slate-800 transition-all font-medium shadow-lg"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add Round
+                  </button>
+                )}
+            </div>
+
+            {showAddRoundForm && (
+              <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                  <select
+                    value={newRound.positionRoundType}
+                    onChange={(e) =>
+                      setNewRound({
+                        ...newRound,
+                        positionRoundType: e.target.value,
+                      })
+                    }
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-slate-400 bg-gray-50 focus:bg-white"
+                  >
+                    <option value="">Select Round Type</option>
+                    <option value="APTITUDE">APTITUDE</option>
+                    <option value="GROUP_DISCUSSION">GROUP DISCUSSION</option>
+                    <option value="CODING">CODING</option>
+                    <option value="TECHNICAL">TECHNICAL</option>
+                    <option value="HR">HR</option>
+                    <option value="CEO">CEO</option>
+                  </select>
+                  <input
+                    type="number"
+                    min={position.positionRounds?.length + 1}
+                    value={newRound.positionRoundSequence}
+                    onChange={(e) =>
+                      setNewRound({
+                        ...newRound,
+                        positionRoundSequence:
+                          parseInt(e.target.value) ||
+                          position.positionRounds?.length + 1,
+                      })
+                    }
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-slate-400 bg-gray-50 focus:bg-white"
+                    placeholder="Round Sequence"
+                  />
+                  <input
+                    type="date"
+                    value={newRound.positionRoundExpectedDate}
+                    onChange={(e) =>
+                      setNewRound({
+                        ...newRound,
+                        positionRoundExpectedDate: e.target.value,
+                      })
+                    }
+                    required
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-slate-400 bg-gray-50 focus:bg-white"
+                    placeholder="Expected Date"
+                  />
+                  <input
+                    type="time"
+                    value={newRound.positionRoundExpectedStartTime}
+                    onChange={(e) =>
+                      setNewRound({
+                        ...newRound,
+                        positionRoundExpectedStartTime: e.target.value,
+                      })
+                    }
+                    required
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-slate-400 bg-gray-50 focus:bg-white"
+                    placeholder="Expected Start Time"
+                  />
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleAddRound}
+                    disabled={!newRound.positionRoundType || !newRound.positionRoundExpectedDate || !newRound.positionRoundExpectedStartTime}
+                    className="flex-1 px-4 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl hover:from-green-700 hover:to-green-800 disabled:from-gray-400 disabled:to-gray-500 transition-all font-semibold shadow-lg"
+                  >
+                    Save Round
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowAddRoundForm(false);
+                      setNewRound({ positionRoundType: "", positionRoundSequence: 1, positionRoundExpectedDate: "", positionRoundExpectedStartTime: "" });
+                    }}
+                    className="flex-1 px-4 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 font-semibold"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {position.positionRounds?.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {position.positionRounds
+                  .sort((a, b) => a.roundSequence - b.roundSequence)
+                  .map((round) => (
+                    <div
+                      key={round.positionRoundId}
+                      className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl p-6 border border-slate-200"
+                    >
+                      {editingRound?.positionRoundId ===
+                      round.positionRoundId ? (
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <select
+                            value={editingRound.positionRoundType}
+                            onChange={(e) =>
+                              setEditingRound({
+                                ...editingRound,
+                                positionRoundType: e.target.value,
+                              })
+                            }
+                            className="w-full px-3 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-slate-400 bg-gray-50 focus:bg-white"
+                          >
+                            <option value="APTITUDE">APTITUDE</option>
+                            <option value="GROUP_DISCUSSION">
+                              GROUP DISCUSSION
+                            </option>
+                            <option value="CODING">CODING</option>
+                            <option value="TECHNICAL">TECHNICAL</option>
+                            <option value="HR">HR</option>
+                            <option value="CEO">CEO</option>
+                            </select>
+                            <input
+                            type="number"
+                            min="1"
+                            value={editingRound.positionRoundSequence}
+                            onChange={(e) =>
+                              setEditingRound({
+                                ...editingRound,
+                                positionRoundSequence: parseInt(e.target.value) || 1,
+                              })
+                            }
+                            className="w-full px-3 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-slate-400 bg-gray-50 focus:bg-white"
+                            />
+                            <input
+                              type="date"
+                              value={editingRound.positionRoundExpectedDate}
+                              onChange={(e) =>
+                                setEditingRound({
+                                  ...editingRound,
+                                  positionRoundExpectedDate: e.target.value,
+                                })
+                              }
+                              className="w-full px-3 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-slate-400 bg-gray-50 focus:bg-white"
+                            />
+                            <input
+                              type="time"
+                              value={editingRound.positionRoundExpectedTime}
+                              onChange={(e) =>
+                                setEditingRound({
+                                  ...editingRound,
+                                  positionRoundExpectedTime: e.target.value,
+                                })
+                              }
+                              className="w-full px-3 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-slate-400 bg-gray-50 focus:bg-white"
+                            />
+                          </div>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() =>
+                                handleUpdateRound(round.positionRoundId)
+                              }
+                              className="flex-1 px-3 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl hover:from-green-700 hover:to-green-800 transition-all font-semibold text-sm"
+                            >
+                              <Save className="w-3 h-3 inline mr-1" />
+                              Save
+                            </button>
+                            <button
+                              onClick={() => setEditingRound(null)}
+                              className="flex-1 px-3 py-2 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 font-semibold text-sm"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 bg-slate-800 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                                {round.positionRoundSequence}
+                              </div>
+                              <span className="text-sm text-slate-600 font-medium">
+                                Round {round.positionRoundSequence}
+                              </span>
+                              <span className="text-sm text-slate-600 font-medium">
+                                {formatDate(round.positionRoundExpectedDate)} at {formatTime(round.positionRoundExpectedTime)}
+                              </span>
+                            </div>
+                            {allowAction() && (
+                                <div className="flex gap-1">
+                                  <button
+                                    onClick={() => setEditingRound({...round, positionRoundExpectedTime: formatTimeForInput(round.positionRoundExpectedTime), positionRoundExpectedDate: formatDateForInput(round.positionRoundExpectedDate)})}
+                                    className="p-1 text-blue-600 hover:bg-blue-100 rounded-lg transition-all"
+                                  >
+                                    <Edit className="w-3 h-3" />
+                                  </button>
+                                  <button
+                                    onClick={() =>
+                                      handleDeleteRound(round.positionRoundId)
+                                    }
+                                    className="p-1 text-red-600 hover:bg-red-100 rounded-lg transition-all"
+                                  >
+                                    <Trash2 className="w-3 h-3" />
+                                  </button>
+                                </div>
+                              )}
+                          </div>
+                          <h4 className="text-lg font-bold text-slate-800 mb-2">
+                            {round.positionRoundType.replace("_", " ")}
+                          </h4>
+                          <div className="text-sm text-slate-600">
+                            <span
+                              className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                round.positionRoundType === "TECHNICAL"
+                                  ? "bg-blue-100 text-blue-800"
+                                  : round.positionRoundType === "HR"
+                                  ? "bg-green-100 text-green-800"
+                                  : round.positionRoundType === "CODING"
+                                  ? "bg-purple-100 text-purple-800"
+                                  : round.positionRoundType === "APTITUDE"
+                                  ? "bg-orange-100 text-orange-800"
+                                  : round.positionRoundType ===
+                                    "GROUP_DISCUSSION"
+                                  ? "bg-yellow-100 text-yellow-800"
+                                  : round.positionRoundType === "CEO"
+                                  ? "bg-red-100 text-red-800"
+                                  : "bg-gray-100 text-gray-800"
+                              }`}
+                            >
+                              {round.positionRoundType}
+                            </span>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <Clock className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <p className="text-gray-500">No rounds configured</p>
+              </div>
+            )}
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Requirements */}
             <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-8">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
                   <Users className="w-6 h-6 text-slate-600" />
                   Requirements ({position.positionRequirements?.length || 0})
                 </h3>
-                {userType === "admin" ||
-                  (userType === "recruiter" && (
+                {allowAction() && (
                     <button
                       onClick={() => setShowAddForm(true)}
                       className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-xl hover:from-slate-700 hover:to-slate-800 transition-all font-medium shadow-lg"
@@ -667,7 +1017,7 @@ const SinglePosition = () => {
                       <Plus className="w-4 h-4" />
                       Add
                     </button>
-                  ))}
+                  )}
               </div>
 
               {showAddForm && (
@@ -806,8 +1156,7 @@ const SinglePosition = () => {
                               {req.positionRequirement}
                             </span>
                           </div>
-                          {userType === "admin" ||
-                            (userType === "recruiter" && (
+                          {allowAction() && (
                               <div className="flex gap-2">
                                 <button
                                   onClick={() => setEditingReq(req)}
@@ -826,7 +1175,7 @@ const SinglePosition = () => {
                                   <Trash2 className="w-4 h-4" />
                                 </button>
                               </div>
-                            ))}
+                            )}
                         </div>
                       )}
                     </div>
@@ -840,15 +1189,13 @@ const SinglePosition = () => {
               </div>
             </div>
 
-            {/* Education */}
             <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-8">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
                   <FileText className="w-6 h-6 text-slate-600" />
                   Education ({position.positionRequiredEducations?.length || 0})
                 </h3>
-                {userType === "admin" ||
-                  (userType === "recruiter" && (
+                {allowAction() && (
                     <button
                       onClick={() => setEditingEducation(!editingEducation)}
                       className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-xl hover:from-orange-700 hover:to-orange-800 transition-all font-medium shadow-lg"
@@ -856,7 +1203,7 @@ const SinglePosition = () => {
                       <Edit className="w-4 h-4" />
                       {editingEducation ? "Cancel" : "Edit"}
                     </button>
-                  ))}
+                  )}
               </div>
 
               {editingEducation && (

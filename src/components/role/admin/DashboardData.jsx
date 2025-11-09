@@ -36,7 +36,6 @@ function DashboardData({ candidates, users, degrees, skills, universities }) {
         </div>
       </div>
 
-      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-10">
         <div className="bg-white rounded-3xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
           <div className="flex items-center justify-between">
@@ -99,7 +98,6 @@ function DashboardData({ candidates, users, degrees, skills, universities }) {
         </div>
       </div>
 
-      {/* Users Section */}
       <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-8 mb-10">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-3">
@@ -173,7 +171,6 @@ function DashboardData({ candidates, users, degrees, skills, universities }) {
         )}
       </div>
 
-      {/* Candidate Section */}
       <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-8 mb-10">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-3">
@@ -238,9 +235,7 @@ function DashboardData({ candidates, users, degrees, skills, universities }) {
         )}
       </div>
 
-      {/* Quick Actions Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* Degrees Section */}
         <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-6 hover:shadow-2xl transition-all duration-300">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-3">
@@ -267,7 +262,6 @@ function DashboardData({ candidates, users, degrees, skills, universities }) {
           </div>
         </div>
 
-        {/* Skills Section */}
         <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-6 hover:shadow-2xl transition-all duration-300">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-3">
@@ -296,7 +290,6 @@ function DashboardData({ candidates, users, degrees, skills, universities }) {
           </div>
         </div>
 
-        {/* Universities Section */}
         <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-6 hover:shadow-2xl transition-all duration-300">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-3">

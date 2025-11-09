@@ -12,10 +12,8 @@ import {
   AlertCircle,
 } from "lucide-react";
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Sidebar from "./Sidebar";
-import Header from "./Header";
 import RecruiterLayout from "./RecruiterLayout";
 
 function RecruiterProfile() {
@@ -192,7 +190,6 @@ function RecruiterProfile() {
           }
         );
 
-        // Update local state with new data
         setProfileData({
           userId: response.data.userId,
           userName: response.data.userName,
@@ -208,7 +205,6 @@ function RecruiterProfile() {
           autoClose: 3000,
         });
 
-        // Logout user after username change to refresh token
         setTimeout(() => {
           navigate("/logout");
         }, 3000);

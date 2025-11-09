@@ -14,9 +14,9 @@ import {
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import ReviewerLayout from "./ReviewerLayout";
+import InterviewerLayout from "./InterviewerLayout";
 
-function RecruiterProfile() {
+function InterviewerProfile() {
   const navigate = useNavigate();
   const { authToken } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState("profile");
@@ -204,7 +204,6 @@ function RecruiterProfile() {
           position: "top-right",
           autoClose: 3000,
         });
-
         setTimeout(() => {
           navigate("/logout");
         }, 3000);
@@ -250,7 +249,7 @@ function RecruiterProfile() {
   };
 
   return (
-    <ReviewerLayout>
+    <InterviewerLayout>
       <main className="flex-1 p-8 overflow-auto">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-8">
@@ -540,8 +539,8 @@ function RecruiterProfile() {
           </div>
         </div>
       </main>
-    </ReviewerLayout>
+    </InterviewerLayout>
   );
 }
 
-export default RecruiterProfile;
+export default InterviewerProfile;

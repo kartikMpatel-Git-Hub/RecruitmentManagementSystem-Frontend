@@ -66,6 +66,8 @@ function Login() {
         navigate("/candidate");
       else if(userType === 'reviewer')
         navigate("/reviewer");
+      else if(userType === 'interviewer')
+        navigate("/interviewer");
       else
         setError("Invalid Role !");
     } catch (err) {

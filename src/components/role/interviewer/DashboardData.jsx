@@ -17,22 +17,20 @@ import {
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 
-function DashboardData({ positions, applications }) {
+function DashboardData({ interviews }) {
   const navigate = useNavigate();
   const {profileData} = useContext(AuthContext)
 
-  const totalPositions = positions?.length || 0;
-  const openPositions = positions?.filter(p => p.positionStatus?.status?.toLowerCase() === 'open')?.length || 0;
-  const closedPositions = positions?.filter(p => p.positionStatus?.status?.toLowerCase() === 'closed')?.length || 0;
-  const totalApplications = positions?.reduce((sum, pos) => sum + (pos.positionApplications || 0), 0) || 0;
+  const totalInterviews = interviews?.length || 0;
+  const pendingInterviews = interviews?.filter(i => i.interviewStatus?.toLowerCase() === "scheduled").length || 0;
 
   const getStatusIcon = (status) => {
     switch (status?.toLowerCase()) {
-      case "open":
+      case "completed":
         return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case "closed":
+      case "cancelled":
         return <XCircle className="w-4 h-4 text-red-500" />;
-      case "on_hold":
+      case "scheduled":
         return <Pause className="w-4 h-4 text-yellow-500" />;
       default:
         return <Clock className="w-4 h-4 text-gray-500" />;
@@ -41,11 +39,11 @@ function DashboardData({ positions, applications }) {
 
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
-      case "open":
+      case "completed":
         return "bg-green-100 text-green-800";
-      case "closed":
+      case "cancelled":
         return "bg-red-100 text-red-800";
-      case "on_hold":
+      case "scheduled":
         return "bg-yellow-100 text-yellow-800";
       default:
         return "bg-gray-100 text-gray-800";
@@ -62,8 +60,8 @@ function DashboardData({ positions, applications }) {
                 <BarChart3 className="w-10 h-10 text-white" />
               </div>
               <div>
-                <h1 className="text-4xl font-bold text-gray-900 mb-2">Reviewer Dashboard</h1>
-                <p className="text-gray-600 text-lg">Review positions and manage recruitment processes</p>
+                <h1 className="text-4xl font-bold text-gray-900 mb-2">Interviewer Dashboard</h1>
+                <p className="text-gray-600 text-lg">Review interviews and manage recruitment processes</p>
               </div>
             </div>
             <div className="text-right">
@@ -72,8 +70,8 @@ function DashboardData({ positions, applications }) {
             </div>
           </div>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+ 
+        {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-6 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
             <div className="flex items-center justify-between">
               <div>
@@ -263,7 +261,8 @@ function DashboardData({ positions, applications }) {
               ))}
             </div>
           )}
-        </div>
+        </div> */}
+        
       </div>
     </div>
   );

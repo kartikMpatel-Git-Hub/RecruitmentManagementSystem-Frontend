@@ -17,6 +17,8 @@ const UniversityList = () => {
       const response = await axios.get("http://localhost:8080/universities", {
         headers: { Authorization: `Bearer ${authToken}` },
       });
+      console.log(response.data);
+      
       setUniversities(response.data.data || response.data);
     } catch (error) {
       console.error("Error fetching universities:", error);

@@ -35,8 +35,14 @@ import {
   PositionShortlistedApplications,
   AllApplications,
   AllShortlistedApplications,
+  Interview,
 } from "./components/role/utility/UtilityComponents";
-import { ReviewerDashboard, ReviewerProfile } from "./components/role/reviewer/ReviewerComponents";
+import {
+  ReviewerDashboard,
+  ReviewerProfile,
+} from "./components/role/reviewer/ReviewerComponents";
+import InterviewerDashboard from "./components/role/interviewer/InterviewerDashboard";
+import InterviewerProfile from "./components/role/interviewer/InterviewerProfile";
 
 function App() {
   return (
@@ -79,6 +85,11 @@ function App() {
           <Route path="new" element={<Skill />} />
         </Route>
 
+        <Route path="applications">
+          <Route path="" element={<AllApplications />} />
+          <Route path="shortlists" element={<AllShortlistedApplications />} />
+        </Route>
+        
         <Route path="positions">
           <Route path="" element={<PositionList />} />
           <Route path="new" element={<Position />} />
@@ -119,6 +130,11 @@ function App() {
           <Route path="new" element={<Skill />} />
         </Route>
 
+        <Route path="applications">
+          <Route path="" element={<AllApplications />} />
+          <Route path="shortlists" element={<AllShortlistedApplications />} />
+        </Route>
+
         <Route path="positions">
           <Route path="" element={<PositionList />} />
           <Route path="new" element={<Position />} />
@@ -137,9 +153,12 @@ function App() {
       <Route path="/reviewer">
         <Route path="" element={<ReviewerDashboard />} />
         <Route path="profile" element={<ReviewerProfile />} />
+
+        <Route path="candidates/:id" element={<SingleCandidateProfile />} />
+
         <Route path="applications">
           <Route path="" element={<AllApplications />} />
-          <Route path="shortlists" element={<AllShortlistedApplications />} />  
+          <Route path="shortlists" element={<AllShortlistedApplications />} />
         </Route>
         <Route path="positions">
           <Route path="" element={<PositionList />} />
@@ -154,6 +173,15 @@ function App() {
             element={<PositionShortlistedApplications />}
           />
         </Route>
+      </Route>
+      
+      <Route path="/interviewer">
+        <Route path="" element={<InterviewerDashboard />} />
+        <Route path="profile" element={<InterviewerProfile />} />
+
+        <Route path="candidates/:id" element={<SingleCandidateProfile />} />
+
+        <Route path="interviews" element={<Interview />} />
       </Route>
 
       <Route path="/" element={<Login />} />

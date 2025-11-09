@@ -1,5 +1,14 @@
 import { useNavigate } from "react-router-dom";
-import { Users, Award, GraduationCap, Building2, LayoutDashboard ,Briefcase} from "lucide-react";
+import {
+  Users,
+  Award,
+  GraduationCap,
+  Building2,
+  LayoutDashboard,
+  Briefcase,
+  MailsIcon,
+  BookmarkIcon,
+} from "lucide-react";
 
 function Sidebar() {
   const navigate = useNavigate();
@@ -50,6 +59,20 @@ function Sidebar() {
         >
           <Briefcase className="w-5 h-5" />
           <span>Manage Positions</span>
+        </button>
+        <button
+          onClick={() => navigate("/recruiter/applications")}
+          className="flex items-center space-x-3 w-full text-left px-4 py-3 rounded-xl hover:bg-slate-700 transition-colors duration-200"
+        >
+          <MailsIcon className="w-5 h-5" />
+          <span>View Applications</span>
+        </button>
+        <button
+          onClick={() => navigate("/recruiter/applications/shortlists")}
+          className="flex items-center space-x-3 w-full text-left px-4 py-3 rounded-xl hover:bg-slate-700 transition-colors duration-200"
+        >
+          <BookmarkIcon className="w-5 h-5" />
+          <span>View Shortlists</span>
         </button>
       </nav>
     </aside>

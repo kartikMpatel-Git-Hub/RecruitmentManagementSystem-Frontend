@@ -184,7 +184,7 @@ function Register() {
       formDataToSubmit.append("role", formData.role);
 
       try {
-        const response = await axios.post(
+        await axios.post(
           "http://localhost:8080/authentication/register",
           formDataToSubmit,
           {
@@ -197,9 +197,9 @@ function Register() {
           position: "top-right",
           autoClose: 3000,
         });
+        requestFormReset();
         setTimeout(() => {
           navigator("/login");
-          requestFormReset();
         }, 3000);
       } catch (error) {
         console.log(error.response.data);
