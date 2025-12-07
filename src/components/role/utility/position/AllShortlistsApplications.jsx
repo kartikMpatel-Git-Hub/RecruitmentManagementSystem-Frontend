@@ -42,7 +42,8 @@ function AllShortlistedApplications() {
   };
 
   useEffect(() => {
-    if (!authToken) return navigate("/login");
+    if (!authToken) 
+      return navigate("/login");
     fetchShortlistedApplications();
   }, [authToken]);
 

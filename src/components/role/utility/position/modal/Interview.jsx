@@ -28,25 +28,75 @@ function Interview({ app, round }) {
     interviewLink: "",
     interviewStatus: "SCHEDULED",
     interviewerIds: [],
+    numberOfInterviewers: 1,
+    interviewTime: "",
+    interviewEndTime: "",
+    interviewDate: "",
   });
 
   const allowedUser = () => {
     if (userType === "admin" || userType === "recruiter") return true;
     return false;
   };
+  const isInterviewCompleted = (interview) => {
+    if (interview.interviewStatus?.toLowerCase() === "completed") return true;
+
+    const now = new Date();
+    const interviewDate = Array.isArray(interview.interviewDate)
+      ? new Date(
+          interview.interviewDate[0],
+          interview.interviewDate[1] - 1,
+          interview.interviewDate[2]
+        )
+      : new Date(interview.interviewDate);
+
+    const interviewEndTime = Array.isArray(interview.interviewEndTime)
+      ? new Date(
+          interviewDate.getFullYear(),
+          interviewDate.getMonth(),
+          interviewDate.getDate(),
+          interview.interviewEndTime[0],
+          interview.interviewEndTime[1]
+        )
+      : new Date(
+          `${interviewDate.toDateString()} ${interview.interviewEndTime}`
+        );
+
+    if (now > interviewEndTime && interview.interviewStatus === "SCHEDULED") {
+      console.log("HERE");
+      interviewComplete(interview);
+      return true;
+    }
+    return false;
+  };
+
+  const interviewComplete = async (interview) => {
+    try {
+      const res = await axios.put(
+        `http://localhost:8080/interviews/complete/${interview.interviewId}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${authToken}` },
+        }
+      );
+    } catch (error) {
+      console.error("Failed to fetch interviews:", error);
+    }
+  };
 
   const allowAction = () => {
     if (
       allowedUser() &&
-      round.roundStatus.roundStatus === "UNDERPROCESS" &&
-      app.applicationStatus.applicationStatus !== "REJECTED"
+      app.applicationStatus.applicationStatus !== "REJECTED" &&
+      round.roundResult === "PENDING"
     )
       return true;
     return false;
   };
   useEffect(() => {
     fetchInterviews();
-    fetchInterviewers();
+    if (round.roundType === "HR") fetchHrs();
+    else fetchInterviewers();
   }, []);
 
   const fetchInterviews = async () => {
@@ -76,33 +126,60 @@ function Interview({ app, round }) {
       console.error("Failed to fetch interviewers:", error);
     }
   };
-
-  const handleAddInterview = async () => {
-    if (!authToken) navigator("/login");
+  const fetchHrs = async () => {
     try {
-      await axios.post("http://localhost:8080/interviews", newInterview, {
+      const response = await axios.get("http://localhost:8080/users/hrs", {
         headers: { Authorization: `Bearer ${authToken}` },
       });
+      setInterviewers(response.data.data);
+    } catch (error) {
+      console.error("Failed to fetch interviewers:", error);
+    }
+  };
+
+  const handleAddInterview = async () => {
+    console.log(newInterview);
+    if (!authToken) navigator("/login");
+    try {
+      const res = await axios.post("http://localhost:8080/interviews/", newInterview, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+      console.log(res);
       toast.success("Interview added successfully!");
       setNewInterview({
         roundId: round.roundId,
         interviewLink: "",
         interviewStatus: "SCHEDULED",
         interviewerIds: [],
+        numberOfInterviewers: 1,
+        interviewTime: "",
+        interviewEndTime: "",
+        interviewDate: "",
       });
       setShowAddForm(false);
       fetchInterviews();
     } catch (error) {
-      toast.error("Failed to add interview");
+      console.log(error);
+      toast.error(error.response.data);
     }
   };
 
   const handleEditInterview = (interview) => {
-    setEditingInterview({ ...interview });
+    // Ensure interviewerIds is properly set for editing
+    const interviewerIds =
+      interview.interviewers?.map((i) => i.interviewer?.userId) ||
+      interview.interviewerIds ||
+      [];
+    setEditingInterview({
+      ...interview,
+      interviewerIds: interviewerIds,
+      // interviewDate: interview.interviewDate
+    });
   };
 
   const handleSaveInterview = async (interviewId) => {
     try {
+      console.log(editingInterview);
       await axios.put(
         `http://localhost:8080/interviews/${interviewId}`,
         editingInterview,
@@ -196,7 +273,12 @@ function Interview({ app, round }) {
                     <Users className="w-4 h-4" />
                     <span>
                       Interviewers:{" "}
-                      {getInterviewerNames(interview.interviewerIds)}
+                      {interview.interviewers?.length > 0
+                        ? interview.interviewers
+                            .map((i) => i.interviewer?.userName)
+                            .filter(Boolean)
+                            .join(", ")
+                        : getInterviewerNames(interview.interviewerIds || [])}
                     </span>
                   </div>
                 </div>
@@ -208,7 +290,7 @@ function Interview({ app, round }) {
                   >
                     <Eye className="w-4 h-4" />
                   </button>
-                  {allowAction() && (
+                  {allowAction() && !isInterviewCompleted(interview) && (
                     <>
                       <button
                         onClick={() => handleEditInterview(interview)}
@@ -243,115 +325,218 @@ function Interview({ app, round }) {
           <div
             className="fixed inset-0 bg-black/60 backdrop-blur-sm"
             onClick={() => setViewingInterview(null)}
-          ></div>
-          <div className="flex min-h-full items-center justify-center p-4">
-            <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-2xl">
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                    <Video className="w-6 h-6 text-purple-600" />
-                    Interview Details
-                  </h3>
-                  <button
-                    onClick={() => setViewingInterview(null)}
-                    className="p-2 hover:bg-gray-100 rounded-full"
-                  >
-                    <X className="w-6 h-6 text-gray-500" />
-                  </button>
-                </div>
-                <div className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Interview ID
-                      </label>
-                      <div className="px-4 py-3 bg-gray-50 rounded-xl text-gray-900">
-                        {viewingInterview.interviewId}
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Round ID
-                      </label>
-                      <div className="px-4 py-3 bg-gray-50 rounded-xl text-gray-900">
-                        {viewingInterview.roundId}
-                      </div>
-                    </div>
+          >
+            <div className="flex min-h-full items-center justify-center p-4">
+              <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                      <Video className="w-6 h-6 text-purple-600" />
+                      Interview Details #{viewingInterview.interviewId}
+                    </h3>
+                    <button
+                      onClick={() => setViewingInterview(null)}
+                      className="p-2 hover:bg-gray-100 rounded-lg"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
                   </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Interview Status
-                    </label>
-                    <div className="px-4 py-3 bg-gray-50 rounded-xl">
-                      <span
-                        className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          viewingInterview.interviewStatus === "SCHEDULED"
-                            ? "bg-blue-100 text-blue-800"
-                            : viewingInterview.interviewStatus === "COMPLETED"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-red-100 text-red-800"
-                        }`}
-                      >
-                        {viewingInterview.interviewStatus}
-                      </span>
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Interview Link
-                    </label>
-                    <div className="px-4 py-3 bg-gray-50 rounded-xl">
-                      {viewingInterview.interviewLink ? (
-                        <a
-                          href={viewingInterview.interviewLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:text-blue-800 underline break-all"
+
+                  {/* Interview Info */}
+                  <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                    <h4 className="font-semibold text-gray-900 mb-3">
+                      Interview Information
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <p className="text-sm text-gray-600">Interview ID</p>
+                        <p className="font-medium text-gray-900">
+                          {viewingInterview.interviewId}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Round ID</p>
+                        <p className="font-medium text-gray-900">
+                          {viewingInterview.roundId}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Status</p>
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            viewingInterview.interviewStatus === "SCHEDULED"
+                              ? "bg-blue-100 text-blue-800"
+                              : viewingInterview.interviewStatus === "COMPLETED"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-red-100 text-red-800"
+                          }`}
                         >
-                          {viewingInterview.interviewLink}
-                        </a>
-                      ) : (
-                        <span className="text-gray-500">No link provided</span>
-                      )}
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Interviewers
-                    </label>
-                    <div className="px-4 py-3 bg-gray-50 rounded-xl">
-                      <div className="space-y-2">
-                        {viewingInterview.interviewerIds.length === 0 ? (
-                          <div className="text-gray-500">
-                            No interviewers assigned
-                          </div>
+                          {viewingInterview.interviewStatus}
+                        </span>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Interview Date</p>
+                        <p className="font-medium text-gray-900">
+                          {Array.isArray(viewingInterview.interviewDate)
+                            ? `${String(
+                                viewingInterview.interviewDate[2]
+                              ).padStart(2, "0")}/${String(
+                                viewingInterview.interviewDate[1]
+                              ).padStart(2, "0")}/${
+                                viewingInterview.interviewDate[0]
+                              }`
+                            : viewingInterview.interviewDate || "Not Set"}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Start Time</p>
+                        <p className="font-medium text-gray-900">
+                          {Array.isArray(viewingInterview.interviewTime)
+                            ? `${String(
+                                viewingInterview.interviewTime[0]
+                              ).padStart(2, "0")}:${String(
+                                viewingInterview.interviewTime[1]
+                              ).padStart(2, "0")}`
+                            : viewingInterview.interviewTime || "Not Set"}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">End Time</p>
+                        <p className="font-medium text-gray-900">
+                          {Array.isArray(viewingInterview.interviewEndTime)
+                            ? `${String(
+                                viewingInterview.interviewEndTime[0]
+                              ).padStart(2, "0")}:${String(
+                                viewingInterview.interviewEndTime[1]
+                              ).padStart(2, "0")}`
+                            : viewingInterview.interviewEndTime || "Not Set"}
+                        </p>
+                      </div>
+                      <div className="md:col-span-3">
+                        <p className="text-sm text-gray-600">Interview Link</p>
+                        {viewingInterview.interviewLink ? (
+                          <a
+                            href={viewingInterview.interviewLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline text-sm break-all"
+                          >
+                            {viewingInterview.interviewLink}
+                          </a>
                         ) : (
-                          [...new Set(viewingInterview.interviewerIds)].map((id,index) => {
-                            const interviewer = interviewers.find(i => i.userId === id);
-                            return interviewer ? (
-                              <div key={id} className="flex items-center gap-3 p-2 bg-white rounded-lg">
-                                <div className="flex items-center gap-2">
-                                  <label>{index + 1}.</label>
-                                  <img src={interviewer.userImageUrl} alt={`${interviewer.userName}`} className="w-8 h-8 rounded-full" />
-                                  <div className="text-sm text-gray-600">{interviewer.userName} • {interviewer.userEmail}</div>
-                                </div>
-                              </div>
-                            ) : (
-                              <div key={id} className="text-gray-500">Unknown Interviewer (ID: {id})</div>
-                            );
-                          })
+                          <span className="text-gray-500 text-sm">
+                            No link provided
+                          </span>
                         )}
                       </div>
                     </div>
                   </div>
-                </div>
-                <div className="flex justify-end mt-8">
-                  <button
-                    onClick={() => setViewingInterview(null)}
-                    className="px-6 py-3 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition-all font-semibold"
-                  >
-                    Close
-                  </button>
+
+                  {/* Interviewers & Feedback */}
+                  <div className="space-y-4">
+                    <h4 className="font-semibold text-gray-900">
+                      Interviewers & Feedback
+                    </h4>
+                    {viewingInterview.interviewers?.map(
+                      (interviewerObj, index) => {
+                        const interviewer = interviewerObj.interviewer;
+                        const feedback = interviewerObj.interviewerFeedback;
+                        return interviewer ? (
+                          <div
+                            key={interviewer.userId}
+                            className="border rounded-lg p-4"
+                          >
+                            <div className="flex items-center gap-3 mb-3">
+                              <img
+                                src={interviewer.userImageUrl}
+                                alt={interviewer.userName}
+                                className="w-10 h-10 rounded-full"
+                              />
+                              <div>
+                                <p className="font-medium text-gray-900">
+                                  {interviewer.userName}
+                                </p>
+                                <p className="text-sm text-gray-600">
+                                  {interviewer.userEmail}
+                                </p>
+                              </div>
+                            </div>
+
+                            {feedback && (
+                              <div className="bg-gray-50 rounded-lg p-3">
+                                <h5 className="font-medium text-gray-900 mb-2">
+                                  Feedback
+                                </h5>
+
+                                {feedback.interviewFeedback && (
+                                  <div className="mb-3">
+                                    <p className="text-sm font-medium text-gray-700">
+                                      Overall Feedback:
+                                    </p>
+                                    <p className="text-gray-600 text-sm">
+                                      {feedback.interviewFeedback}
+                                    </p>
+                                  </div>
+                                )}
+
+                                {feedback.skillRatings?.length > 0 && (
+                                  <div>
+                                    <p className="text-sm font-medium text-gray-700 mb-2">
+                                      Skill Ratings:
+                                    </p>
+                                    <div className="space-y-3">
+                                      {feedback.skillRatings.map(
+                                        (skillRating) => (
+                                          <div
+                                            key={skillRating.skillRatingId}
+                                            className="border-l-4 border-blue-200 pl-3"
+                                          >
+                                            <div className="flex items-center justify-between mb-1">
+                                              <span className="text-sm font-medium text-gray-700">
+                                                {skillRating.skill?.skill}
+                                              </span>
+                                              <div className="flex items-center gap-2">
+                                                <div className="flex text-yellow-400">
+                                                  {[...Array(5)].map((_, i) => (
+                                                    <span
+                                                      key={i}
+                                                      className={
+                                                        i <
+                                                        skillRating.skillRating
+                                                          ? ""
+                                                          : "opacity-30"
+                                                      }
+                                                    >
+                                                      ★
+                                                    </span>
+                                                  ))}
+                                                </div>
+                                                <span className="text-sm text-gray-500">
+                                                  ({skillRating.skillRating}/5)
+                                                </span>
+                                              </div>
+                                            </div>
+                                            {skillRating.skillFeedback && (
+                                              <div className="mt-1">
+                                                {/* <p className="text-xs text-gray-600 mb-1">Feedback:</p> */}
+                                                <p className="text-sm text-gray-700 bg-gray-100 p-2 rounded">
+                                                  {skillRating.skillFeedback}
+                                                </p>
+                                              </div>
+                                            )}
+                                          </div>
+                                        )
+                                      )}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        ) : null;
+                      }
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -399,6 +584,62 @@ function Interview({ app, round }) {
                       placeholder="https://meet.google.com/..."
                     />
                   </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-3">
+                        Interview Date
+                      </label>
+                      <input
+                        type="date"
+                        value={newInterview.interviewDate}
+                        onChange={(e) =>
+                          setNewInterview({
+                            ...newInterview,
+                            interviewDate: e.target.value,
+                          })
+                        }
+                        required
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-purple-400 bg-gray-50 focus:bg-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-3">
+                        Start Time
+                      </label>
+                      <input
+                        type="time"
+                        value={newInterview.interviewTime}
+                        onChange={(e) =>
+                          setNewInterview({
+                            ...newInterview,
+                            interviewTime: e.target.value,
+                          })
+                        }
+                        required
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-purple-400 bg-gray-50 focus:bg-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-3">
+                        End Time
+                      </label>
+                      <input
+                        type="time"
+                        value={newInterview.interviewEndTime}
+                        onChange={(e) =>
+                          setNewInterview({
+                            ...newInterview,
+                            interviewEndTime: e.target.value,
+                          })
+                        }
+                        required
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-purple-400 bg-gray-50 focus:bg-white"
+                      />
+                    </div>
+                  </div>
                   {/* <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-3">Interview Status</label>
                     <select
@@ -413,52 +654,34 @@ function Interview({ app, round }) {
                   </div> */}
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-3">
-                      Select Interviewers
+                      Number Of Interviewers
                     </label>
-                    <div className="max-h-40 overflow-y-auto border-2 border-gray-200 rounded-xl p-3 bg-gray-50">
-                      {interviewers.map((interviewer) => (
-                        <label
-                          key={interviewer.userId}
-                          className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded cursor-pointer"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={newInterview.interviewerIds.includes(
-                              interviewer.userId
-                            )}
-                            onChange={(e) => {
-                              const currentIds = [...new Set(newInterview.interviewerIds)];
-                              if (e.target.checked) {
-                                setNewInterview({
-                                  ...newInterview,
-                                  interviewerIds: [...currentIds, interviewer.userId],
-                                });
-                              } else {
-                                setNewInterview({
-                                  ...newInterview,
-                                  interviewerIds: currentIds.filter(id => id !== interviewer.userId),
-                                });
-                              }
-                            }}
-                            className="rounded"
-                          />
-                          <img
-                            src={interviewer.userImageUrl}
-                            alt={interviewer.userName}
-                            className="w-8 h-8 rounded-full"
-                          />
-                          <span className="text-sm">
-                            {interviewer.userName} | {interviewer.userEmail}
-                          </span>
-                        </label>
-                      ))}
-                    </div>
+                    <input
+                      type="number"
+                      min={1}
+                      max={4}
+                      value={newInterview.numberOfInterviewers}
+                      onChange={(e) =>
+                        setNewInterview({
+                          ...newInterview,
+                          numberOfInterviewers: e.target.value,
+                        })
+                      }
+                      required
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-purple-400 bg-gray-50 focus:bg-white"
+                    />
                   </div>
                 </div>
                 <div className="flex gap-4 mt-8">
                   <button
                     onClick={handleAddInterview}
-                    disabled={newInterview.interviewerIds.length === 0 || !newInterview.interviewLink}
+                    disabled={
+                      !newInterview.numberOfInterviewers ||
+                      !newInterview.interviewLink ||
+                      !newInterview.interviewDate ||
+                      !newInterview.interviewTime ||
+                      !newInterview.interviewEndTime
+                    }
                     className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-xl hover:from-purple-700 hover:to-purple-800 disabled:from-gray-400 disabled:to-gray-500 transition-all font-semibold shadow-lg flex items-center justify-center gap-2"
                   >
                     <Save className="w-5 h-5" />
@@ -519,56 +742,177 @@ function Interview({ app, round }) {
                     <label className="block text-sm font-semibold text-gray-700 mb-3">
                       Interview Status
                     </label>
-                    <div className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-purple-400 bg-gray-50 focus:bg-white text-gray-400">
-                      {editingInterview.interviewStatus === "SCHEDULED"
-                        ? "Scheduled"
-                        : editingInterview.interviewStatus === "COMPLETED"
-                        ? "Completed"
-                        : "Cancelled"}
-                    </div>
+                    <select
+                      value={editingInterview.interviewStatus}
+                      onChange={(e) =>
+                        setEditingInterview({
+                          ...editingInterview,
+                          interviewStatus: e.target.value,
+                        })
+                      }
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-purple-400 bg-gray-50 focus:bg-white"
+                    >
+                      <option value="SCHEDULED">Scheduled</option>
+                      <option value="COMPLETED">Completed</option>
+                      <option value="CANCELLED">Cancelled</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-3">
+                      Interview Time
+                    </label>
+                    <input
+                      type="time"
+                      value={
+                        Array.isArray(editingInterview.interviewTime)
+                          ? `${String(
+                              editingInterview.interviewTime[0]
+                            ).padStart(2, "0")}:${String(
+                              editingInterview.interviewTime[1]
+                            ).padStart(2, "0")}`
+                          : editingInterview.interviewTime || ""
+                      }
+                      onChange={(e) =>
+                        setEditingInterview({
+                          ...editingInterview,
+                          interviewTime: e.target.value,
+                        })
+                      }
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-purple-400 bg-gray-50 focus:bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-3">
+                      Interview End Time
+                    </label>
+                    <input
+                      type="time"
+                      value={
+                        Array.isArray(editingInterview.interviewEndTime)
+                          ? `${String(
+                              editingInterview.interviewEndTime[0]
+                            ).padStart(2, "0")}:${String(
+                              editingInterview.interviewEndTime[1]
+                            ).padStart(2, "0")}`
+                          : editingInterview.interviewEndTime || ""
+                      }
+                      onChange={(e) =>
+                        setEditingInterview({
+                          ...editingInterview,
+                          interviewEndTime: e.target.value,
+                        })
+                      }
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-purple-400 bg-gray-50 focus:bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-3">
+                      Interview Date
+                    </label>
+                    <input
+                      type="date"
+                      value={
+                        Array.isArray(editingInterview.interviewDate)
+                          ? `${editingInterview.interviewDate[0]}-${String(
+                              editingInterview.interviewDate[1]
+                            ).padStart(2, "0")}-${String(
+                              editingInterview.interviewDate[2]
+                            ).padStart(2, "0")}`
+                          : editingInterview.interviewDate || ""
+                      }
+                      onChange={(e) =>
+                        setEditingInterview({
+                          ...editingInterview,
+                          interviewDate: e.target.value,
+                        })
+                      }
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-purple-400 bg-gray-50 focus:bg-white"
+                    />
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-3">
                       Select Interviewers
                     </label>
                     <div className="max-h-40 overflow-y-auto border-2 border-gray-200 rounded-xl p-3 bg-gray-50">
-                      {interviewers.map((interviewer) => (
-                        <label
-                          key={interviewer.userId}
-                          className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded cursor-pointer"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={editingInterview.interviewerIds.includes(
-                              interviewer.userId
-                            )}
-                            onChange={(e) => {
-                              const currentIds = [...new Set(editingInterview.interviewerIds)];
-                              if (e.target.checked) {
-                                setEditingInterview({
-                                  ...editingInterview,
-                                  interviewerIds: [...currentIds, interviewer.userId],
-                                });
-                              } else {
-                                setEditingInterview({
-                                  ...editingInterview,
-                                  interviewerIds: currentIds.filter(id => id !== interviewer.userId),
-                                });
+                      {interviewers.map((interviewer) => {
+                        return (
+                          <label
+                            key={interviewer.userId}
+                            className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded cursor-pointer"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={
+                                editingInterview.interviewerIds?.includes(
+                                  interviewer.userId
+                                ) || false
                               }
-                            }}
-                            className="rounded"
-                          />
-                          <img
-                            src={interviewer.userImageUrl}
-                            alt={interviewer.userName}
-                            className="w-8 h-8 rounded-full"
-                          />
-                          <span className="text-sm">
-                            {interviewer.userName} | {interviewer.userEmail}
-                          </span>
-                        </label>
-                      ))}
+                              onChange={(e) => {
+                                const currentIds =
+                                  editingInterview.interviewerIds || [];
+                                if (e.target.checked) {
+                                  setEditingInterview({
+                                    ...editingInterview,
+                                    interviewerIds: [
+                                      ...currentIds,
+                                      interviewer.userId,
+                                    ],
+                                  });
+                                } else {
+                                  setEditingInterview({
+                                    ...editingInterview,
+                                    interviewerIds: currentIds.filter(
+                                      (id) => id !== interviewer.userId
+                                    ),
+                                  });
+                                }
+                              }}
+                              className="rounded"
+                            />
+                            <img
+                              src={interviewer.userImageUrl}
+                              alt={interviewer.userName}
+                              className="w-8 h-8 rounded-full"
+                            />
+                            <span className="text-sm">
+                              {interviewer.userName} | {interviewer.userEmail}
+                            </span>
+                          </label>
+                        );
+                      })}
                     </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-3">
+                      Interview Feedback
+                    </label>
+                    <textarea
+                      value={
+                        editingInterview.interviewers?.[0]?.interviewerFeedback
+                          ?.interviewFeedback || ""
+                      }
+                      onChange={(e) => {
+                        const updatedInterviewers = [
+                          ...(editingInterview.interviewers || []),
+                        ];
+                        if (updatedInterviewers[0]) {
+                          updatedInterviewers[0] = {
+                            ...updatedInterviewers[0],
+                            interviewerFeedback: {
+                              ...updatedInterviewers[0].interviewerFeedback,
+                              interviewFeedback: e.target.value,
+                            },
+                          };
+                        }
+                        setEditingInterview({
+                          ...editingInterview,
+                          interviewers: updatedInterviewers,
+                        });
+                      }}
+                      rows={4}
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-purple-400 bg-gray-50 focus:bg-white resize-none"
+                      placeholder="Enter interview feedback..."
+                    />
                   </div>
                 </div>
                 <div className="flex gap-4 mt-8">

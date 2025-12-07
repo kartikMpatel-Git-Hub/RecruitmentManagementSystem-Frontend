@@ -67,6 +67,8 @@ const PositionList = () => {
       basePath = "/recruiter";
     } else if (currentPath.includes("/reviewer/")) {
       basePath = "/reviewer";
+    } else if (currentPath.includes("/hr/")) {
+      basePath = "/hr";
     } else {
       basePath = "/";
     }

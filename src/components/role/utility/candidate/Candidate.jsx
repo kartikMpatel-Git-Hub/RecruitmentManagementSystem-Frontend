@@ -88,7 +88,7 @@ function Candidate() {
   };
 
   useEffect(() => {
-    if (userType !== "admin" && userType !== "recruiter") navigate("/");
+    if (userType !== "admin" && userType !== "recruiter" && userType !== "hr") navigate("/");
   }, [userType]);
 
   const fetchCandidates = async () => {

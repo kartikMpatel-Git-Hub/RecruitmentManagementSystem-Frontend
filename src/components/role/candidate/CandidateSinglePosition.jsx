@@ -323,9 +323,9 @@ const CandidateSinglePosition = () => {
                   >
                     <div className="flex items-center gap-3 mb-3">
                       <div className="w-8 h-8 bg-slate-800 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                        {round.roundSequence}
+                        {round.positionRoundSequence}
                       </div>
-                      <span className="text-sm text-slate-600 font-medium">Round {round.roundSequence}</span>
+                      <span className="text-sm text-slate-600 font-medium">Round {round.positionRoundSequence}</span>
                     </div>
                     <h4 className="text-lg font-bold text-slate-800 mb-2">
                       {round.positionRoundType.replace('_', ' ')}

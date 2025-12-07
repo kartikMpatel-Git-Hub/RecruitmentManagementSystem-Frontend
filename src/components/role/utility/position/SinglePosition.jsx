@@ -50,14 +50,18 @@ const SinglePosition = () => {
     positionRoundType: "",
     positionRoundSequence: 1,
     positionRoundExpectedDate: "",
-    positionRoundExpectedStartTime: "",
+    positionRoundExpectedTime: "",
   });
 
-  const allowAction = ()=>{
-    if(userType==="admin" || userType==="recruiter")
-      return true
-    return false
-  }
+  const allowAction = () => {
+    if (userType === "admin" || userType === "recruiter") return true;
+    return false;
+  };
+
+  const viewAllowAction = () => {
+    if (userType !== "interviewer") return true;
+    return false;
+  };
 
   const fetchPosition = async () => {
     try {
@@ -67,6 +71,7 @@ const SinglePosition = () => {
           headers: { Authorization: `Bearer ${authToken}` },
         }
       );
+      console.log(response.data);
       setPosition(response.data);
       setNewRound((prev) => ({
         ...prev,
@@ -251,7 +256,6 @@ const SinglePosition = () => {
   };
 
   const handleAddRound = async () => {
-    
     try {
       await axios.patch(
         `http://localhost:8080/positions/${id}/rounds`,
@@ -260,7 +264,12 @@ const SinglePosition = () => {
           headers: { Authorization: `Bearer ${authToken}` },
         }
       );
-      setNewRound({ positionRoundType: "", positionRoundSequence: 1, positionRoundExpectedDate: "", positionRoundExpectedStartTime: "" });
+      setNewRound({
+        positionRoundType: "",
+        positionRoundSequence: 1,
+        positionRoundExpectedDate: "",
+        positionRoundExpectedTime: "",
+      });
       setShowAddRoundForm(false);
       fetchPosition();
       toast.success("Round added successfully!");
@@ -308,25 +317,37 @@ const SinglePosition = () => {
   const formatDate = (dateArray) => {
     if (!Array.isArray(dateArray) || dateArray.length !== 3) return "Not Set";
     const [year, month, day] = dateArray;
-    return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
+    return `${String(day).padStart(2, "0")}/${String(month).padStart(
+      2,
+      "0"
+    )}/${year}`;
   };
 
   const formatTime = (timeArray) => {
     if (!Array.isArray(timeArray) || timeArray.length !== 2) return "Not Set";
     const [hour, minute] = timeArray;
-    return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+    return `${String(hour).padStart(2, "0")}:${String(minute).padStart(
+      2,
+      "0"
+    )}`;
   };
 
   const formatDateForInput = (dateArray) => {
     if (!Array.isArray(dateArray) || dateArray.length !== 3) return "";
     const [year, month, day] = dateArray;
-    return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(
+      2,
+      "0"
+    )}`;
   };
 
   const formatTimeForInput = (timeArray) => {
     if (!Array.isArray(timeArray) || timeArray.length !== 2) return "";
     const [hour, minute] = timeArray;
-    return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+    return `${String(hour).padStart(2, "0")}:${String(minute).padStart(
+      2,
+      "0"
+    )}`;
   };
 
   if (loading) {
@@ -415,21 +436,26 @@ const SinglePosition = () => {
                 </div>
 
                 <div className="flex flex-wrap gap-3">
-                  <button
-                    onClick={() => navigate(`applications`)}
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-xl transition-all font-medium shadow-lg"
-                  >
-                    <Eye className="w-4 h-4" />
-                    Applications
-                  </button>
-                  <button
-                    onClick={() => navigate(`applications/shortlist`)}
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white rounded-xl transition-all font-medium shadow-lg"
-                  >
-                    <Star className="w-4 h-4" />
-                    Shortlisted
-                  </button>
-                  {allowAction() &&
+                  {viewAllowAction() && (
+                    <>
+                      <button
+                        onClick={() => navigate(`applications`)}
+                        className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-xl transition-all font-medium shadow-lg"
+                      >
+                        <Eye className="w-4 h-4" />
+                        Applications
+                      </button>
+                      <button
+                        onClick={() => navigate(`applications/shortlist`)}
+                        className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white rounded-xl transition-all font-medium shadow-lg"
+                      >
+                        <Star className="w-4 h-4" />
+                        Shortlisted
+                      </button>
+                    </>
+                  )}
+
+                  {allowAction() && (
                     <>
                       <button
                         onClick={() => setEditingPosition(!editingPosition)}
@@ -447,7 +473,7 @@ const SinglePosition = () => {
                         {deleting ? "Deleting..." : "Delete"}
                       </button>
                     </>
-                  }
+                  )}
                 </div>
               </div>
             </div>
@@ -752,19 +778,19 @@ const SinglePosition = () => {
                 Position Rounds ({position.positionRounds?.length || 0})
               </h3>
               {allowAction() && (
-                  <button
-                    onClick={() => setShowAddRoundForm(true)}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-xl hover:from-slate-700 hover:to-slate-800 transition-all font-medium shadow-lg"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Add Round
-                  </button>
-                )}
+                <button
+                  onClick={() => setShowAddRoundForm(true)}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-xl hover:from-slate-700 hover:to-slate-800 transition-all font-medium shadow-lg"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add Round
+                </button>
+              )}
             </div>
 
             {showAddRoundForm && (
               <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6 mb-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mb-4">
                   <select
                     value={newRound.positionRoundType}
                     onChange={(e) =>
@@ -798,37 +824,13 @@ const SinglePosition = () => {
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-slate-400 bg-gray-50 focus:bg-white"
                     placeholder="Round Sequence"
                   />
-                  <input
-                    type="date"
-                    value={newRound.positionRoundExpectedDate}
-                    onChange={(e) =>
-                      setNewRound({
-                        ...newRound,
-                        positionRoundExpectedDate: e.target.value,
-                      })
-                    }
-                    required
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-slate-400 bg-gray-50 focus:bg-white"
-                    placeholder="Expected Date"
-                  />
-                  <input
-                    type="time"
-                    value={newRound.positionRoundExpectedStartTime}
-                    onChange={(e) =>
-                      setNewRound({
-                        ...newRound,
-                        positionRoundExpectedStartTime: e.target.value,
-                      })
-                    }
-                    required
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-slate-400 bg-gray-50 focus:bg-white"
-                    placeholder="Expected Start Time"
-                  />
                 </div>
                 <div className="flex gap-3">
                   <button
                     onClick={handleAddRound}
-                    disabled={!newRound.positionRoundType || !newRound.positionRoundExpectedDate || !newRound.positionRoundExpectedStartTime}
+                    disabled={
+                      !newRound.positionRoundType
+                    }
                     className="flex-1 px-4 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl hover:from-green-700 hover:to-green-800 disabled:from-gray-400 disabled:to-gray-500 transition-all font-semibold shadow-lg"
                   >
                     Save Round
@@ -836,7 +838,12 @@ const SinglePosition = () => {
                   <button
                     onClick={() => {
                       setShowAddRoundForm(false);
-                      setNewRound({ positionRoundType: "", positionRoundSequence: 1, positionRoundExpectedDate: "", positionRoundExpectedStartTime: "" });
+                      setNewRound({
+                        positionRoundType: "",
+                        positionRoundSequence: 1,
+                        positionRoundExpectedDate: "",
+                        positionRoundExpectedTime: "",
+                      });
                     }}
                     className="flex-1 px-4 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 font-semibold"
                   >
@@ -860,54 +867,33 @@ const SinglePosition = () => {
                         <div className="space-y-4">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <select
-                            value={editingRound.positionRoundType}
-                            onChange={(e) =>
-                              setEditingRound({
-                                ...editingRound,
-                                positionRoundType: e.target.value,
-                              })
-                            }
-                            className="w-full px-3 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-slate-400 bg-gray-50 focus:bg-white"
-                          >
-                            <option value="APTITUDE">APTITUDE</option>
-                            <option value="GROUP_DISCUSSION">
-                              GROUP DISCUSSION
-                            </option>
-                            <option value="CODING">CODING</option>
-                            <option value="TECHNICAL">TECHNICAL</option>
-                            <option value="HR">HR</option>
-                            <option value="CEO">CEO</option>
-                            </select>
-                            <input
-                            type="number"
-                            min="1"
-                            value={editingRound.positionRoundSequence}
-                            onChange={(e) =>
-                              setEditingRound({
-                                ...editingRound,
-                                positionRoundSequence: parseInt(e.target.value) || 1,
-                              })
-                            }
-                            className="w-full px-3 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-slate-400 bg-gray-50 focus:bg-white"
-                            />
-                            <input
-                              type="date"
-                              value={editingRound.positionRoundExpectedDate}
+                              value={editingRound.positionRoundType}
                               onChange={(e) =>
                                 setEditingRound({
                                   ...editingRound,
-                                  positionRoundExpectedDate: e.target.value,
+                                  positionRoundType: e.target.value,
                                 })
                               }
                               className="w-full px-3 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-slate-400 bg-gray-50 focus:bg-white"
-                            />
+                            >
+                              <option value="APTITUDE">APTITUDE</option>
+                              <option value="GROUP_DISCUSSION">
+                                GROUP DISCUSSION
+                              </option>
+                              <option value="CODING">CODING</option>
+                              <option value="TECHNICAL">TECHNICAL</option>
+                              <option value="HR">HR</option>
+                              <option value="CEO">CEO</option>
+                            </select>
                             <input
-                              type="time"
-                              value={editingRound.positionRoundExpectedTime}
+                              type="number"
+                              min="1"
+                              value={editingRound.positionRoundSequence}
                               onChange={(e) =>
                                 setEditingRound({
                                   ...editingRound,
-                                  positionRoundExpectedTime: e.target.value,
+                                  positionRoundSequence:
+                                    parseInt(e.target.value) || 1,
                                 })
                               }
                               className="w-full px-3 py-2 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-slate-400 bg-gray-50 focus:bg-white"
@@ -941,28 +927,37 @@ const SinglePosition = () => {
                               <span className="text-sm text-slate-600 font-medium">
                                 Round {round.positionRoundSequence}
                               </span>
-                              <span className="text-sm text-slate-600 font-medium">
-                                {formatDate(round.positionRoundExpectedDate)} at {formatTime(round.positionRoundExpectedTime)}
-                              </span>
                             </div>
                             {allowAction() && (
-                                <div className="flex gap-1">
-                                  <button
-                                    onClick={() => setEditingRound({...round, positionRoundExpectedTime: formatTimeForInput(round.positionRoundExpectedTime), positionRoundExpectedDate: formatDateForInput(round.positionRoundExpectedDate)})}
-                                    className="p-1 text-blue-600 hover:bg-blue-100 rounded-lg transition-all"
-                                  >
-                                    <Edit className="w-3 h-3" />
-                                  </button>
-                                  <button
-                                    onClick={() =>
-                                      handleDeleteRound(round.positionRoundId)
-                                    }
-                                    className="p-1 text-red-600 hover:bg-red-100 rounded-lg transition-all"
-                                  >
-                                    <Trash2 className="w-3 h-3" />
-                                  </button>
-                                </div>
-                              )}
+                              <div className="flex gap-1">
+                                <button
+                                  onClick={() =>
+                                    setEditingRound({
+                                      ...round,
+                                      positionRoundExpectedTime:
+                                        formatTimeForInput(
+                                          round.positionRoundExpectedTime
+                                        ),
+                                      positionRoundExpectedDate:
+                                        formatDateForInput(
+                                          round.positionRoundExpectedDate
+                                        ),
+                                    })
+                                  }
+                                  className="p-1 text-blue-600 hover:bg-blue-100 rounded-lg transition-all"
+                                >
+                                  <Edit className="w-3 h-3" />
+                                </button>
+                                <button
+                                  onClick={() =>
+                                    handleDeleteRound(round.positionRoundId)
+                                  }
+                                  className="p-1 text-red-600 hover:bg-red-100 rounded-lg transition-all"
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </button>
+                              </div>
+                            )}
                           </div>
                           <h4 className="text-lg font-bold text-slate-800 mb-2">
                             {round.positionRoundType.replace("_", " ")}
@@ -1010,14 +1005,14 @@ const SinglePosition = () => {
                   Requirements ({position.positionRequirements?.length || 0})
                 </h3>
                 {allowAction() && (
-                    <button
-                      onClick={() => setShowAddForm(true)}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-xl hover:from-slate-700 hover:to-slate-800 transition-all font-medium shadow-lg"
-                    >
-                      <Plus className="w-4 h-4" />
-                      Add
-                    </button>
-                  )}
+                  <button
+                    onClick={() => setShowAddForm(true)}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-xl hover:from-slate-700 hover:to-slate-800 transition-all font-medium shadow-lg"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add
+                  </button>
+                )}
               </div>
 
               {showAddForm && (
@@ -1157,25 +1152,25 @@ const SinglePosition = () => {
                             </span>
                           </div>
                           {allowAction() && (
-                              <div className="flex gap-2">
-                                <button
-                                  onClick={() => setEditingReq(req)}
-                                  className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-all"
-                                >
-                                  <Edit className="w-4 h-4" />
-                                </button>
-                                <button
-                                  onClick={() =>
-                                    handleDeleteRequirement(
-                                      req.positionRequirementId
-                                    )
-                                  }
-                                  className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-all"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
-                              </div>
-                            )}
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => setEditingReq(req)}
+                                className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-all"
+                              >
+                                <Edit className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() =>
+                                  handleDeleteRequirement(
+                                    req.positionRequirementId
+                                  )
+                                }
+                                className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-all"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
@@ -1196,14 +1191,14 @@ const SinglePosition = () => {
                   Education ({position.positionRequiredEducations?.length || 0})
                 </h3>
                 {allowAction() && (
-                    <button
-                      onClick={() => setEditingEducation(!editingEducation)}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-xl hover:from-orange-700 hover:to-orange-800 transition-all font-medium shadow-lg"
-                    >
-                      <Edit className="w-4 h-4" />
-                      {editingEducation ? "Cancel" : "Edit"}
-                    </button>
-                  )}
+                  <button
+                    onClick={() => setEditingEducation(!editingEducation)}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-xl hover:from-orange-700 hover:to-orange-800 transition-all font-medium shadow-lg"
+                  >
+                    <Edit className="w-4 h-4" />
+                    {editingEducation ? "Cancel" : "Edit"}
+                  </button>
+                )}
               </div>
 
               {editingEducation && (

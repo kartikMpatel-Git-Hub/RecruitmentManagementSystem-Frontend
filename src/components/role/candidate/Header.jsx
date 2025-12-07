@@ -32,6 +32,18 @@ const Header = ({ title, showBackButton = false, backPath = "/candidate/home" })
               Positions
             </button>
             <button
+              onClick={() => navigate("/candidate/interviews")}
+              className="px-4 py-2 text-gray-700 hover:text-slate-800 hover:bg-gray-100 rounded-lg transition-all font-medium"
+            >
+              Interviews
+            </button>
+            <button
+              onClick={() => navigate("/candidate/applications")}
+              className="px-4 py-2 text-gray-700 hover:text-slate-800 hover:bg-gray-100 rounded-lg transition-all font-medium"
+            >
+              Applications
+            </button>
+            <button
               onClick={() => navigate("/candidate/profile")}
               className="p-2 text-gray-700 hover:text-slate-800 hover:bg-gray-100 rounded-lg transition-all"
             >
