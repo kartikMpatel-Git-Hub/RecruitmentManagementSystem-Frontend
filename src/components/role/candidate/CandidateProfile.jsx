@@ -479,14 +479,6 @@ function CandidateProfile() {
       <Header title="My Profile" showBackButton={true} />
 
       <div className="max-w-7xl mx-100 px-4 py-8">
-        {/* <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl mb-4 shadow-lg">
-            <User className="w-8 h-8 text-white" />
-          </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">My Profile</h1>
-          <p className="text-gray-600">Manage your profile information</p>
-        </div> */}
-
         <div className="bg-white rounded-3xl shadow-xl border border-gray-200 overflow-hidden">
           <div className="bg-gradient-to-r from-slate-800 to-slate-900 p-6 flex flex-col md:flex-row items-center md:items-start gap-6">
             <img

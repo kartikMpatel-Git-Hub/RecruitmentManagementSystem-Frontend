@@ -68,11 +68,14 @@ function Login() {
         navigate("/reviewer");
       else if(userType === 'interviewer')
         navigate("/interviewer");
+      else if(userType === 'hr')
+        navigate("/hr");
       else
         setError("Invalid Role !");
     } catch (err) {
+      console.log(err);
       setError(
-        err.response?.data?.message || "Login failed. Please try again."
+        err.response?.data.message || "Login failed. Please try again."
       );
     }finally{
       setLoading(false)

@@ -33,7 +33,7 @@ function Degree() {
   };
 
   useEffect(() => {
-    if (userType !== "admin" && userType !== "recruiter") {
+    if (userType !== "admin" && userType !== "recruiter" && userType !== "hr") {
       navigate("/");
     }
   }, [userType]);

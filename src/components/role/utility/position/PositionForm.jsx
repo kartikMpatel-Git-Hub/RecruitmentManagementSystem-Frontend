@@ -187,10 +187,10 @@ function PositionForm({handleSubmit,handleChange,position,handleStatusChange,han
                 </button>
               </div>
 
-              <div className="space-y-4 mb-6">
+              <div className="space-y-5 mb-6">
                 {position.positionRounds.map((round, index) => (
                   <div key={index} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-2">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">Round Type</label>
                         <select
@@ -225,28 +225,8 @@ function PositionForm({handleSubmit,handleChange,position,handleStatusChange,han
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Expected Date</label>
-                        <input
-                          type="date"
-                          required
-                          name="positionRoundExpectedDate"
-                          value={round.positionRoundExpectedDate}
-                          onChange={(e) => handleRoundChange(index, e)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Start Time</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-8"></label>
                         <div className="flex gap-2">
-                          <input
-                            type="time"
-                            required
-                            name="positionRoundExpectedStartTime"
-                            value={round.positionRoundExpectedStartTime}
-                            onChange={(e) => handleRoundChange(index, e)}
-                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all"
-                          />
                           <button
                             type="button"
                             onClick={() => removeRound(index)}
@@ -311,6 +291,7 @@ function PositionForm({handleSubmit,handleChange,position,handleStatusChange,han
                           ))}
                         </select>
                       </div>
+                      
 
                       {/* <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">Position</label>

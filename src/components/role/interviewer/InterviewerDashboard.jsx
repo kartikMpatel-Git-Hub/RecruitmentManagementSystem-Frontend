@@ -14,6 +14,7 @@ function InterviewerDashboard() {
   const fetchInterviews = async () => {
     if (!authToken || !profileData.userId) 
       return navigate("/login");
+    
     try {
       const response = await axios.get(
         `http://localhost:8080/interviews/interviewer/${profileData.userId}`,
@@ -29,11 +30,12 @@ function InterviewerDashboard() {
   };
 
   useEffect(() => {
-    if (!authToken && userType !== "interviewer") {
-      navigate("/login");
+    if (!authToken || userType !== "interviewer") {
+      return navigate("/login");
     }
-    fetchInterviews();
-  }, [authToken, userType]);
+    if(profileData?.userId)
+      fetchInterviews();
+  }, [authToken,userType,profileData]);
 
   return (
     <InterviewerLayout>

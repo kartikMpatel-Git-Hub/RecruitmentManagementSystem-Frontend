@@ -1,0 +1,130 @@
+Folder PATH listing for volume New Volume_E
+Volume serial number is A688-DB16
+F:\ROIMA\MAIN\INTERNSHIP\FRONTEND\RECRUITMENTMANAGEMENTSYSTEM\SRC
+¦   App.css
+¦   App.jsx
+¦   index.css
+¦   main.jsx
+¦   
++---assets
+¦       react.svg
+¦       
++---components
+    +---Authentication
+    ¦       Login.jsx
+    ¦       Logout.jsx
+    ¦       Register.jsx
+    ¦       
+    +---context
+    ¦       AuthContext.jsx
+    ¦       
+    +---pages
+    +---role
+    ¦   +---admin
+    ¦   ¦       AdminComponents.js
+    ¦   ¦       AdminLayout.jsx
+    ¦   ¦       AdminProfile.jsx
+    ¦   ¦       Dashboard.jsx
+    ¦   ¦       DashboardData.jsx
+    ¦   ¦       Header.jsx
+    ¦   ¦       Sidebar.jsx
+    ¦   ¦       
+    ¦   +---candidate
+    ¦   ¦       CandidateComponents.js
+    ¦   ¦       CandidateInterview.jsx
+    ¦   ¦       CandidatePositions.jsx
+    ¦   ¦       CandidateProfile.jsx
+    ¦   ¦       CandidateSinglePosition.jsx
+    ¦   ¦       Footer.jsx
+    ¦   ¦       Header.jsx
+    ¦   ¦       Home.jsx
+    ¦   ¦       
+    ¦   +---interviewer
+    ¦   ¦       DashboardData.jsx
+    ¦   ¦       Header.jsx
+    ¦   ¦       InterviewerComponents.js
+    ¦   ¦       InterviewerDashboard.jsx
+    ¦   ¦       InterviewerLayout.jsx
+    ¦   ¦       InterviewerProfile.jsx
+    ¦   ¦       Sidebar.jsx
+    ¦   ¦       
+    ¦   +---recruiter
+    ¦   ¦       DashboardData.jsx
+    ¦   ¦       Header.jsx
+    ¦   ¦       RecruiterComponents.js
+    ¦   ¦       RecruiterDashboard.jsx
+    ¦   ¦       RecruiterLayout.jsx
+    ¦   ¦       RecruiterProfile.jsx
+    ¦   ¦       Sidebar.jsx
+    ¦   ¦       
+    ¦   +---reviewer
+    ¦   ¦       DashboardData.jsx
+    ¦   ¦       Header.jsx
+    ¦   ¦       ReviewerComponents.js
+    ¦   ¦       ReviewerDashboard.jsx
+    ¦   ¦       ReviewerLayout.jsx
+    ¦   ¦       ReviewerProfile.jsx
+    ¦   ¦       Sidebar.jsx
+    ¦   ¦       
+    ¦   +---utility
+    ¦       ¦   Layout.jsx
+    ¦       ¦   UtilityComponents.js
+    ¦       ¦   
+    ¦       +---candidate
+    ¦       ¦       Candidate.jsx
+    ¦       ¦       CandidateList.jsx
+    ¦       ¦       SingleCandidateProfile.jsx
+    ¦       ¦       
+    ¦       +---degree
+    ¦       ¦       Degree.jsx
+    ¦       ¦       DegreeForm.jsx
+    ¦       ¦       DegreeList.jsx
+    ¦       ¦       
+    ¦       +---interview
+    ¦       ¦       Interview.jsx
+    ¦       ¦       InterviewDetail.jsx
+    ¦       ¦       InterviewFeedback.jsx
+    ¦       ¦       
+    ¦       +---position
+    ¦       ¦   ¦   AllPllications.jsx
+    ¦       ¦   ¦   AllShortlistsApplications.jsx
+    ¦       ¦   ¦   Position.jsx
+    ¦       ¦   ¦   PositionApplications.jsx
+    ¦       ¦   ¦   PositionForm.jsx
+    ¦       ¦   ¦   PositionList.jsx
+    ¦       ¦   ¦   PositionShortlistedApplications.jsx
+    ¦       ¦   ¦   SinglePosition.jsx
+    ¦       ¦   ¦   
+    ¦       ¦   +---modal
+    ¦       ¦           Applications.jsx
+    ¦       ¦           HoldStatusModal.jsx
+    ¦       ¦           Interview.jsx
+    ¦       ¦           PositionModal.jsx
+    ¦       ¦           ProfileModal.jsx
+    ¦       ¦           Round.jsx
+    ¦       ¦           Shortlists.jsx
+    ¦       ¦           StatusModal.jsx
+    ¦       ¦           
+    ¦       +---skill
+    ¦       ¦       Skill.jsx
+    ¦       ¦       SkillForm.jsx
+    ¦       ¦       SkillList.jsx
+    ¦       ¦       
+    ¦       +---university
+    ¦       ¦       Univeristy.jsx
+    ¦       ¦       UniversityForm.jsx
+    ¦       ¦       UniversityList.jsx
+    ¦       ¦       
+    ¦       +---until
+    ¦       ¦       AmountCalculation.js
+    ¦       ¦       
+    ¦       +---user
+    ¦               SingleUserProfile.jsx
+    ¦               User.jsx
+    ¦               UserForm.jsx
+    ¦               UserList.jsx
+    ¦               
+    +---utility
+            dateTimeUtils.js
+            NotFound.jsx
+            

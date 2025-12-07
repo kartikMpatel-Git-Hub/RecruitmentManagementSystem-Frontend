@@ -23,6 +23,7 @@ import { toast, ToastContainer } from "react-toastify";
 import Header from "./Header";
 import Footer from "./Footer";
 import { currencyCalculate } from "../utility/until/AmountCalculation";
+import Layout from "../utility/Layout";
 
 const CandidatePositions = () => {
   const { authToken, profileData } = useContext(AuthContext);
@@ -180,9 +181,7 @@ const CandidatePositions = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <Header title="Available Positions" showBackButton={true} />
-
+    <Layout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {loading ? (
           <div className="flex items-center justify-center h-64">
@@ -569,9 +568,7 @@ const CandidatePositions = () => {
           </>
         )}
       </div>
-      <ToastContainer />
-      <Footer />
-    </div>
+    </Layout>
   );
 };
 

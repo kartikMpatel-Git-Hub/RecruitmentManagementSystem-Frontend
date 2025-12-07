@@ -120,8 +120,10 @@ const Position = () => {
   const handleRoundChange = (index, e) => {
     const { name, value } = e.target;
     const newRounds = [...position.positionRounds];
-    if (name === 'positionRoundSequence') {
+    if (name === 'positionRoundSequence') { 
       newRounds[index][name] = parseInt(value) || 1;
+    }else if (name === 'positionRoundDuration') { 
+      newRounds[index][name] = parseInt(value) || 30;
     } else {
       newRounds[index][name] = value;
     }
@@ -148,13 +150,11 @@ const Position = () => {
     if (!authToken) return alert("You are not authorized!");
 
     try {
-      console.log(position);
-      const response = await axios.post(
+      await axios.post(
         "http://localhost:8080/positions/",
         position,
         { headers: { Authorization: `Bearer ${authToken}` } }
       );
-      console.log("Position saved:", response.data);
       alert("Position created successfully!");
       navigate('/admin/positions');
     } catch (error) {
