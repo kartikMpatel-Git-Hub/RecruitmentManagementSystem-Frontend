@@ -14,7 +14,7 @@ import ShortlistTable from "./ShortlistedTable";
 
 function AllShortlistedApplications() {
   const navigate = useNavigate();
-  const { authToken } = useContext(AuthContext);
+  const { authToken ,userType} = useContext(AuthContext);
 
   const [shortlistedApplications, setShortlistedApplications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -34,9 +34,16 @@ function AllShortlistedApplications() {
   const [editHoldStatus, setEditHoldStatus] = useState(null);
 
   const fetchShortlistedApplications = async () => {
+    let url = ""
+    if(userType === 'recruiter')
+      url = `http://localhost:8080/applications/shortlists/recruiter`
+    else if(userType === 'reviewer')
+      url = `http://localhost:8080/applications/shortlists/reviewer`
+    else
+      url = `http://localhost:8080/applications/shortlists`
+
     try {
-      const response = await axios.get(
-        "http://localhost:8080/applications/shortlists",
+      const response = await axios.get(url,
         { headers: { Authorization: `Bearer ${authToken}` } }
       );
       setShortlistedApplications(response.data.data || []);
@@ -126,7 +133,7 @@ function AllShortlistedApplications() {
       holdReason: application.applicationStatus.applicationFeedback,
       applicationStatus:
         application.applicationStatus.applicationStatus === "ONHOLD"
-          ? "UNDERPROCESS"
+          ? "SHORTLISTED"
           : "ONHOLD",
     });
     setShowHoldStatus(true);

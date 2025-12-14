@@ -385,7 +385,9 @@ function CandidateProfile() {
         percentage: parseFloat(percentage),
         passingYear: parseInt(passingYear),
       };
-
+      
+      console.log(educationData);
+      
       await axios.put(
         `http://localhost:8080/candidate-educations/${educationId}`,
         educationData,

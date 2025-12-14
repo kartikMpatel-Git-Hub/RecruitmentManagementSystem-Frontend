@@ -47,6 +47,7 @@ const CandidateSinglePosition = () => {
         ...response.data,
         applied: applied.includes(response.data.positionId),
       };
+      console.log(updatedPosition);
       setPosition(updatedPosition);
     } catch (error) {
       console.error("Error fetching position:", error);
@@ -192,7 +193,7 @@ const CandidateSinglePosition = () => {
                   <p className="text-slate-300">
                     Created by{" "}
                     <span className="font-semibold text-white">
-                      {position.createdByName}
+                      {position.createdBy.userName}
                     </span>
                   </p>
                 </div>
@@ -231,9 +232,9 @@ const CandidateSinglePosition = () => {
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-slate-800">
-                  {position.positionApplications || 0}
+                  {position.positionMinYearsOfExperience || 0}
                 </div>
-                <div className="text-sm text-gray-600 mt-1">Applications</div>
+                <div className="text-sm text-gray-600 mt-1">Minimun Years Of Experience</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-slate-800">

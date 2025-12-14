@@ -9,11 +9,8 @@ function Dashboard() {
   const navigate = useNavigate();
   const { userType } = useContext(AuthContext);
   const { authToken } = useContext(AuthContext);
-  const [users, setUsers] = useState([]); // State to store all users
-  const [candidates, setCandidates] = useState([]); // State to store all users
-  const [degrees, setDegrees] = useState([]); // State to store all degrees
-  const [skills, setSkills] = useState([]); // State to store all skills
-  const [universities, setUniversities] = useState([]); // State to store all skills
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!authToken || userType !== "admin") {
@@ -23,93 +20,38 @@ function Dashboard() {
 
   useEffect(() => {
     if (authToken && userType === "admin") {
-      fetchUsers();
-      fetchDegrees();
-      fetchSkills();
-      fetchUniversities();
-      fetchCandidates()
+      fetchDashboardData();
     }
   }, [authToken, userType]);
 
-  const fetchUsers = async () => {
+  const fetchDashboardData = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:8080/users/non-candidates",
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        }
-      );
-      setUsers(response.data.data || []);
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    }
-  };
-  const fetchCandidates = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:8080/users/candidates",
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        }
-      );
-      setCandidates(response.data.data || []);
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    }
-  };
-
-  const fetchDegrees = async () => {
-    try {
-      const response = await axios.get("http://localhost:8080/degrees", {
+      const response = await axios.get("http://localhost:8080/dashboard/admin", {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
       });
-      setDegrees(response.data.data || []);
+      setDashboardData(response.data);
     } catch (error) {
-      console.error("Error fetching degrees:", error);
+      console.error("Error fetching dashboard data:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const fetchSkills = async () => {
-    try {
-      const response = await axios.get("http://localhost:8080/skills", {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
-      setSkills(response.data.data || []);
-    } catch (error) {
-      console.error("Error fetching skills:", error);
-    }
-  };
-
-  const fetchUniversities = async () => {
-    try {
-      const response = await axios.get("http://localhost:8080/universities", {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
-      setUniversities(response.data.data || []);
-    } catch (error) {
-      console.error("Error fetching skills:", error);
-    }
-  };
+  if (loading) {
+    return (
+      <AdminLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800"></div>
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>
-      <DashboardData
-        candidates={candidates}
-        users={users}
-        degrees={degrees}
-        skills={skills}
-        universities={universities}
-      />
+      <DashboardData dashboardData={dashboardData} />
     </AdminLayout>
   );
 }

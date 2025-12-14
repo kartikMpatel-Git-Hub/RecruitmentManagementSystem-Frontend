@@ -1,62 +1,57 @@
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import ReviewerLayout from "./ReviewerLayout";
 import axios from "axios";
 import DashboardData from "./DashboardData";
-import { ReviewerLayout } from "./ReviewerComponents";
 
 function ReviewerDashboard() {
   const navigate = useNavigate();
   const { userType } = useContext(AuthContext);
   const { authToken } = useContext(AuthContext);
-
-  const [positions, setPositions] = useState(null);
-  const [applications,setApplications] = useState(null)  
-
-  const fetchPositions = async ()=>{
-    if(!authToken)
-      return navigate("/login")
-    try {
-      const response = await axios.get("http://localhost:8080/positions",{
-        headers:{
-          Authorization:`Bearer ${authToken}`
-        }
-      })
-      setPositions(response.data.data);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-  const fetchApplications = async ()=>{
-    if(!authToken)
-      return navigate("/login")
-    try {
-      const response = await axios.get("http://localhost:8080/applications",{
-        headers:{
-          Authorization:`Bearer ${authToken}`
-        }
-      })
-      setApplications(response.data.data);
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!authToken && userType !== "reviewer") {
-      navigate("/login");
+    if (!authToken || userType !== "reviewer") {
+      navigate("/");
     }
-    fetchPositions()
-    fetchApplications()
+  }, [authToken, userType, navigate]);
+
+  useEffect(() => {
+    if (authToken && userType === "reviewer") {
+      fetchDashboardData();
+    }
   }, [authToken, userType]);
 
+  const fetchDashboardData = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/dashboard/reviewer", {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+      setDashboardData(response.data);
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <ReviewerLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800"></div>
+        </div>
+      </ReviewerLayout>
+    );
+  }
 
   return (
     <ReviewerLayout>
-      <DashboardData
-        positions={positions}
-        applications={applications}
-      />
+      <DashboardData dashboardData={dashboardData} />
     </ReviewerLayout>
   );
 }

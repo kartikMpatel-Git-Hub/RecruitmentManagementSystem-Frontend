@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { AuthContext } from "../../../context/AuthContext";
+import { AuthContext } from "../../../../context/AuthContext";
 import {
   User,
   Eye,
@@ -14,13 +14,13 @@ import {
   Pause,
   Clock,
 } from "lucide-react";
-import Layout from "../Layout";
+import Layout from "../../Layout";
 import { toast } from "react-toastify";
-import { currencyCalculate } from "../until/AmountCalculation";
-import PositionModal from "./modal/PositionModal";
-import ProfileModal from "./modal/ProfileModal";
-import StatusModal from "./modal/StatusModal";
-import Applications from "./modal/Applications";
+import { currencyCalculate } from "../../until/AmountCalculation";
+import PositionModal from "../modal/PositionModal";
+import ProfileModal from "../modal/ProfileModal";
+import StatusModal from "../modal/HoldStatusModal";
+import Applications from "./Applications";
 
 function AllApplications() {
   const navigate = useNavigate();

@@ -54,8 +54,8 @@ function PositionModal({
               </div>
             ) : position ? (
               <div className="flex flex-col h-full">
-                <div className="bg-gradient-to-br bg-slate-800 text-white p-8 relative overflow-hidden">
-                  <div className="absolute inset-0 "></div>
+                <div className="bg-gradient-to-br bg-slate-800 text-white p-5 relative overflow-hidden">
+                  {/* <div className="absolute inset-0 "></div> */}
                   <div className="relative flex items-center justify-between">
                     <div className="flex items-center gap-6">
                       <div className="p-4 bg-white/20 backdrop-blur-sm rounded-3xl border border-white/30">
@@ -121,7 +121,7 @@ function PositionModal({
                       </div>
                     </div>
                     <div className="bg-white rounded-2xl p-6 text-center shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-                      <div className="text-3xl font-bold text-green-600 mb-2">
+                      <div className="text-2xl font-bold text-green-600 mb-2">
                         ₹{currencyCalculate(position.positionSalary) || "N/A"}
                       </div>
                       <div className="text-sm text-gray-600 font-medium">
@@ -203,7 +203,7 @@ function PositionModal({
                         {position.positionRequirements?.length > 0 ? (
                           <>
                             {position.positionRequirements
-                              .slice(0, 3)
+                              .slice(0, 2)
                               .map((req) => (
                                 <div
                                   key={req.positionRequirementId}
@@ -256,7 +256,7 @@ function PositionModal({
                         {position.positionRequiredEducations?.length > 0 ? (
                           <>
                             {position.positionRequiredEducations
-                              .slice(0, 3)
+                              .slice(0, 2)
                               .map((edu) => (
                                 <div
                                   key={edu.degreeId}

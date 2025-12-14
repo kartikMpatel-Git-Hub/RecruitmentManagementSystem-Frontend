@@ -1,49 +1,59 @@
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import DashboardData from "./DashboardData";
-import { InterviewerLayout } from "./InterviewerComponents";
+import InterviewerLayout from "./InterviewerLayout"
+import DashboardData from "./DashboardData"
 
-function InterviewerDashboard() {
+function Dashboard() {
   const navigate = useNavigate();
-  const { userType,authToken,profileData } = useContext(AuthContext);
-
-  const [interviews, setInterviews] = useState(null);
-
-  const fetchInterviews = async () => {
-    if (!authToken || !profileData.userId) 
-      return navigate("/login");
-    
-    try {
-      const response = await axios.get(
-        `http://localhost:8080/interviews/interviewer/${profileData.userId}`,
-        {
-          headers: { Authorization: `Bearer ${authToken}` },
-        }
-      );
-      const data = response.data.data || [];
-      setInterviews(data);
-    } catch (error) {
-      console.error("Error fetching interviewers:", error);
-    }
-  };
+  const { userType } = useContext(AuthContext);
+  const { authToken } = useContext(AuthContext);
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!authToken || userType !== "interviewer") {
-      return navigate("/login");
+      navigate("/");
     }
-    if(profileData?.userId)
-      fetchInterviews();
-  }, [authToken,userType,profileData]);
+  }, [authToken, userType, navigate]);
+
+  useEffect(() => {
+    if (authToken && userType === "interviewer") {
+      fetchDashboardData();
+    }
+  }, [authToken, userType]);
+
+  const fetchDashboardData = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/dashboard/interviewer", {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+      setDashboardData(response.data);
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <InterviewerLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800"></div>
+        </div>
+      </InterviewerLayout>
+    );
+  }
 
   return (
     <InterviewerLayout>
-      <DashboardData 
-        interviews={interviews}
-      />
+      <DashboardData dashboardData={dashboardData} />
     </InterviewerLayout>
   );
 }
 
-export default InterviewerDashboard;
+export default Dashboard;

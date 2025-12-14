@@ -1,19 +1,16 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { HrLayout } from "./HrComponents";
+import HrLayout from "./HrLayout"
 import axios from "axios";
-import HrDashboardData from "./HrDashboardData";
-import Layout from "../utility/Layout";
+import HrDashboardData from "./HrDashboardData"
 
-function HrDashboard() {
+function Dashboard() {
   const navigate = useNavigate();
   const { userType } = useContext(AuthContext);
   const { authToken } = useContext(AuthContext);
-  const [candidates, setCandidates] = useState([]); // State to store all users
-  const [degrees, setDegrees] = useState([]); // State to store all degrees
-  const [skills, setSkills] = useState([]); // State to store all skills
-  const [universities, setUniversities] = useState([]); // State to store all skills
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!authToken || userType !== "hr") {
@@ -23,78 +20,40 @@ function HrDashboard() {
 
   useEffect(() => {
     if (authToken && userType === "hr") {
-      fetchDegrees();
-      fetchSkills();
-      fetchUniversities();
-      fetchCandidates()
+      fetchDashboardData();
     }
   }, [authToken, userType]);
 
-  const fetchCandidates = async () => {
+  const fetchDashboardData = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:8080/users/candidates",
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        }
-      );
-      setCandidates(response.data.data || []);
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    }
-  };
-
-  const fetchDegrees = async () => {
-    try {
-      const response = await axios.get("http://localhost:8080/degrees", {
+      const response = await axios.get("http://localhost:8080/dashboard/hr", {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
       });
-      setDegrees(response.data.data || []);
+      setDashboardData(response.data);
     } catch (error) {
-      console.error("Error fetching degrees:", error);
+      console.error("Error fetching dashboard data:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const fetchSkills = async () => {
-    try {
-      const response = await axios.get("http://localhost:8080/skills", {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
-      setSkills(response.data.data || []);
-    } catch (error) {
-      console.error("Error fetching skills:", error);
-    }
-  };
-
-  const fetchUniversities = async () => {
-    try {
-      const response = await axios.get("http://localhost:8080/universities", {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
-      setUniversities(response.data.data || []);
-    } catch (error) {
-      console.error("Error fetching skills:", error);
-    }
-  };
+  if (loading) {
+    return (
+      <HrLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800"></div>
+        </div>
+      </HrLayout>
+    );
+  }
 
   return (
-    <Layout>
-      <HrDashboardData
-        candidates={candidates}
-        degrees={degrees}
-        skills={skills}
-        universities={universities}
-      />
-    </Layout>
+    <HrLayout>
+      <HrDashboardData dashboardData={dashboardData} />
+    </HrLayout>
   );
 }
 
-export default HrDashboard;
+export default Dashboard;

@@ -33,6 +33,7 @@ function Interview() {
       );
       const data = response.data.data || [];
       setInterviews(data);
+      console.log(data);
       setFilteredInterviews(data);
     } catch (error) {
       console.error("Error fetching interviews:", error);
@@ -234,7 +235,7 @@ function Interview() {
                   )}
 
                   {/* Feedback */}
-                  {interview.interviewers?.[0]?.interviewerFeedback
+                  {isInterviewCompleted(interview) && interview.interviewers?.[0]?.interviewerFeedback
                     ?.interviewFeedback && (
                     <div className="mt-4 p-3 bg-gray-50 rounded-lg">
                       <div className="flex items-center gap-2 mb-1">
@@ -270,7 +271,7 @@ function Interview() {
                         </button>
                       )}
                     </div>
-                    {interview.interviewLink && (
+                    {interview.interviewLink && !isInterviewCompleted(interview) && (
                       <a
                         href={interview.interviewLink}
                         target="_blank"

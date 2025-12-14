@@ -71,7 +71,6 @@ const SinglePosition = () => {
           headers: { Authorization: `Bearer ${authToken}` },
         }
       );
-      console.log(response.data);
       setPosition(response.data);
       setNewRound((prev) => ({
         ...prev,
@@ -174,6 +173,7 @@ const SinglePosition = () => {
           positionDescription: position.positionDescription,
           positionCriteria: position.positionCriteria,
           positionTotalOpening: position.positionTotalOpening,
+          positionMinYearsOfExperience:position.positionMinYearsOfExperience,
           positionType: position.positionType,
           positionSalary: parseFloat(position.positionSalary) || 0,
           positionLocation: position.positionLocation,
@@ -512,10 +512,10 @@ const SinglePosition = () => {
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-bold text-slate-800">
-                    {position.positionLanguage || "N/A"}
+                    {position.positionMinYearsOfExperience || "N/A"}
                   </div>
                   <div className="text-sm text-gray-600 mt-1">
-                    Position Language
+                    Minimum Year Of Experience
                   </div>
                 </div>
               </div>
@@ -669,6 +669,24 @@ const SinglePosition = () => {
                       className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-slate-400 bg-gray-50 focus:bg-white"
                     />
                   </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-3">
+                      Minimum Year Of Experience
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      value={position.positionMinYearsOfExperience}
+                      onChange={(e) =>
+                        setPosition({
+                          ...position,
+                          positionMinYearsOfExperience: parseInt(e.target.value) || 0,
+                        })
+                      }
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-slate-400 bg-gray-50 focus:bg-white"
+                    />
+                  </div>
+                  {/* private Integer positionMinYearsOfExperience; */}
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-3">
                       Type

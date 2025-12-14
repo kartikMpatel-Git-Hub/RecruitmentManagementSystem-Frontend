@@ -4,7 +4,6 @@ function Applications({
   applications,
   getStatusBadge,
   openProfileModal,
-  openStatusModal,
   openPositionModal,
   handleShortlistApplication
 }) {

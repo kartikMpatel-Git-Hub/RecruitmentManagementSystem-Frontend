@@ -43,6 +43,7 @@ import {
   Interview,
   InterviewDetail,
   InterviewFeedback,
+  AllMappedApplications,
 } from "./components/role/utility/UtilityComponents";
 import {
   ReviewerDashboard,
@@ -71,7 +72,7 @@ function App() {
 
         <Route path="bulk-entry">
           <Route path="" element={<BulkEntryList />}/>
-          <Route path="new" element={<BulkStatus />}/>
+          <Route path=":id" element={<BulkStatus />}/>
         </Route>
 
         <Route path="degrees">
@@ -118,6 +119,10 @@ function App() {
             path=":positionId/applications/shortlist"
             element={<PositionShortlistedApplications />}
           />
+          <Route
+            path=":positionId/applications/mapped"
+            element={<AllMappedApplications />}
+          />
         </Route>
       </Route>
 
@@ -162,6 +167,10 @@ function App() {
           <Route
             path=":positionId/applications/shortlist"
             element={<PositionShortlistedApplications />}
+          />
+          <Route
+            path=":positionId/applications/mapped"
+            element={<AllMappedApplications />}
           />
         </Route>
       </Route>
@@ -208,6 +217,11 @@ function App() {
             path=":positionId/applications/shortlist"
             element={<PositionShortlistedApplications />}
           />
+
+          <Route
+            path=":positionId/applications/mapped"
+            element={<AllMappedApplications />}
+          />
         </Route>
       </Route>
 
@@ -232,6 +246,11 @@ function App() {
           <Route
             path=":positionId/applications/shortlist"
             element={<PositionShortlistedApplications />}
+          />
+
+          <Route
+            path=":positionId/applications/mapped"
+            element={<AllMappedApplications />}
           />
         </Route>
       </Route>

@@ -352,6 +352,7 @@ function InterviewDetail() {
             <div className="space-y-6">
               {interview.interviewers.map((interviewerObj, index) => {
                 const interviewer = interviewerObj.interviewer;
+                console.log(interviewer);
                 const feedback = interviewerObj.interviewerFeedback;
                 return interviewer ? (
                   <div key={interviewer.userId} className="border rounded-lg p-4">
@@ -365,7 +366,7 @@ function InterviewDetail() {
                         <p className="font-medium text-gray-900">{interviewer.userName}</p>
                         <p className="text-sm text-gray-600">{interviewer.userEmail}</p>
                       </div>
-                      {profileData.userId === interviewer.userId && (
+                      {profileData.userId === interviewer.userId && interviewerObj.isFeedbackGiven &&(
                         <button
                           onClick={() => navigate(`/interviewer/${interviewer.userId}/interviews/${interview.interviewId}/feedback`)}
                           className="bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 text-sm"
@@ -376,7 +377,7 @@ function InterviewDetail() {
                       )}
                     </div>
                     
-                    {feedback && (
+                    {interviewerObj.isFeedbackGiven && (
                       <div className="bg-gray-50 rounded-lg p-4">
                         <h4 className="font-medium text-gray-900 mb-3">Feedback</h4>
                         

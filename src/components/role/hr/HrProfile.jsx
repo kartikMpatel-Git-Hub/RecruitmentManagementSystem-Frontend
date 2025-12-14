@@ -336,6 +336,7 @@ function HrProfile() {
                           name="userName"
                           value={profileData.userName}
                           onChange={handleProfileChange}
+                          disabled
                           className={`w-full pl-12 pr-4 py-4 border-2 rounded-2xl focus:outline-none focus:ring-0 transition-all duration-300 text-gray-400 placeholder-gray-500 ${
                             profileErrors.userName
                               ? "border-red-300 bg-red-50 focus:border-red-400"

@@ -1,6 +1,6 @@
 // src/components/Applications/shortlisted/InterviewSection/InterviewSection.jsx
 import React, { useContext, useEffect, useState } from "react";
-import { Video, Info, Plus } from "lucide-react";
+import { Video, Info, Plus, Eye, Edit, Trash2 } from "lucide-react";
 import axios from "axios";
 import { AuthContext } from "../../../../../../context/AuthContext";
 import { toast } from "react-toastify";
@@ -39,9 +39,11 @@ function InterviewSection({ app, round }) {
     round.roundResult === "PENDING";
 
   const isInterviewCompleted = (interview) => {
-    if (interview.interviewStatus?.toLowerCase() === "completed") return true;
+    if (interview.interviewStatus?.toLowerCase() === "completed") 
+      return true;
 
-    if (!interview.interviewDate || !interview.interviewEndTime) return false;
+    if (!interview.interviewDate || !interview.interviewEndTime) 
+      return false;
 
     const now = new Date();
     const interviewDate = Array.isArray(interview.interviewDate)
@@ -199,10 +201,13 @@ function InterviewSection({ app, round }) {
         {allowAction() && (
           <button
             onClick={() => setShowAddForm(true)}
-            className="px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2 text-sm"
+            className="group relative p-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+            title="Add Interview"
           >
-            <Plus className="w-4 h-4" />
-            Add Interview
+            <Plus className="w-5 h-5" />
+            <span className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+              Add Interview
+            </span>
           </button>
         )}
       </div>
@@ -255,26 +260,36 @@ function InterviewSection({ app, round }) {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setViewingInterview(interview)}
-                    className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors text-sm"
+                    className="group relative p-2 bg-gradient-to-r from-slate-600 to-slate-700 text-white rounded-lg hover:from-slate-700 hover:to-slate-800 transition-all shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
+                    title="View Interview"
                   >
-                    View
+                    <Eye className="w-4 h-4" />
+                    <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                      View Interview
+                    </span>
                   </button>
 
                   {allowAction() && !isInterviewCompleted(interview) && (
                     <>
                       <button
                         onClick={() => handleEditInterview(interview)}
-                        className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors text-sm"
+                        className="group relative p-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
+                        title="Edit Interview"
                       >
-                        Edit
+                        <Edit className="w-4 h-4" />
+                        <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                          Edit Interview
+                        </span>
                       </button>
                       <button
-                        onClick={() =>
-                          handleDeleteInterview(interview.interviewId)
-                        }
-                        className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors text-sm"
+                        onClick={() => handleDeleteInterview(interview.interviewId)}
+                        className="group relative p-2 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg hover:from-red-700 hover:to-red-800 transition-all shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
+                        title="Delete Interview"
                       >
-                        Delete
+                        <Trash2 className="w-4 h-4" />
+                        <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                          Delete Interview
+                        </span>
                       </button>
                     </>
                   )}

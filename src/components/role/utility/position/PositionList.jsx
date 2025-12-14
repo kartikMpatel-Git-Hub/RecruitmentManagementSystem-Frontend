@@ -17,6 +17,9 @@ import {
   Wallet2Icon,
   ChevronLeft,
   ChevronRight,
+  FileText,
+  UserCheck,
+  Target,
 } from "lucide-react";
 import Layout from "../Layout";
 
@@ -36,9 +39,16 @@ const PositionList = () => {
   });
 
   const fetchPositions = async (page = 0, size = 6) => {
+    let url = ""
+    console.log(userType);
+    
+    if(userType === 'recruiter'){
+      url = `http://localhost:8080/positions/recruiter?page=${page}&size=${size}`
+    }else{
+      url = `http://localhost:8080/positions?page=${page}&size=${size}`
+    }
     try {
-      const response = await axios.get(
-        `http://localhost:8080/positions?page=${page}&size=${size}`,
+      const response = await axios.get(url,
         {
           headers: { Authorization: `Bearer ${authToken}` },
         }
@@ -239,7 +249,7 @@ const PositionList = () => {
                     <div className="p-6 space-y-6">
                       <div>
                         <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                          <div className="w-2 h-2 bg-slate-500 rounded-full"></div>
                           Description
                         </h4>
                         <p className="text-gray-600 text-sm leading-relaxed line-clamp-3">
@@ -249,7 +259,7 @@ const PositionList = () => {
 
                       <div>
                         <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                          <div className="w-2 h-2 bg-slate-500 rounded-full"></div>
                           Criteria
                         </h4>
                         <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">
@@ -259,7 +269,7 @@ const PositionList = () => {
 
                       <div>
                         <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                          <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
+                          <div className="w-2 h-2 bg-slate-500 rounded-full"></div>
                           Total Opening
                         </h4>
                         <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">
@@ -269,7 +279,7 @@ const PositionList = () => {
 
                       <div>
                         <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                          <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                          <div className="w-2 h-2 bg-slate-500 rounded-full"></div>
                           Required Education (
                           {position.positionRequiredEducations?.length || 0})
                         </h4>
@@ -280,7 +290,7 @@ const PositionList = () => {
                               .map((edu) => (
                                 <span
                                   key={edu.degreeId}
-                                  className="px-2 py-1 bg-orange-100 text-orange-800 rounded-full text-xs font-medium"
+                                  className="px-2 py-1 bg-slate-100 text-slate-800 rounded-full text-xs font-medium"
                                 >
                                   {edu.degree}
                                 </span>
@@ -304,7 +314,7 @@ const PositionList = () => {
 
                       <div>
                         <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                          <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                          <div className="w-2 h-2 bg-slate-500 rounded-full"></div>
                           Requirements (
                           {position.positionRequirements?.length || 0})
                         </h4>
@@ -325,7 +335,7 @@ const PositionList = () => {
                                       req.positionRequirement?.toLowerCase() ===
                                       "mandatory"
                                         ? "bg-red-100 text-red-800"
-                                        : "bg-blue-100 text-blue-800"
+                                        : "bg-slate-100 text-slate-800"
                                     }`}
                                   >
                                     {req.positionRequirement}
@@ -350,40 +360,49 @@ const PositionList = () => {
                         )}
                       </div>
 
-                      <div className="border-t border-gray-100">
-                        <button
-                          onClick={() => {
-                            navigate(
-                              `${position.positionId}`
-                            );
-                          }}
-                          className="mx-3 inline-flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-xl hover:from-slate-700 hover:to-slate-800 transition-all font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                        >
-                          <Eye className="w-4 h-4" />
-                          View Details
-                        </button>
-                        <button
-                          onClick={() => {
-                            navigate(
-                              `${position.positionId}/applications`
-                            );
-                          }}
-                          className="mx-3 inline-flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-xl hover:from-slate-700 hover:to-slate-800 transition-all font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                        >
-                          <Users className="w-4 h-4" />
-                          View Applications
-                        </button>
-                        <button
-                          onClick={() => {
-                            navigate(
-                              `${position.positionId}/applications/shortlist`
-                            );
-                          }}
-                          className="mx-3 inline-flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-xl hover:from-slate-700 hover:to-slate-800 transition-all font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                        >
-                          <Users className="w-4 h-4" />
-                          View Shortlist
-                        </button>
+                      <div className="border-t border-gray-100 pt-4">
+                        <div className="flex items-center justify-center gap-3">
+                          <button
+                            onClick={() => navigate(`${position.positionId}`)}
+                            className="group relative p-3 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-xl hover:from-slate-700 hover:to-slate-800 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                            title="View Details"
+                          >
+                            <Eye className="w-5 h-5" />
+                            <span className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                              View Details
+                            </span>
+                          </button>
+                          <button
+                            onClick={() => navigate(`${position.positionId}/applications`)}
+                            className="group relative p-3 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-xl hover:from-slate-700 hover:to-slate-800 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                            title="Applications"
+                          >
+                            <FileText className="w-5 h-5" />
+                            <span className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                              Applications
+                            </span>
+                          </button>
+                          <button
+                            onClick={() => navigate(`${position.positionId}/applications/shortlist`)}
+                            className="group relative p-3 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-xl hover:from-slate-700 hover:to-slate-800 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                            title="Shortlist"
+                          >
+                            <UserCheck className="w-5 h-5" />
+                            <span className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                              Shortlist
+                            </span>
+                          </button>
+                          <button
+                            onClick={() => navigate(`${position.positionId}/applications/mapped`)}
+                            className="group relative p-3 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-xl hover:from-slate-700 hover:to-slate-800 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                            title="Mapped Applications"
+                          >
+                            <Target className="w-5 h-5" />
+                            <span className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                              Mapped
+                            </span>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
