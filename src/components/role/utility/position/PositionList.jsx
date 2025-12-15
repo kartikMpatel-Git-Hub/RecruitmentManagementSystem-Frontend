@@ -40,8 +40,6 @@ const PositionList = () => {
 
   const fetchPositions = async (page = 0, size = 6) => {
     let url = ""
-    console.log(userType);
-    
     if(userType === 'recruiter'){
       url = `http://localhost:8080/positions/recruiter?page=${page}&size=${size}`
     }else{

@@ -686,7 +686,6 @@ const SinglePosition = () => {
                       className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-slate-400 bg-gray-50 focus:bg-white"
                     />
                   </div>
-                  {/* private Integer positionMinYearsOfExperience; */}
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-3">
                       Type

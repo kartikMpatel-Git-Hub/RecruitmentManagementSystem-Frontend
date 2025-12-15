@@ -55,7 +55,6 @@ function InterviewDetail() {
       const interviewData = response.data;
       setInterview(interviewData);
 
-      // Fetch candidate details
       if (interviewData.candidateId) {
         const candidateResponse = await axios.get(
           `http://localhost:8080/candidates/${interviewData.candidateId}`,
@@ -67,7 +66,6 @@ function InterviewDetail() {
         setCandidate(candidateResponse.data);
       }
 
-      // Fetch position details
       if (interviewData.positionId) {
         const positionResponse = await axios.get(
           `http://localhost:8080/positions/${interviewData.positionId}`,
@@ -123,7 +121,6 @@ function InterviewDetail() {
   return (
     <InterviewerLayout>
       <div className="space-y-6">
-        {/* Header */}
         <div className="flex items-center gap-3">
           <div className="p-2 bg-purple-100 rounded-lg">
             <Video className="w-6 h-6 text-purple-600" />
@@ -138,7 +135,6 @@ function InterviewDetail() {
           </div>
         </div>
 
-        {/* Interview Information */}
         <div className="bg-white rounded-lg shadow-sm border p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <Video className="w-5 h-5 text-purple-600" />
@@ -208,7 +204,6 @@ function InterviewDetail() {
           </div>
         </div>
 
-        {/* Candidate Information */}
         {candidate && (
           <div className="bg-white rounded-lg shadow-sm border p-6">
             <div className="flex items-center justify-between mb-4">
@@ -286,7 +281,6 @@ function InterviewDetail() {
           </div>
         )}
 
-        {/* Position Information */}
         {position && (
           <div className="bg-white rounded-lg shadow-sm border p-6">
             <div className="flex items-center justify-between mb-4">
@@ -342,7 +336,6 @@ function InterviewDetail() {
           </div>
         )}
 
-        {/* Interviewers & Feedback */}
         {interview?.interviewers?.length > 0 && (
           <div className="bg-white rounded-lg shadow-sm border p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
@@ -352,7 +345,6 @@ function InterviewDetail() {
             <div className="space-y-6">
               {interview.interviewers.map((interviewerObj, index) => {
                 const interviewer = interviewerObj.interviewer;
-                console.log(interviewer);
                 const feedback = interviewerObj.interviewerFeedback;
                 return interviewer ? (
                   <div key={interviewer.userId} className="border rounded-lg p-4">
@@ -373,7 +365,6 @@ function InterviewDetail() {
                         >
                           Provide Feedback
                         </button>
-                        // http://localhost:5173/interviewer/5/interviews/3/feedback
                       )}
                     </div>
                     

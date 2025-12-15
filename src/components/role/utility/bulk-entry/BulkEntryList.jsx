@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 import { toast } from "react-toastify";
 import Layout from "../Layout";
-// import { bulkEntryService } from "../../../services/bulkEntryService";
 
 const BulkEntryList = () => {
   const { authToken, profileData } = useContext(AuthContext);
@@ -47,10 +46,8 @@ const BulkEntryList = () => {
       const response = await axios.get(`http://localhost:8080/bulk-entries/status/${jobId}`, {
         headers: { Authorization: `Bearer ${authToken}` },
       });
-      console.log(response);
       toast.success("Job Detail Get Successfully!");
     } catch (error) {
-      console.log(error);
       toast.error("Error While getting Job!");
     }
   };
@@ -107,13 +104,11 @@ const BulkEntryList = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
-      console.log(res);
       toast.success("File uploaded successfully!");
       setShowUploadModal(false);
       setFile(null);
       fetchJobs();
     } catch (err) {
-      console.log(err);
       setError("Upload failed. Please try again.");
       toast.error("Upload failed!");
     } finally {
@@ -272,7 +267,6 @@ const BulkEntryList = () => {
     <Layout>
       <JobContent />
 
-      {/* Upload Modal */}
       {showUploadModal && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <div

@@ -258,6 +258,7 @@ function DashboardData({ dashboardData }) {
             <div>
               <p className="text-gray-600 text-sm font-semibold">Total Users</p>
               <p className="text-3xl font-bold text-gray-900 mt-2">{summaryStats.totalUsers || 0}</p>
+              <p className="text-green-600 text-xs mt-1">+{summaryStats.totalRequests || 0} new Request</p>
             </div>
             <div className="w-14 h-14 bg-gradient-to-r from-slate-100 to-slate-200 rounded-2xl flex items-center justify-center">
               <Users className="w-7 h-7 text-slate-600" />

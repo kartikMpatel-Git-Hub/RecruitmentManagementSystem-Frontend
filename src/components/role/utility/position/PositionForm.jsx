@@ -291,22 +291,6 @@ function PositionForm({handleSubmit,handleChange,position,handleStatusChange,han
                           ))}
                         </select>
                       </div>
-                      
-
-                      {/* <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Position</label>
-                        <input
-                          type="number"
-                          name="position"
-                          value={req.position}
-                          onChange={(e) => handleRequirementChange(index, e)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all"
-                          placeholder="Position order"
-                          min="1"
-                          required
-                        />
-                      </div> */}
-
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">Requirement Type</label>
                         <div className="flex gap-2">
@@ -326,7 +310,6 @@ function PositionForm({handleSubmit,handleChange,position,handleStatusChange,han
                             type="button"
                             onClick={() => removeRequirement(index)}
                             className="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-                            // disabled={position.positionRequirements.length === 1}
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>

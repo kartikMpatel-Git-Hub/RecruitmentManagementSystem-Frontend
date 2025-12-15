@@ -44,7 +44,6 @@ function PositionShortlistedApplications() {
         url,
         { headers: { Authorization: `Bearer ${authToken}` } }
       );
-      console.log(response.data.data);
       setShortlistedApplications(response.data.data || []);
     } catch (error) {
       console.error("Error fetching shortlisted applications:", error);
@@ -165,7 +164,6 @@ function PositionShortlistedApplications() {
   return (
     <Layout>
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-8 mb-8">
           <div className="flex items-center gap-4">
             <button

@@ -159,6 +159,7 @@ function AdminProfile() {
   };
 
   const handleProfileSubmit = async (e) => {
+    setLoading(true)
     e.preventDefault();
     if (validateProfile()) {
       try {
@@ -211,6 +212,9 @@ function AdminProfile() {
           error?.response?.data || "Profile update failed!",
           { position: "top-right", autoClose: 3000 }
         );
+      }
+      finally{
+        setLoading(false)
       }
     }
   };
@@ -384,8 +388,12 @@ function AdminProfile() {
 
                     <button
                       type="submit"
-                      disabled={!loading}
-                      className="w-full bg-gradient-to-r from-slate-800 to-slate-900 text-white py-4 px-6 rounded-2xl hover:from-slate-900 hover:to-black focus:outline-none focus:ring-4 focus:ring-slate-300 transition-all duration-300 font-semibold text-lg shadow-lg hover:shadow-2xl transform hover:-translate-y-1"
+                      disabled={loading}
+                      className={`w-full bg-gradient-to-r text-white py-4 px-6 rounded-2xl 
+                        ${!loading
+                          ? "from-slate-800 to-slate-900 hover:from-slate-900 hover:to-black focus:outline-none focus:ring-4 focus:ring-slate-300 transition-all duration-300 font-semibold text-lg shadow-lg hover:shadow-2xl transform hover:-translate-y-1"
+                          : "from-slate-400 to-slate-300 "
+                        }`}
                     >
                       <Save className="w-5 h-5 mr-2 inline" />
                       Update Profile

@@ -1,4 +1,3 @@
-// src/components/Applications/shortlisted/RoundSection/PassRoundModal.jsx
 import React from "react";
 import ReactDOM from "react-dom";
 import { Star, X } from "lucide-react";

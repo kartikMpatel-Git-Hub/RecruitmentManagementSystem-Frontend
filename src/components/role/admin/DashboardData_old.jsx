@@ -305,7 +305,6 @@ function DashboardData({ dashboardData }) {
         </div>
       </div>
 
-      {/* Applications Timeline */}
       <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-8 mb-10">
         <div className="flex items-center gap-3 mb-6">
           <TrendingUp className="w-6 h-6 text-slate-600" />
@@ -359,7 +358,6 @@ function DashboardData({ dashboardData }) {
         </div>
       </div>
 
-      {/* Degrees and Universities */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
         <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-8">
           <div className="flex items-center gap-3 mb-6">
@@ -456,7 +454,6 @@ function DashboardData({ dashboardData }) {
         </div>
       </div>
 
-      {/* Interview Outcomes */}
       <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-8 mb-10">
         <div className="flex items-center gap-3 mb-6">
           <Calendar className="w-6 h-6 text-slate-600" />
@@ -510,7 +507,6 @@ function DashboardData({ dashboardData }) {
         </div>
       </div>
 
-      {/* Upcoming Interviews */}
       <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-8 mb-10">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
@@ -554,19 +550,12 @@ function DashboardData({ dashboardData }) {
                     </span>
                   </div>
                 </div>
-                {/* <button 
-                  onClick={() => window.open(interview.meetingLink, '_blank')}
-                  className="w-full mt-4 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-                >
-                  Join Meeting
-                </button> */}
               </div>
             ))}
           </div>
         )}
       </div>
 
-      {/* Top Candidates by Experience */}
       <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-8 mb-10">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">

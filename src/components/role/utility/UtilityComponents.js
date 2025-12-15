@@ -7,6 +7,8 @@ import UniversityList from "./university/UniversityList";
 import User from "./user/User";
 import SingleUserProfile from "./user/SingleUserProfile";
 
+import RegisterRequest from "./registerRequest/RegisterRequest"
+
 import SingleCandidateProfile from "./candidate/SingleCandidateProfile";
 import Candidate from "./candidate/Candidate";
 
@@ -30,6 +32,8 @@ import InterviewFeedback from "./interview/InterviewFeedback"
 import BulkEntry from "./bulk-entry/BulkEntry";
 import BulkEntryList from "./bulk-entry/BulkEntryList";
 import BulkStatus from "./bulk-entry/BulkStatus";
+
+import DocumentVerification from "./applications/document-varification/DocumentVerification";
 
 export {
   BulkEntry,
@@ -55,5 +59,7 @@ export {
   Interview,
   InterviewDetail,
   InterviewFeedback,
-  AllMappedApplications
+  AllMappedApplications,
+  RegisterRequest,
+  DocumentVerification
 };

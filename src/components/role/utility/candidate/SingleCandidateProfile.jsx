@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { AuthContext } from "../../../context/AuthContext";
-import { Download } from "lucide-react";
+import { Download, User } from "lucide-react";
 import axios from "axios";
 import Layout from "../Layout";
 
@@ -55,11 +55,8 @@ function SingleCandidateProfile() {
   };
 
   useEffect(() => {
-    if (id) 
-      fetchCandidate();
+    if (id) fetchCandidate();
   }, [id]);
-
- 
 
   const formatDate = (dateArray) => {
     if (!dateArray || dateArray.length !== 3) return "N/A";
@@ -73,11 +70,16 @@ function SingleCandidateProfile() {
         candidate ? (
           <div className="bg-white rounded-3xl shadow-xl border border-gray-200 overflow-hidden">
             <div className="bg-gradient-to-r from-slate-800 to-slate-900 p-6 flex flex-col md:flex-row items-center md:items-start gap-6">
-              <img
-                src={candidate.userImageUrl || "/default-avatar.png"}
-                alt="Profile"
-                className="w-24 h-24 rounded-full border-4 border-white shadow-lg object-cover"
-              />
+              {candidate.userImageUrl ? (
+                <img
+                  src={candidate.userImageUrl || "/default-avatar.png"}
+                  alt="Profile"
+                  className="w-24 h-24 rounded-full border-4 border-white shadow-lg object-cover"
+                />
+              ) : (
+                <User className="w-24 h-24 rounded-full border-2 text-white border-white shadow-lg object-cover bg-slate-800 " />
+              )}
+
               <div className="text-center md:text-left flex-1">
                 <h2 className="text-2xl font-bold text-white">
                   {candidate.candidateFirstName} {candidate.candidateMiddleName}{" "}
@@ -252,7 +254,7 @@ function SingleCandidateProfile() {
           <div className="mt-90 flex items-center justify-center">
             <div className="text-center">
               <h2 className="text-2xl font-bold text-gray-900">
-                Candidate not found With Id : 
+                Candidate not found With Id :
                 <span className="text-red-500">{id}</span>
                 <br />
                 Please check the ID again or contact the admin.

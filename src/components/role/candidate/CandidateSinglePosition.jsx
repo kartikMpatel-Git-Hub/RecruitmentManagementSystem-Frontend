@@ -47,7 +47,7 @@ const CandidateSinglePosition = () => {
         ...response.data,
         applied: applied.includes(response.data.positionId),
       };
-      console.log(updatedPosition);
+      // console.log(updatedPosition);
       setPosition(updatedPosition);
     } catch (error) {
       console.error("Error fetching position:", error);

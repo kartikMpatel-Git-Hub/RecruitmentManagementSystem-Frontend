@@ -127,7 +127,6 @@ const BulkStatus = () => {
                 </div>
               </div>
 
-              {/* Progress Bar */}
               <div className="mb-6">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm font-medium text-gray-700">Processing Progress</span>
@@ -141,7 +140,6 @@ const BulkStatus = () => {
                 </div>
               </div>
 
-              {/* Download Section */}
               {jobData.status === 'COMPLETED' && (
                 <div className="flex gap-4 mb-6">
                   {jobData.successFilePath && (
@@ -183,8 +181,6 @@ const BulkStatus = () => {
                   Refresh
                 </button>
               </div>
-
-              {/* Filters */}
               <div className="flex flex-col sm:flex-row gap-4 mb-6">
                 <div className="flex items-center gap-2">
                   <Filter className="w-4 h-4 text-slate-600" />

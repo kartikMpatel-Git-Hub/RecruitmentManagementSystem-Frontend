@@ -171,22 +171,6 @@ function PositionModal({
                           </p>
                         </div>
                       </div>
-
-                      {/* {position.positionStatus?.status !== "OPEN" && (
-                            <div className="bg-white rounded-2xl p-6 shadow-sm border border-red-200">
-                              <h3 className="text-xl font-bold text-red-900 mb-4 flex items-center gap-3">
-                                <div className="p-2 bg-red-100 rounded-xl">
-                                  <Info className="w-5 h-5 text-red-600" />
-                                </div>
-                                Status Information
-                              </h3>
-                              <div className="bg-gradient-to-br from-red-50 to-pink-50 rounded-xl p-5 border border-red-100">
-                                <p className="text-red-700 leading-relaxed">
-                                  {position.positionStatus.positionStatusReason}
-                                </p>
-                              </div>
-                            </div>
-                          )} */}
                     </div>
                   </div>
 

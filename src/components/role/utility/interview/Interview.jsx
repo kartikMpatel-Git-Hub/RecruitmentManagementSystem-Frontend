@@ -33,7 +33,6 @@ function Interview() {
       );
       const data = response.data.data || [];
       setInterviews(data);
-      console.log(data);
       setFilteredInterviews(data);
     } catch (error) {
       console.error("Error fetching interviews:", error);
@@ -112,7 +111,6 @@ function Interview() {
   return (
     <InterviewerLayout>
       <div className="space-y-6">
-        {/* Page Header */}
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-purple-100 rounded-lg">
@@ -132,7 +130,6 @@ function Interview() {
           </div>
         </div>
 
-        {/* Filters */}
         <div className="bg-white rounded-lg shadow-sm p-4">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex items-center gap-2">
@@ -161,7 +158,6 @@ function Interview() {
           </div>
         </div>
 
-        {/* Interviews Grid */}
         {filteredInterviews.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredInterviews.map((interview) => (
@@ -170,7 +166,6 @@ function Interview() {
                 className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow"
               >
                 <div className="p-6">
-                  {/* Header */}
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                       <Video className="w-5 h-5 text-purple-600" />
@@ -187,7 +182,6 @@ function Interview() {
                     </span>
                   </div>
 
-                  {/* Details */}
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-sm text-gray-600">
                       <Calendar className="w-4 h-4" />
@@ -205,7 +199,6 @@ function Interview() {
                     </div>
                   </div>
 
-                  {/* Interviewers */}
                   {interview.interviewers?.length > 0 && (
                     <div className="mt-4">
                       <div className="text-xs font-medium text-gray-700 mb-2">
@@ -234,7 +227,6 @@ function Interview() {
                     </div>
                   )}
 
-                  {/* Feedback */}
                   {isInterviewCompleted(interview) && interview.interviewers?.[0]?.interviewerFeedback
                     ?.interviewFeedback && (
                     <div className="mt-4 p-3 bg-gray-50 rounded-lg">
@@ -251,7 +243,6 @@ function Interview() {
                     </div>
                   )}
 
-                  {/* Actions */}
                   <div className="mt-4 pt-4 border-t space-y-2">
                     <div className="flex gap-2">
                       <button

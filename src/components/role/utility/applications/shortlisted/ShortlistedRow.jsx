@@ -1,4 +1,3 @@
-// src/components/Applications/shortlisted/ShortlistRow.jsx
 import React from "react";
 import { Eye, ChevronDown, Clock, Briefcase, User } from "lucide-react";
 import RoundSection from "./rounds/RoundSection";

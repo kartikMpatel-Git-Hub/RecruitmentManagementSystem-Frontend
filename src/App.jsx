@@ -44,6 +44,8 @@ import {
   InterviewDetail,
   InterviewFeedback,
   AllMappedApplications,
+  RegisterRequest,
+  DocumentVerification,
 } from "./components/role/utility/UtilityComponents";
 import {
   ReviewerDashboard,
@@ -69,6 +71,10 @@ function App() {
 
       <Route path="/admin">
         <Route path="" element={<Dashboard />} />
+
+        <Route path="register-request">
+          <Route path="" element={<RegisterRequest/>}/>
+        </Route>
 
         <Route path="bulk-entry">
           <Route path="" element={<BulkEntryList />}/>
@@ -172,6 +178,10 @@ function App() {
             path=":positionId/applications/mapped"
             element={<AllMappedApplications />}
           />
+        </Route>
+
+        <Route path="document-verification">
+          <Route path="" element={<DocumentVerification/>} />
         </Route>
       </Route>
 

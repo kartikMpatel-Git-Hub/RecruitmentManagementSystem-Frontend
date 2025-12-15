@@ -57,6 +57,7 @@ function AllShortlistedApplications() {
   useEffect(() => {
     if (!authToken) 
       return navigate("/login");
+    
     fetchShortlistedApplications();
   }, [authToken, navigate]);
 
@@ -84,7 +85,6 @@ function AllShortlistedApplications() {
     }
   };
 
-  // ───── Hold / Unhold Application ─────
   const handleHoldStatus = async (e) => {
     if (
       !e ||
@@ -144,7 +144,6 @@ function AllShortlistedApplications() {
     setEditHoldStatus(null);
   };
 
-  // ───── Profile Modal ─────
   const openProfileModal = async (candidateId) => {
     setProfileLoading(true);
     setShowProfileModal(true);
@@ -182,7 +181,6 @@ function AllShortlistedApplications() {
     setCandidateSkills([]);
   };
 
-  // ───── Position Modal ─────
   const openPositionModal = async (positionId) => {
     if (!positionId) return;
     setPositionLoading(true);

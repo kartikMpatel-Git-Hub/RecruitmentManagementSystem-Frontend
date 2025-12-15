@@ -55,7 +55,6 @@ function InterviewFeedback() {
       );
       navigate(-1);
     } catch (error) {
-      console.log(error);
       console.error("Error saving feedback:", error);
     }
     setLoading(false);
@@ -77,12 +76,9 @@ function InterviewFeedback() {
     );
   }
 
-  // if(feedbackData)
-
   return (
     <InterviewerLayout>
       <div className="max-w-4xl mx-auto space-y-6">
-        {/* Header */}
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate(-1)}
@@ -105,7 +101,6 @@ function InterviewFeedback() {
           </div>
         </div>
 
-        {/* Skill Ratings */}
         <div className="bg-white rounded-lg shadow-sm border p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
             Skill Ratings
@@ -151,7 +146,6 @@ function InterviewFeedback() {
           </div>
         </div>
 
-        {/* Overall Feedback */}
         <div className="bg-white rounded-lg shadow-sm border p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
             Overall Interview Feedback
@@ -165,7 +159,6 @@ function InterviewFeedback() {
           />
         </div>
 
-        {/* Submit Button */}
         <div className="flex justify-end">
           <button
             onClick={()=>handleSubmit(feedbackData.interviewFeedbackId)}

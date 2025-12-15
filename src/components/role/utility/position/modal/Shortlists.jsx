@@ -107,7 +107,6 @@ function Shortlists({
                     >
                       <User className="w-4 h-4" />
                     </button>
-                    {/* {app.applicationRounds?.length > 0 && ( */}
                     <button
                       onClick={() => toggleRounds(app.applicationId)}
                       className="m-1 inline-flex items-center gap-2 px-2 py-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-lg hover:from-slate-700 hover:to-slate-800 transition-all font-medium shadow-sm"
@@ -120,7 +119,6 @@ function Shortlists({
                         }`}
                       />
                     </button>
-                    {/* )} */}
                   </td>
                 </tr>
                 {expandedRounds[app.applicationId] && (
