@@ -24,7 +24,7 @@ import Applications from "./modal/Applications";
 
 function AllApplications() {
   const navigate = useNavigate();
-  const { authToken } = useContext(AuthContext);
+  const { authToken ,userType} = useContext(AuthContext);
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showStatusModal, setShowStatusModal] = useState(false);
@@ -45,9 +45,14 @@ function AllApplications() {
   });
 
   const fetchApplications = async () => {
-    // setLoading(true)
+    let url = ""
+    if(userType === "recruiter")
+      url = `http://localhost:8080/applications/recruiter`
+    else
+      url = `http://localhost:8080/applications`
+    setLoading(true)
     try {
-      const response = await axios.get(`http://localhost:8080/applications`, {
+      const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${authToken}` },
       });
       setApplications(response.data.data || []);
@@ -59,7 +64,8 @@ function AllApplications() {
   };
 
   useEffect(() => {
-    if (!authToken) return navigate("/login");
+    if (!authToken) 
+      return navigate("/login");
     fetchApplications();
   }, [authToken]);
 
@@ -254,7 +260,7 @@ function AllApplications() {
             >
               <Star className="w-4 h-4" />
               View Shortlists
-            </button>
+            </button> 
           </div>
         </div>
 

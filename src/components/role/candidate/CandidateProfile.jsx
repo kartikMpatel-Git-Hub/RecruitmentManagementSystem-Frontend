@@ -61,7 +61,7 @@ function CandidateProfile() {
           headers: { Authorization: `Bearer ${authToken}` },
         }
       );
-      console.log(response);
+      // console.log(response);
 
       if (!response.ok) throw new Error("Download failed");
 
@@ -147,7 +147,7 @@ function CandidateProfile() {
       });
       setUniversities(response.data.data);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
 
@@ -385,7 +385,9 @@ function CandidateProfile() {
         percentage: parseFloat(percentage),
         passingYear: parseInt(passingYear),
       };
-
+      
+      // console.log(educationData);
+      
       await axios.put(
         `http://localhost:8080/candidate-educations/${educationId}`,
         educationData,
@@ -401,7 +403,7 @@ function CandidateProfile() {
         autoClose: 3000,
       });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       toast.error(
         error?.response?.data?.message || "Failed to update education!",
         { position: "top-right", autoClose: 3000 }
@@ -438,7 +440,7 @@ function CandidateProfile() {
         autoClose: 3000,
       });
     } catch (error) {
-      console.log(error.response);
+      // console.log(error.response);
 
       toast.error(
         error?.response?.data?.message || "Failed to update profile!",
@@ -464,7 +466,7 @@ function CandidateProfile() {
         autoClose: 3000,
       });
     } catch (error) {
-      console.log(error);
+      // // console.log(error);
       toast.error(
         error?.response?.data?.message || "Failed to Delete education!",
         { position: "top-right", autoClose: 3000 }

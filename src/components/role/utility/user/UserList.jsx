@@ -1,4 +1,4 @@
-import { Users, Trash2, Power, PowerOff,Eye } from "lucide-react";
+import { Users, Trash2, Power, PowerOff,Eye, User } from "lucide-react";
 
 function UserList({ users, onUpdate, onDelete, onView}) {
   const getRoleClasses = (role) => {
@@ -69,7 +69,7 @@ function UserList({ users, onUpdate, onDelete, onView}) {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center rounded-full bg-gradient-to-r from-slate-800 to-slate-900 shadow-lg">
-                        <Users className="w-8 h-8 text-white" />
+                        <User className="w-8 h-8 text-white" />
                       </div>
                     )}
                   </div>

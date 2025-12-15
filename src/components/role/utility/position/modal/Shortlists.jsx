@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Eye, ChevronDown, Clock } from "lucide-react";
+import { Eye,Briefcase, ChevronDown, Clock, User } from "lucide-react";
 import Round from "./Round";
 
 function Shortlists({
@@ -95,22 +95,22 @@ function Shortlists({
                   <td className="flex px-6 py-4 text-center">
                     <button
                       onClick={() => openPositionModal(app?.positionId)}
-                      className="m-1 inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-lg hover:from-slate-700 hover:to-slate-800 transition-all font-medium shadow-sm"
+                      className="m-1 inline-flex items-center gap-2 px-2 py-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-lg hover:from-slate-700 hover:to-slate-800 transition-all font-medium shadow-sm"
+                      title="view Position"
                     >
-                      <Eye className="w-4 h-4" />
-                      View Position
+                      <Briefcase className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => openProfileModal(app?.candidateId)}
-                      className="m-1 inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-lg hover:from-slate-700 hover:to-slate-800 transition-all font-medium shadow-sm"
+                      className="m-1 inline-flex items-center gap-2 px-2 py-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-lg hover:from-slate-700 hover:to-slate-800 transition-all font-medium shadow-sm"
+                      title="view Candidate"
                     >
-                      <Eye className="w-4 h-4" />
-                      View Profile
+                      <User className="w-4 h-4" />
                     </button>
-                    {/* {app.applicationRounds?.length > 0 && ( */}
                     <button
                       onClick={() => toggleRounds(app.applicationId)}
-                      className="m-1 inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-lg hover:from-slate-700 hover:to-slate-800 transition-all font-medium shadow-sm"
+                      className="m-1 inline-flex items-center gap-2 px-2 py-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-lg hover:from-slate-700 hover:to-slate-800 transition-all font-medium shadow-sm"
+                      title="Toggle Rounds"
                     >
                       <Clock className="w-4 h-4" />
                       <ChevronDown
@@ -118,9 +118,7 @@ function Shortlists({
                           expandedRounds[app.applicationId] ? "rotate-180" : ""
                         }`}
                       />
-                      Rounds
                     </button>
-                    {/* )} */}
                   </td>
                 </tr>
                 {expandedRounds[app.applicationId] && (

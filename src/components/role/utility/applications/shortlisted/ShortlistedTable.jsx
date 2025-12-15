@@ -34,6 +34,9 @@ function ShortlistTable({
               Candidate ID
             </th>
             <th className="px-6 py-4 text-left text-sm font-semibold text-white">
+              PositionId ID
+            </th>
+            <th className="px-6 py-4 text-left text-sm font-semibold text-white">
               Status
             </th>
             <th className="px-6 py-4 text-left text-sm font-semibold text-white">

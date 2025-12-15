@@ -73,9 +73,8 @@ function Login() {
       else
         setError("Invalid Role !");
     } catch (err) {
-      console.log(err);
       setError(
-        err.response?.data.message || "Login failed. Please try again."
+        err.response?.data.message + ", Or Under Evaluation" || "Login failed. Please try again."
       );
     }finally{
       setLoading(false)

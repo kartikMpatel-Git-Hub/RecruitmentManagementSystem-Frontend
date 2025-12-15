@@ -78,7 +78,6 @@ function AllShortlistedApplications() {
       !editHoldStatus.applicationStatusId
     )
       return;
-    console.log(editHoldStatus);
     e.preventDefault();
     try {
       await axios.patch(
@@ -95,7 +94,6 @@ function AllShortlistedApplications() {
       closeHoldStatus()
       fetchShortlistedApplications()
     } catch (error) {
-      console.log(error);
       toast.error("Failed to load Hold Application");
     }
   };

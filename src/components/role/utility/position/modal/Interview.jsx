@@ -63,7 +63,6 @@ function Interview({ app, round }) {
         );
 
     if (now > interviewEndTime && interview.interviewStatus === "SCHEDULED") {
-      console.log("HERE");
       interviewComplete(interview);
       return true;
     }
@@ -138,13 +137,11 @@ function Interview({ app, round }) {
   };
 
   const handleAddInterview = async () => {
-    console.log(newInterview);
     if (!authToken) navigator("/login");
     try {
       const res = await axios.post("http://localhost:8080/interviews/", newInterview, {
         headers: { Authorization: `Bearer ${authToken}` },
       });
-      console.log(res);
       toast.success("Interview added successfully!");
       setNewInterview({
         roundId: round.roundId,
@@ -159,13 +156,11 @@ function Interview({ app, round }) {
       setShowAddForm(false);
       fetchInterviews();
     } catch (error) {
-      console.log(error);
       toast.error(error.response.data);
     }
   };
 
   const handleEditInterview = (interview) => {
-    // Ensure interviewerIds is properly set for editing
     const interviewerIds =
       interview.interviewers?.map((i) => i.interviewer?.userId) ||
       interview.interviewerIds ||
@@ -173,13 +168,11 @@ function Interview({ app, round }) {
     setEditingInterview({
       ...interview,
       interviewerIds: interviewerIds,
-      // interviewDate: interview.interviewDate
     });
   };
 
   const handleSaveInterview = async (interviewId) => {
     try {
-      console.log(editingInterview);
       await axios.put(
         `http://localhost:8080/interviews/${interviewId}`,
         editingInterview,
@@ -191,7 +184,6 @@ function Interview({ app, round }) {
       fetchInterviews();
       setEditingInterview(null);
     } catch (error) {
-      console.log(error);
       toast.error("Failed to update interview");
     }
   };
@@ -342,7 +334,6 @@ function Interview({ app, round }) {
                     </button>
                   </div>
 
-                  {/* Interview Info */}
                   <div className="bg-gray-50 rounded-lg p-4 mb-6">
                     <h4 className="font-semibold text-gray-900 mb-3">
                       Interview Information
@@ -432,7 +423,6 @@ function Interview({ app, round }) {
                     </div>
                   </div>
 
-                  {/* Interviewers & Feedback */}
                   <div className="space-y-4">
                     <h4 className="font-semibold text-gray-900">
                       Interviewers & Feedback
@@ -518,7 +508,6 @@ function Interview({ app, round }) {
                                             </div>
                                             {skillRating.skillFeedback && (
                                               <div className="mt-1">
-                                                {/* <p className="text-xs text-gray-600 mb-1">Feedback:</p> */}
                                                 <p className="text-sm text-gray-700 bg-gray-100 p-2 rounded">
                                                   {skillRating.skillFeedback}
                                                 </p>
@@ -640,18 +629,6 @@ function Interview({ app, round }) {
                       />
                     </div>
                   </div>
-                  {/* <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-3">Interview Status</label>
-                    <select
-                      value={newInterview.interviewStatus}
-                      onChange={(e) => setNewInterview({...newInterview, interviewStatus: e.target.value})}
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-purple-400 bg-gray-50 focus:bg-white"
-                    >
-                      <option value="SCHEDULED">Scheduled</option>
-                      <option value="COMPLETED">Completed</option>
-                      <option value="CANCELLED">Cancelled</option>
-                    </select>
-                  </div> */}
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-3">
                       Number Of Interviewers

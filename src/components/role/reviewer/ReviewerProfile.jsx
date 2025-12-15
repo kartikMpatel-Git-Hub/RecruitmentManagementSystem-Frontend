@@ -15,12 +15,13 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ReviewerLayout from "./ReviewerLayout";
+import { FaSlack } from "react-icons/fa";
 
 function RecruiterProfile() {
   const navigate = useNavigate();
   const { authToken } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState("profile");
-
+  const [loading,setLoading] = useState(false)
   const [profileData, setProfileData] = useState({
     userId: "",
     userName: "",
@@ -161,6 +162,7 @@ function RecruiterProfile() {
   };
 
   const handleProfileSubmit = async (e) => {
+    setLoading(true)
     e.preventDefault();
     if (validateProfile()) {
       try {
@@ -213,6 +215,8 @@ function RecruiterProfile() {
           position: "top-right",
           autoClose: 3000,
         });
+      }finally{
+        setLoading(false)
       }
     }
   };
@@ -333,6 +337,7 @@ function RecruiterProfile() {
                       <input
                         type="text"
                         name="userName"
+                        disabled
                         value={profileData.userName}
                         onChange={handleProfileChange}
                         className={`w-full pl-12 pr-4 py-4 border-2 rounded-2xl focus:outline-none focus:ring-0 transition-all duration-300 text-gray-400 placeholder-gray-500 ${
@@ -382,7 +387,13 @@ function RecruiterProfile() {
 
                   <button
                     type="submit"
-                    className="w-full bg-gradient-to-r from-slate-800 to-slate-900 text-white py-4 px-6 rounded-2xl hover:from-slate-900 hover:to-black focus:outline-none focus:ring-4 focus:ring-slate-300 transition-all duration-300 font-semibold text-lg shadow-lg hover:shadow-2xl transform hover:-translate-y-1"
+                    disabled={loading}
+                    className={`w-full bg-gradient-to-r text-white py-4 px-6 rounded-2xl 
+                                          ${
+                                            !loading
+                                              ? "from-slate-800 to-slate-900 hover:from-slate-900 hover:to-black focus:outline-none focus:ring-4 focus:ring-slate-300 transition-all duration-300 font-semibold text-lg shadow-lg hover:shadow-2xl transform hover:-translate-y-1"
+                                              : "from-slate-400 to-slate-300 "
+                                          }`}
                   >
                     <Save className="w-5 h-5 mr-2 inline" />
                     Update Profile

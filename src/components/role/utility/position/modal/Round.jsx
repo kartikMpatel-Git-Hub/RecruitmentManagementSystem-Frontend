@@ -90,7 +90,6 @@ function Round({ app, fetchShortlistedApplications, openHoldStatus }) {
   const isRoundCompleted = (round) => {
     if (round.roundStatus?.roundStatus === "COMPLETED") 
       return true;
-    console.log(round);
     
     const now = new Date();
     const roundDate = Array.isArray(round.roundDate)
@@ -135,7 +134,6 @@ function Round({ app, fetchShortlistedApplications, openHoldStatus }) {
 
   const handlePassRound = async () => {
     try {
-      console.log(passFormData);
       const res = await axios.put(
         `http://localhost:8080/rounds/pass/${passingRoundId}`,
         {
@@ -147,7 +145,6 @@ function Round({ app, fetchShortlistedApplications, openHoldStatus }) {
           headers: { Authorization: `Bearer ${authToken}` },
         }
       );
-      console.log(res);
       toast.success("Result Given !");
       setShowPassForm(false);
       setPassFormData({
@@ -184,9 +181,6 @@ function Round({ app, fetchShortlistedApplications, openHoldStatus }) {
     }
   };
 
-  // ------------------------------
-  // PORTAL MODAL (Add Round)
-  // ------------------------------
   const AddRoundModal =
     showAddForm &&
     ReactDOM.createPortal(
@@ -212,7 +206,6 @@ function Round({ app, fetchShortlistedApplications, openHoldStatus }) {
             </div>
 
             <div className="space-y-6">
-              {/* FORM FIELDS */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-semibold">
@@ -333,10 +326,6 @@ function Round({ app, fetchShortlistedApplications, openHoldStatus }) {
       </div>,
       document.body
     );
-
-  // ------------------------------
-  // PORTAL MODAL (Edit Round)
-  // ------------------------------
   const EditRoundModal =
     editingRound &&
     ReactDOM.createPortal(
@@ -358,7 +347,6 @@ function Round({ app, fetchShortlistedApplications, openHoldStatus }) {
               </button>
             </div>
 
-            {/* Fields */}
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -711,7 +699,6 @@ function Round({ app, fetchShortlistedApplications, openHoldStatus }) {
       {AddRoundModal}
       {EditRoundModal}
 
-      {/* Pass Round Modal */}
       {showPassForm &&
         ReactDOM.createPortal(
           <div className="fixed inset-0 z-50 overflow-y-auto">

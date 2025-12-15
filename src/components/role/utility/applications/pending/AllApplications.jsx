@@ -2,53 +2,62 @@ import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../../../../context/AuthContext";
-import { ArrowLeft, Star, Clock, CheckCircle, XCircle, Pause } from "lucide-react";
+import {
+  User,
+  Eye,
+  ArrowLeft,
+  Users,
+  Edit,
+  Star,
+  CheckCircle,
+  XCircle,
+  Pause,
+  Clock,
+} from "lucide-react";
 import Layout from "../../Layout";
-import { currencyCalculate } from "../../until/AmountCalculation";
 import { toast } from "react-toastify";
-import ProfileModal from "../modal/ProfileModal";
+import { currencyCalculate } from "../../until/AmountCalculation";
 import PositionModal from "../modal/PositionModal";
-import HoldStatusModal from "../modal/HoldStatusModal";
+import ProfileModal from "../modal/ProfileModal";
+import StatusModal from "../modal/HoldStatusModal";
+import Applications from "./Applications";
 
-import ShortlistTable from "./ShortlistedTable";
-
-function AllShortlistedApplications() {
+function AllApplications() {
   const navigate = useNavigate();
   const { authToken ,userType} = useContext(AuthContext);
-
-  const [shortlistedApplications, setShortlistedApplications] = useState([]);
+  const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const [showStatusModal, setShowStatusModal] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showPositionModal, setShowPositionModal] = useState(false);
-  const [showHoldStatus, setShowHoldStatus] = useState(false);
-
+  const [selectedApplication, setSelectedApplication] = useState(null);
   const [candidateProfile, setCandidateProfile] = useState(null);
+  const [position, setPosition] = useState(null);
   const [candidateEducations, setCandidateEducations] = useState([]);
   const [candidateSkills, setCandidateSkills] = useState([]);
-  const [position, setPosition] = useState(null);
-
   const [profileLoading, setProfileLoading] = useState(false);
   const [positionLoading, setPositionLoading] = useState(false);
+  const [statusForm, setStatusForm] = useState({
+    positionId: "",
+    currentStatus: "",
+    applicationStatus: "",
+    applicationFeedback: "",
+  });
 
-  const [editHoldStatus, setEditHoldStatus] = useState(null);
-
-  const fetchShortlistedApplications = async () => {
+  const fetchApplications = async () => {
     let url = ""
-    if(userType === 'recruiter')
-      url = `http://localhost:8080/applications/shortlists/recruiter`
-    else if(userType === 'reviewer')
-      url = `http://localhost:8080/applications/shortlists/reviewer`
+    if(userType === "recruiter")
+      url = `http://localhost:8080/applications/recruiter`
     else
-      url = `http://localhost:8080/applications/shortlists`
-
+      url = `http://localhost:8080/applications`
+    setLoading(true)
     try {
-      const response = await axios.get(url,
-        { headers: { Authorization: `Bearer ${authToken}` } }
-      );
-      setShortlistedApplications(response.data.data || []);
+      const response = await axios.get(url, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+      setApplications(response.data.data || []);
     } catch (error) {
-      console.error("Error fetching shortlisted applications:", error);
+      console.error("Error fetching applications:", error);
     } finally {
       setLoading(false);
     }
@@ -57,9 +66,8 @@ function AllShortlistedApplications() {
   useEffect(() => {
     if (!authToken) 
       return navigate("/login");
-    
-    fetchShortlistedApplications();
-  }, [authToken, navigate]);
+    fetchApplications();
+  }, [authToken]);
 
   const getStatusBadge = (status) => {
     const statusColors = {
@@ -67,7 +75,6 @@ function AllShortlistedApplications() {
       ACCEPTED: "bg-green-100 text-green-800",
       REJECTED: "bg-red-100 text-red-800",
       PENDING: "bg-blue-100 text-blue-800",
-      ONHOLD: "bg-purple-100 text-purple-800",
     };
     return statusColors[status] || "bg-gray-100 text-gray-800";
   };
@@ -85,63 +92,69 @@ function AllShortlistedApplications() {
     }
   };
 
-  const handleHoldStatus = async (e) => {
-    if (
-      !e ||
-      !editHoldStatus ||
-      !editHoldStatus.applicationId ||
-      !editHoldStatus.applicationStatusId
-    )
-      return;
+  const openStatusModal = (application) => {
+    setSelectedApplication(application);
+    setStatusForm({
+      positionId: application.positionId,
+      currentStatus: application.applicationStatus?.applicationStatus || "",
+      applicationStatus: application.applicationStatus?.applicationStatus || "",
+      applicationFeedback:
+        application.applicationStatus?.applicationFeedback || "",
+    });
+    setShowStatusModal(true);
+  }
 
+  const closeStatusModal = () => {
+    setShowStatusModal(false);
+    setSelectedApplication(null);
+    setStatusForm({
+      positionId: "",
+      currentStatus: "",
+      applicationStatus: "",
+      applicationFeedback: "",
+    });
+  }
+
+  const handleStatusChange = (e) => {
+    const { name, value } = e.target;
+    setStatusForm((prev) => ({ ...prev, [name]: value }));
+  }
+
+  const handleStatusUpdate = async (e, positionId) => {
+    if (!positionId) return;
     e.preventDefault();
     try {
       await axios.patch(
-        `http://localhost:8080/applications/${editHoldStatus.applicationId}/application-status/${editHoldStatus.applicationStatusId}`,
+        `http://localhost:8080/applications/${positionId}/application-status/${selectedApplication.applicationStatus.applicationStatusId}`,
         {
-          applicationStatus: editHoldStatus.applicationStatus,
-          applicationFeedback: editHoldStatus.holdReason,
+          applicationStatus: statusForm.applicationStatus,
+          applicationFeedback: statusForm.applicationFeedback,
         },
-        {
-          headers: { Authorization: `Bearer ${authToken}` },
-        }
+        { headers: { Authorization: `Bearer ${authToken}` } }
       );
-      toast.success("Application Status Changed!");
-      closeHoldStatus();
-      fetchShortlistedApplications();
+      toast.success("Application status updated successfully!");
+      fetchApplications();
+      closeStatusModal();
     } catch (error) {
-      console.error(error);
       toast.error("Failed to update application status");
     }
   };
 
-  const openHoldStatus = (applicationId) => {
+  const handleShortlistApplication = async (applicationId) => {
     if (!applicationId) return;
-    const application = shortlistedApplications.find(
-      (a) => a.applicationId === applicationId
-    );
-    if (!application) return;
-
-    if (application.applicationStatus.applicationStatus === "REJECTED") {
-      toast.error("Application Already Rejected!");
-      return closeHoldStatus();
+    try {
+      await axios.patch(
+        `http://localhost:8080/applications/${applicationId}/shortlist`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${authToken}` },
+        }
+      );
+      toast.success("Application Shortlisted Successfully!");
+      fetchApplications();
+    } catch (error) {
+      toast.error("Failed to shortlist application");
     }
-
-    setEditHoldStatus({
-      applicationId: application.applicationId,
-      applicationStatusId: application.applicationStatus.applicationStatusId,
-      holdReason: application.applicationStatus.applicationFeedback,
-      applicationStatus:
-        application.applicationStatus.applicationStatus === "ONHOLD"
-          ? "SHORTLISTED"
-          : "ONHOLD",
-    });
-    setShowHoldStatus(true);
-  };
-
-  const closeHoldStatus = () => {
-    setShowHoldStatus(false);
-    setEditHoldStatus(null);
   };
 
   const openProfileModal = async (candidateId) => {
@@ -155,11 +168,15 @@ function AllShortlistedApplications() {
           }),
           axios.get(
             `http://localhost:8080/candidate-educations/candidate/${candidateId}`,
-            { headers: { Authorization: `Bearer ${authToken}` } }
+            {
+              headers: { Authorization: `Bearer ${authToken}` },
+            }
           ),
           axios.get(
             `http://localhost:8080/candidate-skills/candidate/${candidateId}`,
-            { headers: { Authorization: `Bearer ${authToken}` } }
+            {
+              headers: { Authorization: `Bearer ${authToken}` },
+            }
           ),
         ]);
 
@@ -167,7 +184,6 @@ function AllShortlistedApplications() {
       setCandidateEducations(educationResponse.data.data || []);
       setCandidateSkills(skillsResponse.data.data || []);
     } catch (error) {
-      console.error(error);
       toast.error("Failed to load candidate profile");
     } finally {
       setProfileLoading(false);
@@ -189,13 +205,14 @@ function AllShortlistedApplications() {
       const response = await axios.get(
         `http://localhost:8080/positions/${positionId}`,
         {
-          headers: { Authorization: `Bearer ${authToken}` },
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
         }
       );
       setPosition(response.data);
     } catch (error) {
-      console.error(error);
-      toast.error("Failed to load position");
+      toast.error("Failed to load Position");
     } finally {
       setPositionLoading(false);
     }
@@ -219,7 +236,6 @@ function AllShortlistedApplications() {
   return (
     <Layout>
       <div className="max-w-7xl mx-auto">
-        {/* Header Card */}
         <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-8 mb-8">
           <div className="flex items-center gap-4">
             <button
@@ -229,40 +245,58 @@ function AllShortlistedApplications() {
               <ArrowLeft className="w-6 h-6 text-gray-600" />
             </button>
             <div className="p-3 bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl">
-              <Star className="w-8 h-8 text-white" />
+              <Users className="w-8 h-8 text-white" />
             </div>
             <div>
               <h1 className="text-4xl font-bold text-gray-900 mb-2">
-                Shortlisted Applications
+                All Applications
               </h1>
-              <p className="text-gray-600 text-lg">All Shortlists</p>
+              <p className="text-gray-600 text-lg">All Applications</p>
             </div>
+
+            <button
+              onClick={() => navigate("./shortlists")}
+              className="m-1 inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-lg hover:from-slate-700 hover:to-slate-800 transition-all font-medium shadow-sm"
+            >
+              <Star className="w-4 h-4" />
+              View Shortlists
+            </button> 
           </div>
         </div>
 
-        {/* Content */}
-        {shortlistedApplications.length === 0 ? (
+        {applications.length === 0 ? (
           <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-16 text-center">
-            <Star className="w-24 h-24 text-gray-300 mx-auto mb-6" />
+            <User className="w-24 h-24 text-gray-300 mx-auto mb-6" />
             <h3 className="text-2xl font-bold text-gray-900 mb-3">
-              No Shortlisted Applications
+              No Applications Found
             </h3>
             <p className="text-gray-600 text-lg">
-              No candidates have been shortlisted yet.
+              No candidates have applied for this position yet.
             </p>
           </div>
         ) : (
-          <ShortlistTable
-            shortlistedApplications={shortlistedApplications}
-            getStatusBadge={getStatusBadge}
-            openPositionModal={openPositionModal}
-            openProfileModal={openProfileModal}
-            openHoldStatus={openHoldStatus}
-            fetchShortlistedApplications={fetchShortlistedApplications}
+          <>
+            <Applications 
+                applications={applications}
+                getStatusBadge={getStatusBadge}
+                openPositionModal={openPositionModal}
+                openProfileModal={openProfileModal}
+                openStatusModal={openStatusModal}
+                handleShortlistApplication={handleShortlistApplication}
+            />
+          </>
+        )}
+
+        {showStatusModal && (
+          <StatusModal
+            closeStatusModal={closeStatusModal}
+            statusForm={statusForm}
+            handleStatusChange={handleStatusChange}
+            handleStatusUpdate={handleStatusUpdate}
+            selectedApplication={selectedApplication}
           />
         )}
 
-        {/* Modals */}
         {showProfileModal && (
           <ProfileModal
             closeProfileModal={closeProfileModal}
@@ -270,15 +304,6 @@ function AllShortlistedApplications() {
             candidateProfile={candidateProfile}
             candidateSkills={candidateSkills}
             candidateEducations={candidateEducations}
-          />
-        )}
-
-        {showHoldStatus && (
-          <HoldStatusModal
-            closeHoldStatus={closeHoldStatus}
-            editHoldStatus={editHoldStatus}
-            handleHoldStatus={handleHoldStatus}
-            setEditHoldStatus={setEditHoldStatus}
           />
         )}
 
@@ -297,4 +322,4 @@ function AllShortlistedApplications() {
   );
 }
 
-export default AllShortlistedApplications;
+export default AllApplications;

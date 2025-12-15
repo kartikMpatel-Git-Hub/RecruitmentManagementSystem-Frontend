@@ -63,7 +63,6 @@ function PositionApplications() {
       toast.success("Application Shortlisted Successfully!");
       fetchApplications();
     } catch (error) {
-      console.log(error);
       toast.error("Failed to shortlist application");
     }
   };

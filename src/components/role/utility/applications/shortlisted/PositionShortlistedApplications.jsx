@@ -1,8 +1,15 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useParams } from "react-router-dom";
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../../../../context/AuthContext";
-import { ArrowLeft, Star, Clock, CheckCircle, XCircle, Pause } from "lucide-react";
+import {
+  ArrowLeft,
+  Star,
+  Clock,
+  CheckCircle,
+  XCircle,
+  Pause,
+} from "lucide-react";
 import Layout from "../../Layout";
 import { currencyCalculate } from "../../until/AmountCalculation";
 import { toast } from "react-toastify";
@@ -12,9 +19,10 @@ import HoldStatusModal from "../modal/HoldStatusModal";
 
 import ShortlistTable from "./ShortlistedTable";
 
-function AllShortlistedApplications() {
+function PositionShortlistedApplications() {
+  const { positionId } = useParams();
   const navigate = useNavigate();
-  const { authToken ,userType} = useContext(AuthContext);
+  const { authToken, userType } = useContext(AuthContext);
 
   const [shortlistedApplications, setShortlistedApplications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -34,18 +42,16 @@ function AllShortlistedApplications() {
   const [editHoldStatus, setEditHoldStatus] = useState(null);
 
   const fetchShortlistedApplications = async () => {
-    let url = ""
-    if(userType === 'recruiter')
-      url = `http://localhost:8080/applications/shortlists/recruiter`
-    else if(userType === 'reviewer')
-      url = `http://localhost:8080/applications/shortlists/reviewer`
+    let url = "";
+    if (userType === "reviewer")
+      url = `http://localhost:8080/applications/shortlists/position/${positionId}/reviewer`;
     else
-      url = `http://localhost:8080/applications/shortlists`
+      url = `http://localhost:8080/applications/shortlists/position/${positionId}`;
 
     try {
-      const response = await axios.get(url,
-        { headers: { Authorization: `Bearer ${authToken}` } }
-      );
+      const response = await axios.get(url, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
       setShortlistedApplications(response.data.data || []);
     } catch (error) {
       console.error("Error fetching shortlisted applications:", error);
@@ -55,9 +61,7 @@ function AllShortlistedApplications() {
   };
 
   useEffect(() => {
-    if (!authToken) 
-      return navigate("/login");
-    
+    if (!authToken) return navigate("/login");
     fetchShortlistedApplications();
   }, [authToken, navigate]);
 
@@ -219,7 +223,6 @@ function AllShortlistedApplications() {
   return (
     <Layout>
       <div className="max-w-7xl mx-auto">
-        {/* Header Card */}
         <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-8 mb-8">
           <div className="flex items-center gap-4">
             <button
@@ -235,12 +238,13 @@ function AllShortlistedApplications() {
               <h1 className="text-4xl font-bold text-gray-900 mb-2">
                 Shortlisted Applications
               </h1>
-              <p className="text-gray-600 text-lg">All Shortlists</p>
+              <p className="text-gray-600 text-lg">
+                Shortlisted candidates for Position ID: {positionId}
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Content */}
         {shortlistedApplications.length === 0 ? (
           <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-16 text-center">
             <Star className="w-24 h-24 text-gray-300 mx-auto mb-6" />
@@ -262,7 +266,6 @@ function AllShortlistedApplications() {
           />
         )}
 
-        {/* Modals */}
         {showProfileModal && (
           <ProfileModal
             closeProfileModal={closeProfileModal}
@@ -297,4 +300,4 @@ function AllShortlistedApplications() {
   );
 }
 
-export default AllShortlistedApplications;
+export default PositionShortlistedApplications;

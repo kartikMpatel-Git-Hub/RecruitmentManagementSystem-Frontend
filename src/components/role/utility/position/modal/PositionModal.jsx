@@ -121,7 +121,7 @@ function PositionModal({
                       </div>
                     </div>
                     <div className="bg-white rounded-2xl p-6 text-center shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-                      <div className="text-3xl font-bold text-green-600 mb-2">
+                      <div className="text-2xl font-bold text-green-600 mb-2">
                         ₹{currencyCalculate(position.positionSalary) || "N/A"}
                       </div>
                       <div className="text-sm text-gray-600 font-medium">
@@ -171,22 +171,6 @@ function PositionModal({
                           </p>
                         </div>
                       </div>
-
-                      {/* {position.positionStatus?.status !== "OPEN" && (
-                            <div className="bg-white rounded-2xl p-6 shadow-sm border border-red-200">
-                              <h3 className="text-xl font-bold text-red-900 mb-4 flex items-center gap-3">
-                                <div className="p-2 bg-red-100 rounded-xl">
-                                  <Info className="w-5 h-5 text-red-600" />
-                                </div>
-                                Status Information
-                              </h3>
-                              <div className="bg-gradient-to-br from-red-50 to-pink-50 rounded-xl p-5 border border-red-100">
-                                <p className="text-red-700 leading-relaxed">
-                                  {position.positionStatus.positionStatusReason}
-                                </p>
-                              </div>
-                            </div>
-                          )} */}
                     </div>
                   </div>
 
@@ -203,7 +187,7 @@ function PositionModal({
                         {position.positionRequirements?.length > 0 ? (
                           <>
                             {position.positionRequirements
-                              .slice(0, 3)
+                              .slice(0, 2)
                               .map((req) => (
                                 <div
                                   key={req.positionRequirementId}
@@ -256,7 +240,7 @@ function PositionModal({
                         {position.positionRequiredEducations?.length > 0 ? (
                           <>
                             {position.positionRequiredEducations
-                              .slice(0, 3)
+                              .slice(0, 2)
                               .map((edu) => (
                                 <div
                                   key={edu.degreeId}

@@ -11,9 +11,6 @@ function Round({ app, fetchShortlistedApplications, openHoldStatus, authToken, u
   const [editModal, setEditModal] = useState(null);
   const [passModal, setPassModal] = useState(null);
 
-  // ----------------------------
-  // ACTION PERMISSIONS
-  // ----------------------------
   const allowedUser = () =>
     (userType === "admin" || userType === "recruiter") &&
     app.applicationStatus.applicationStatus !== "REJECTED";
@@ -33,10 +30,6 @@ function Round({ app, fetchShortlistedApplications, openHoldStatus, authToken, u
 
     return now > end;
   };
-
-  // ----------------------------
-  // API HANDLERS
-  // ----------------------------
 
   const addRound = async (data) => {
     try {

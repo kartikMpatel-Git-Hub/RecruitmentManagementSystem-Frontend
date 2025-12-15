@@ -200,16 +200,8 @@ const CandidatePositions = () => {
                     Discover your next career opportunity
                   </p>
                 </div>
-                {/* <button
-                  onClick={() => setShowFilters(!showFilters)}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-all"
-                >
-                  <Filter className="w-4 h-4" />
-                  Filters
-                </button> */}
               </div>
 
-              {/* {showFilters && ( */}
               <div className="bg-white rounded-lg shadow border border-gray-200 p-6 mb-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                   <div>

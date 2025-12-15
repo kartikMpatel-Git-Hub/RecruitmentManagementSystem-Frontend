@@ -1,6 +1,16 @@
-// src/components/Applications/shortlisted/RoundSection/RoundSection.jsx
 import React, { useContext, useState, useMemo } from "react";
-import { Clock, Info, Star, Calendar, MessageSquare } from "lucide-react";
+import {
+  Clock,
+  Info,
+  Star,
+  Calendar,
+  MessageSquare,
+  Edit,
+  Trash2,
+  CheckCircle,
+  Pause,
+  Play,
+} from "lucide-react";
 import { BiStopwatch } from "react-icons/bi";
 import { AuthContext } from "../../../../../context/AuthContext";
 import { toast } from "react-toastify";
@@ -38,13 +48,11 @@ function RoundSection({ app, fetchShortlistedApplications, openHoldStatus }) {
     []
   );
 
-  const allowAccess = () => {
-    if (app.applicationStatus.applicationStatus === "REJECTED") return false;
-    return true;
-  };
+  const allowedUser = () => (userType === "admin" || userType === "hr");
 
-  const allowedUser = () =>
-    allowAccess() && (userType === "admin" || userType === "recruiter");
+  const canModifyRounds =
+    allowedUser() && 
+    (app.applicationStatus?.applicationStatus !== "REJECTED" && app.applicationStatus?.applicationStatus !== "DOCUMENT_VERIFICATION" && app.applicationStatus?.applicationStatus !== "HIRED");
 
   const handleEditRound = (round) => setEditingRound({ ...round });
   const closeEditModal = () => setEditingRound(null);
@@ -52,7 +60,11 @@ function RoundSection({ app, fetchShortlistedApplications, openHoldStatus }) {
   const isRoundCompleted = (round) => {
     if (round.roundStatus?.roundStatus === "COMPLETED") return true;
 
-    if (!round.roundDate || !round.roundExpectedTime || !round.roundDurationInMinutes)
+    if (
+      !round.roundDate ||
+      !round.roundExpectedTime ||
+      !round.roundDurationInMinutes
+    )
       return false;
 
     const now = new Date();
@@ -173,26 +185,90 @@ function RoundSection({ app, fetchShortlistedApplications, openHoldStatus }) {
     }
   };
 
-  const canModifyRounds =
-    allowedUser() && app.applicationStatus?.applicationStatus !== "REJECTED";
+  const completeAllRound = (application) => {
+    let result = true;
+    application.applicationRounds.slice().map((round) => {
+      if (round.roundResult !== "PASS") result = false;
+    });
+    return result;
+  };
+
+  const handleMoveToDocumentVerification = async (application) => {
+    if (!completeAllRound(application))
+      return toast.error(
+        "Complete All Round Before Move To Document Verification "
+      );
+
+    if (!authToken) return;
+
+    if (!app.applicationId) return toast.error("Application Id Not Found !");
+
+    try {
+      await axios.patch(
+        `http://localhost:8080/applications/${app.applicationId}/document-verification`,
+        {},
+        { headers: { Authorization: `Bearer ${authToken}` } }
+      );
+
+      toast.success(
+        "Application Moved To Document Verification Successfully !"
+      );
+      setShowAddForm(false);
+      fetchShortlistedApplications();
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to Moved Application");
+    }
+  };
 
   return (
     <>
       <tr>
-        <td colSpan="6" className="px-6 py-4 bg-gray-50">
-          <div className="flex justify-end mb-3">
+        <td colSpan="7" className="px-6 py-4 bg-gray-50">
+          <div className="flex justify-end mb-3 gap-2">
+            <button
+              onClick={() => handleMoveToDocumentVerification(app)}
+              className={`group relative p-3 bg-gradient-to-r text-white  
+                ${
+                  (app.applicationStatus.applicationStatus === "DOCUMENT_VERIFICATION" || app.applicationStatus.applicationStatus === "HIRED")
+                    ? "from-slate-400 to-slate-400 rounded-xl"
+                    : "from-slate-800 to-slate-900 rounded-xl hover:from-slate-700 hover:to-slate-800 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                }
+                `}
+              title="Move To Document Verification"
+              disabled={
+                app.applicationStatus.applicationStatus === "DOCUMENT_VERIFICATION"
+                || app.applicationStatus.applicationStatus === "HIRED"
+              }
+            >
+              <CheckCircle />
+            </button>
             <button
               onClick={() => openHoldStatus(app.applicationId)}
-              className="bg-slate-800 text-white px-4 py-2 rounded-xl hover:bg-slate-900 transition-colors"
+              className="group relative p-3 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-xl hover:from-slate-700 hover:to-slate-800 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              title={
+                app.applicationStatus.applicationStatus === "ONHOLD"
+                  ? "Unhold Application"
+                  : "Hold Application"
+              }
+              disabled={
+                app.applicationStatus.applicationStatus === "HIRED"
+              }
             >
-              {app.applicationStatus.applicationStatus === "ONHOLD"
-                ? "Unhold"
-                : "Hold"}{" "}
-              Application
+              {app.applicationStatus.applicationStatus === "ONHOLD" ? (
+                <Play className="w-5 h-5" />
+              ) : (
+                <Pause className="w-5 h-5" />
+              )}
+              <span className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                {app.applicationStatus.applicationStatus === "ONHOLD"
+                  ? "Unhold Application"
+                  : "Hold Application"}
+              </span>
             </button>
           </div>
 
-          {app.applicationRounds?.length > 0 ? (
+          {app.applicationRounds?.length >= 0 ? (
             <div className="space-y-3">
               <h4 className="text-lg font-semibold flex items-center gap-2">
                 <Clock className="w-5 h-5" />
@@ -297,14 +373,18 @@ function RoundSection({ app, fetchShortlistedApplications, openHoldStatus }) {
                         {/* Right side actions & stars */}
                         <div className="flex flex-col items-end justify-between gap-2">
                           {canModifyRounds && (
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-2">
                               {round.roundResult === "PENDING" &&
                                 isRoundCompleted(round) && (
                                   <button
                                     onClick={() => openPassForm(round.roundId)}
-                                    className="px-3 py-1 bg-green-600 text-white text-xs rounded-lg hover:bg-green-700"
+                                    className="group relative p-2 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 transition-all shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
+                                    title="Give Result"
                                   >
-                                    Give Result
+                                    <CheckCircle className="w-4 h-4" />
+                                    <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                                      Give Result
+                                    </span>
                                   </button>
                                 )}
 
@@ -312,17 +392,25 @@ function RoundSection({ app, fetchShortlistedApplications, openHoldStatus }) {
                                 <>
                                   <button
                                     onClick={() => handleEditRound(round)}
-                                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+                                    className="group relative p-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
+                                    title="Edit Round"
                                   >
-                                    Edit
+                                    <Edit className="w-4 h-4" />
+                                    <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                                      Edit Round
+                                    </span>
                                   </button>
                                   <button
                                     onClick={() =>
                                       handleDeleteRound(round.roundId)
                                     }
-                                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                                    className="group relative p-2 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg hover:from-red-700 hover:to-red-800 transition-all shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
+                                    title="Delete Round"
                                   >
-                                    Delete
+                                    <Trash2 className="w-4 h-4" />
+                                    <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                                      Delete Round
+                                    </span>
                                   </button>
                                 </>
                               )}

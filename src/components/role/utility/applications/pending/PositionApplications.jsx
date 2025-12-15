@@ -2,59 +2,68 @@ import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect, useContext, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { AuthContext } from "../../../context/AuthContext";
+import { AuthContext } from "../../../../context/AuthContext";
 import {
+  User,
+  Users,
   ArrowLeft,
   Star,
-  CheckCircle,
-  XCircle,
-  Pause,
-  Clock,
 } from "lucide-react";
-import Layout from "../Layout";
-import { currencyCalculate } from "../until/AmountCalculation";
+import Layout from "../../Layout";
 import { toast } from "react-toastify";
-import ProfileModal from "./modal/ProfileModal";
-import PositionModal from "./modal/PositionModal";
-import Shortlists from "./modal/Shortlists";
+import ProfileModal from "../modal/ProfileModal";
+import StatusModal from "../modal/HoldStatusModal";
+import Applications from "./Applications";
 
-function PositionShortlistedApplications() {
+function PositionApplications() {
   const { positionId } = useParams();
   const navigate = useNavigate();
-  const { authToken, userType } = useContext(AuthContext);
-  const [shortlistedApplications, setShortlistedApplications] = useState([]);
+  const { authToken } = useContext(AuthContext);
+  const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showProfileModal, setShowProfileModal] = useState(false);
-  const [showPositionModal, setShowPositionModal] = useState(false);
   const [candidateProfile, setCandidateProfile] = useState(null);
   const [candidateEducations, setCandidateEducations] = useState([]);
   const [candidateSkills, setCandidateSkills] = useState([]);
-  const [position, setPosition] = useState(null);
   const [profileLoading, setProfileLoading] = useState(false);
-  const [positionLoading, setPositionLoading] = useState(false);
+  const [statusFilter, setStatusFilter] = useState("");
 
-  const fetchShortlistedApplications = async () => {
-    let url = ``
-    if(userType === 'reviewer')
-      url = `http://localhost:8080/applications/shortlists/position/${positionId}/reviewer`
-    else
-      url = `http://localhost:8080/applications/shortlists/position/${positionId}`
+  const fetchApplications = async () => {
     try {
       const response = await axios.get(
-        url,
+        `http://localhost:8080/applications/position/${positionId}`,
         { headers: { Authorization: `Bearer ${authToken}` } }
       );
-      setShortlistedApplications(response.data.data || []);
+      setApplications(response.data.data || []);
+      
     } catch (error) {
-      console.error("Error fetching shortlisted applications:", error);
+      console.error("Error fetching applications:", error);
     } finally {
       setLoading(false);
     }
   };
 
+  const handleShortlistApplication =async (applicationId) => {
+    if (!applicationId) return;
+    try {
+      await axios.patch(
+        `http://localhost:8080/applications/${applicationId}/shortlist`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${authToken}` },
+        }
+      );
+      toast.success("Application Shortlisted Successfully!");
+      fetchApplications();
+    } catch (error) {
+      // console.log(error);
+      toast.error("Failed to shortlist application");
+    }
+  };
+
   useEffect(() => {
     if (!authToken) return navigate("/login");
-    fetchShortlistedApplications();
+    fetchApplications();
   }, [positionId, authToken]);
 
   const getStatusBadge = (status) => {
@@ -67,18 +76,6 @@ function PositionShortlistedApplications() {
     return statusColors[status] || "bg-gray-100 text-gray-800";
   };
 
-  const getStatusIcon = (status) => {
-    switch (status?.toLowerCase()) {
-      case "open":
-        return <CheckCircle className="w-5 h-5 text-green-500" />;
-      case "closed":
-        return <XCircle className="w-5 h-5 text-red-500" />;
-      case "on_hold":
-        return <Pause className="w-5 h-5 text-yellow-500" />;
-      default:
-        return <Clock className="w-5 h-5 text-gray-500" />;
-    }
-  };
   const openProfileModal = async (candidateId) => {
     setProfileLoading(true);
     setShowProfileModal(true);
@@ -112,43 +109,11 @@ function PositionShortlistedApplications() {
     }
   };
 
-  const openPositionModal = async (positionId) => {
-    if (!positionId) return;
-    setPositionLoading(true);
-    setShowPositionModal(true);
-    try {
-      const response = await axios.get(
-        `http://localhost:8080/positions/${positionId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        }
-      );
-      setPosition(response.data);
-    } catch (error) {
-      toast.error("Failed to load Position");
-    } finally {
-      setPositionLoading(false);
-    }
-  };
-
-  const closePositionModal = () => {
-    setShowPositionModal(false);
-    setPosition(null);
-  };
-
   const closeProfileModal = () => {
     setShowProfileModal(false);
     setCandidateProfile(null);
     setCandidateEducations([]);
     setCandidateSkills([]);
-  };
-
-  const formatDate = (dateArray) => {
-    if (!dateArray || dateArray.length !== 3) return "N/A";
-    const [year, month, day] = dateArray;
-    return new Date(year, month - 1, day).toLocaleDateString();
   };
 
   if (loading) {
@@ -173,41 +138,49 @@ function PositionShortlistedApplications() {
               <ArrowLeft className="w-6 h-6 text-gray-600" />
             </button>
             <div className="p-3 bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl">
-              <Star className="w-8 h-8 text-white" />
+              <Users className="w-8 h-8 text-white" />
             </div>
             <div>
               <h1 className="text-4xl font-bold text-gray-900 mb-2">
-                Shortlisted Applications
+                Position Applications
               </h1>
               <p className="text-gray-600 text-lg">
-                Shortlisted candidates for Position ID: {positionId}
+                Applications for Position ID: {positionId}
               </p>
             </div>
+
+            <button
+              onClick={() => navigate("./shortlist")}
+              className="m-1 inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-lg hover:from-slate-700 hover:to-slate-800 transition-all font-medium shadow-sm"
+            >
+              <Star className="w-4 h-4" />
+              View Shortlists
+            </button>
           </div>
         </div>
 
-        {shortlistedApplications.length === 0 ? (
+        {applications.length === 0 ? (
           <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-16 text-center">
-            <Star className="w-24 h-24 text-gray-300 mx-auto mb-6" />
+            <User className="w-24 h-24 text-gray-300 mx-auto mb-6" />
             <h3 className="text-2xl font-bold text-gray-900 mb-3">
-              No Shortlisted Applications
+              No Applications Found
             </h3>
             <p className="text-gray-600 text-lg">
-              No candidates have been shortlisted for this position yet.
+              No candidates have applied for this position yet.
             </p>
           </div>
         ) : (
           <>
-            <Shortlists
-              shortlistedApplications={shortlistedApplications}
-              getStatusBadge={getStatusBadge}
-              openPositionModal={openPositionModal}
-              openProfileModal={openProfileModal}
-              fetchShortlistedApplications={fetchShortlistedApplications}
+
+            <Applications 
+                applications={applications}
+                getStatusBadge={getStatusBadge}
+                statusFilter={statusFilter}
+                openProfileModal={openProfileModal}
+                handleShortlistApplication={handleShortlistApplication}
             />
           </>
         )}
-
         {showProfileModal && (
           <ProfileModal
             closeProfileModal={closeProfileModal}
@@ -218,19 +191,9 @@ function PositionShortlistedApplications() {
           />
         )}
 
-        {showPositionModal && (
-          <PositionModal
-            closePositionModal={closePositionModal}
-            position={position}
-            positionLoading={positionLoading}
-            getStatusIcon={getStatusIcon}
-            getStatusBadge={getStatusBadge}
-            currencyCalculat={currencyCalculate}
-          />
-        )}
       </div>
     </Layout>
   );
 }
 
-export default PositionShortlistedApplications;
+export default PositionApplications;

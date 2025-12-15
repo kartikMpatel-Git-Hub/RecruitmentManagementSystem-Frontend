@@ -174,6 +174,7 @@ function Register() {
         userName: formData.userName,
         userEmail: formData.userEmail,
         userPassword: formData.userPassword,
+        role: formData.role
       };
       const formDataToSubmit = new FormData();
       formDataToSubmit.append(
@@ -181,8 +182,6 @@ function Register() {
         new Blob([JSON.stringify(user)], { type: "application/json" })
       );
       formDataToSubmit.append("image", formData.image);
-      formDataToSubmit.append("role", formData.role);
-
       try {
         await axios.post(
           "http://localhost:8080/authentication/register",
@@ -202,8 +201,7 @@ function Register() {
           navigator("/login");
         }, 3000);
       } catch (error) {
-        console.log(error.response.data);
-        toast.error(error?.response?.data || "Registration failed!", {
+        toast.error(error?.response?.data?.errors[0] || error?.response?.data?.message, {
           position: "top-right",
           autoClose: 3000,
         });
@@ -414,7 +412,7 @@ function Register() {
                   value={formData.role}
                 >
                   <option value="">Select Role</option>
-                  <option value="ADMIN">Admin</option>
+                  {/* <option value="ADMIN">Admin</option> */}
                   <option value="CANDIDATE">Candidate</option>
                   <option value="RECRUITER">Recruiter</option>
                   <option value="INTERVIEWER">Interviewer</option>
