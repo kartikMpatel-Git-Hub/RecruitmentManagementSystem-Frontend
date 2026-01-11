@@ -11,6 +11,13 @@ function Candidate() {
   const navigate = useNavigate();
   const { userType, authToken } = useContext(AuthContext);
   const [candidates, setCandidates] = useState([]);
+  const [pagination, setPagination] = useState({
+    currentPage: 0,
+    pageSize: 10,
+    totalItems: 0,
+    totalPages: 0,
+    last: false,
+  });
 
   const updateCandidate = async (status, userId) => {
     if (!authToken) navigate("/login");
@@ -91,16 +98,19 @@ function Candidate() {
     if (userType !== "admin" && userType !== "recruiter" && userType !== "hr") navigate("/");
   }, [userType]);
 
-  const fetchCandidates = async () => {
+  const fetchCandidates = async (page = 0) => {
     if (!authToken) return;
     try {
       const response = await axios.get(
         "http://localhost:8080/users/candidates",
         {
           headers: { Authorization: `Bearer ${authToken}` },
+          params: { page, size: pagination.pageSize },
         }
       );
-      setCandidates(response.data.data || []);
+      const { data, currentPage, pageSize, totalItems, totalPages, last } = response.data;
+      setCandidates(data || []);
+      setPagination({ currentPage, pageSize, totalItems, totalPages, last });
     } catch (error) {
       console.error("Error fetching users:", error);
     }
@@ -110,6 +120,12 @@ function Candidate() {
     fetchCandidates();
   }, []);
 
+  const handlePageChange = (newPage) => {
+    if (newPage >= 0 && newPage < pagination.totalPages) {
+      fetchCandidates(newPage);
+    }
+  };
+
   return (
     <Layout>
       <CandidateList
@@ -117,6 +133,8 @@ function Candidate() {
         onUpdate={updateCandidate}
         onDelete={deleteCandidate}
         onView={viewCandidate}
+        pagination={pagination}
+        onPageChange={handlePageChange}
       />
     </Layout>
   );

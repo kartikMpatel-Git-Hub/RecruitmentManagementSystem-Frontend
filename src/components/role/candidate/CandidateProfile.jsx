@@ -88,6 +88,7 @@ function CandidateProfile() {
       });
       setUser(response.data);
     } catch (error) {
+      console.log(error);
     }
   };
 

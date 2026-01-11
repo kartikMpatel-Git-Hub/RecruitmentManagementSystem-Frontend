@@ -1,6 +1,7 @@
 import React from "react";
 import { Eye, ChevronDown, Clock, Briefcase, User } from "lucide-react";
 import RoundSection from "./rounds/RoundSection";
+import { useNavigate } from "react-router-dom";
 
 function ShortlistRow({
   index,
@@ -13,6 +14,7 @@ function ShortlistRow({
   openHoldStatus,
   fetchShortlistedApplications,
 }) {
+  const navigator = useNavigate()
   return (
     <>
       <tr className="hover:bg-gray-50 transition-colors">
@@ -82,7 +84,7 @@ function ShortlistRow({
             </button>
 
             <button
-              onClick={onToggle}
+              onClick={()=> navigator(`./${app.applicationId}/rounds`)}
               className="group relative p-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-lg hover:from-slate-700 hover:to-slate-800 transition-all shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
               title="Toggle Rounds"
             >
@@ -102,13 +104,13 @@ function ShortlistRow({
         </td>
       </tr>
 
-      {isExpanded && (
+      {/* {isExpanded && (
         <RoundSection
           app={app}
           openHoldStatus={openHoldStatus}
           fetchShortlistedApplications={fetchShortlistedApplications}
         />
-      )}
+      )} */}
     </>
   );
 }

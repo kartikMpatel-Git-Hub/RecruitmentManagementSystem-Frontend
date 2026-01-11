@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../context/AuthContext";
-import { Building2, Plus, Trash2 } from "lucide-react";
+import { Building2, Plus, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "react-toastify";
 import Layout from "../Layout";
 
@@ -11,17 +11,33 @@ const UniversityList = () => {
   const navigate = useNavigate();
   const [universities, setUniversities] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [pagination, setPagination] = useState({
+    currentPage: 0,
+    pageSize: 10,
+    totalItems: 0,
+    totalPages: 0,
+    last: false,
+  });
 
-  const fetchUniversities = async () => {
+  const fetchUniversities = async (page = 0) => {
     try {
       const response = await axios.get("http://localhost:8080/universities", {
         headers: { Authorization: `Bearer ${authToken}` },
+        params: { page, size: pagination.pageSize },
       });
-      setUniversities(response.data.data || response.data);
+      const { data, currentPage, pageSize, totalItems, totalPages, last } = response.data;
+      setUniversities(data || response.data);
+      setPagination({ currentPage, pageSize, totalItems, totalPages, last });
     } catch (error) {
       console.error("Error fetching universities:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 0 && newPage < pagination.totalPages) {
+      fetchUniversities(newPage);
     }
   };
   const deleteUniversity = async (degreeId) => {
@@ -144,6 +160,39 @@ const UniversityList = () => {
                   </div>
                 </div>
               ))}
+            </div>
+          )}
+
+          {/* Pagination */}
+          {pagination.totalPages >= 1 && (
+            <div className="flex items-center justify-between px-6 py-4 mt-6 bg-white rounded-2xl shadow-lg border border-gray-200">
+              <p className="text-sm text-gray-600">
+                Showing {pagination.currentPage * pagination.pageSize + 1} to{" "}
+                {Math.min(
+                  (pagination.currentPage + 1) * pagination.pageSize,
+                  pagination.totalItems
+                )}{" "}
+                of {pagination.totalItems} universities
+              </p>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => handlePageChange(pagination.currentPage - 1)}
+                  disabled={pagination.currentPage === 0}
+                  className="p-2 rounded-lg border border-gray-300 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronLeft className="w-5 h-5 text-gray-600" />
+                </button>
+                <span className="px-4 py-2 text-sm font-medium text-gray-700">
+                  Page {pagination.currentPage + 1} of {pagination.totalPages}
+                </span>
+                <button
+                  onClick={() => handlePageChange(pagination.currentPage + 1)}
+                  disabled={pagination.last}
+                  className="p-2 rounded-lg border border-gray-300 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronRight className="w-5 h-5 text-gray-600" />
+                </button>
+              </div>
             </div>
           )}
         </div>

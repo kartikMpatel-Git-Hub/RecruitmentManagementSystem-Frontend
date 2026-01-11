@@ -19,13 +19,18 @@ import Position from "./position/Position";
 import PositionList from "./position/PositionList";
 import SinglePosition from "./position/SinglePosition";
 
-import AllApplications from "./applications/pending/AllApplications";
-import AllShortlistedApplications from "./applications/shortlisted/AllShortlistedApplications";
+import Applications from "./applications/new_applications/Applications";
+import AllShortlistedApplications from "./applications/new_shortlisted/ShortlistedApplications";
 import AllMappedApplications from "./applications/mapped/AllMappedApplications";
-import PositionApplications from "./applications/pending/PositionApplications";
-import PositionShortlistedApplications from "./applications/shortlisted/PositionShortlistedApplications";
+import PositionApplications from "./applications/new_applications/PositionApplications";
+import PositionShortlistedApplications from "./applications/new_shortlisted/PositionShortlistedApplications";
 
+import Round from "./applications/round/Rounds";
+
+import Interviews from "./applications/interview/Interviews";
 import Interview from "./interview/Interview";
+
+// import Interview from "./interview/Interview";
 import InterviewDetail from "./interview/InterviewDetail";
 import InterviewFeedback from "./interview/InterviewFeedback"
 
@@ -54,12 +59,14 @@ export {
   SinglePosition,
   PositionApplications,
   PositionShortlistedApplications,
-  AllApplications,
+  Applications,
   AllShortlistedApplications,
   Interview,
+  Interviews,
   InterviewDetail,
   InterviewFeedback,
   AllMappedApplications,
   RegisterRequest,
+  Round,
   DocumentVerification
 };

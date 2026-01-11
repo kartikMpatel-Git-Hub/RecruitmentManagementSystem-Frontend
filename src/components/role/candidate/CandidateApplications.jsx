@@ -359,30 +359,37 @@ function CandidateApplications() {
                                   {/* Edit document form */}
                                   {editingDocument === doc.documentId && (
                                     <div className="mt-3 pt-3 border-t border-yellow-200">
-                                      <div className="flex items-center gap-3">
-                                        <input
-                                          type="file"
-                                          onChange={(e) => {
-                                            const file = e.target.files[0];
-                                            if (file)
-                                              handleDocumentEdit(
-                                                doc.documentId,
-                                                application.applicationId,
-                                                file
-                                              );
-                                          }}
-                                          className="text-xs text-gray-600 file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-medium file:bg-slate-800 file:text-white hover:file:bg-slate-700"
-                                          accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                                        />
-                                        <button
-                                          onClick={() =>
-                                            setEditingDocument(null)
-                                          }
-                                          className="px-3 py-1 border border-gray-300 text-gray-700 rounded text-xs hover:bg-gray-50 transition-colors"
-                                        >
-                                          Cancel
-                                        </button>
-                                      </div>
+                                      {uploadingDoc === doc.documentId ? (
+                                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                                          <div className="w-4 h-4 border-2 border-slate-800 border-t-transparent rounded-full animate-spin"></div>
+                                          <span>Uploading document...</span>
+                                        </div>
+                                      ) : (
+                                        <div className="flex items-center gap-3">
+                                          <input
+                                            type="file"
+                                            onChange={(e) => {
+                                              const file = e.target.files[0];
+                                              if (file)
+                                                handleDocumentEdit(
+                                                  doc.documentId,
+                                                  application.applicationId,
+                                                  file
+                                                );
+                                            }}
+                                            className="text-xs text-gray-600 file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-medium file:bg-slate-800 file:text-white hover:file:bg-slate-700"
+                                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                                          />
+                                          <button
+                                            onClick={() =>
+                                              setEditingDocument(null)
+                                            }
+                                            className="px-3 py-1 border border-gray-300 text-gray-700 rounded text-xs hover:bg-gray-50 transition-colors"
+                                          >
+                                            Cancel
+                                          </button>
+                                        </div>
+                                      )}
                                     </div>
                                   )}
                                 </div>

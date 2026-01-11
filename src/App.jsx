@@ -38,7 +38,7 @@ import {
   SinglePosition,
   PositionApplications,
   PositionShortlistedApplications,
-  AllApplications,
+  Applications,
   AllShortlistedApplications,
   Interview,
   InterviewDetail,
@@ -46,6 +46,7 @@ import {
   AllMappedApplications,
   RegisterRequest,
   DocumentVerification,
+  Interviews,
 } from "./components/role/utility/UtilityComponents";
 import {
   ReviewerDashboard,
@@ -55,6 +56,7 @@ import InterviewerDashboard from "./components/role/interviewer/InterviewerDashb
 import InterviewerProfile from "./components/role/interviewer/InterviewerProfile";
 import HrDashboard from "./components/role/hr/HrDashboard";
 import HrProfile from "./components/role/hr/HrProfile";
+import Rounds from "./components/role/utility/applications/round/Rounds";
 
 function App() {
   return (
@@ -66,19 +68,19 @@ function App() {
         <Route path="positions" element={<CandidatePositions />} />
         <Route path="positions/:id" element={<CandidateSinglePosition />} />
         <Route path="interviews" element={<CandidateInterview />} />
-        <Route path="applications" element={<CandidateApplications/>}/>
+        <Route path="applications" element={<CandidateApplications />} />
       </Route>
 
       <Route path="/admin">
         <Route path="" element={<Dashboard />} />
 
         <Route path="register-request">
-          <Route path="" element={<RegisterRequest/>}/>
+          <Route path="" element={<RegisterRequest />} />
         </Route>
 
         <Route path="bulk-entry">
-          <Route path="" element={<BulkEntryList />}/>
-          <Route path=":id" element={<BulkStatus />}/>
+          <Route path="" element={<BulkEntryList />} />
+          <Route path=":id" element={<BulkStatus />} />
         </Route>
 
         <Route path="degrees">
@@ -109,8 +111,17 @@ function App() {
         </Route>
 
         <Route path="applications">
-          <Route path="" element={<AllApplications />} />
-          <Route path="shortlists" element={<AllShortlistedApplications />} />
+          <Route path="" element={<Applications />} />
+          <Route path="shortlists">
+            <Route path="" element={<AllShortlistedApplications />} />
+            <Route path=":id/rounds">
+              <Route path="" element={<Rounds />} />
+              <Route path=":rid/interviews">
+                <Route path="" element={<Interviews />} />
+                <Route path=":iid" element={<Interview />} />
+              </Route>
+            </Route>
+          </Route>
         </Route>
 
         <Route path="positions">
@@ -130,11 +141,18 @@ function App() {
             element={<AllMappedApplications />}
           />
         </Route>
+        <Route path="document-verification">
+          <Route path="" element={<DocumentVerification />} />
+        </Route>
       </Route>
 
       <Route path="/hr">
         <Route path="" element={<HrDashboard />} />
 
+        <Route path="register-request">
+          <Route path="" element={<RegisterRequest />} />
+        </Route>
+        
         <Route path="degrees">
           <Route path="" element={<DegreeList />} />
           <Route path="new" element={<Degree />} />
@@ -158,8 +176,17 @@ function App() {
         </Route>
 
         <Route path="applications">
-          <Route path="" element={<AllApplications />} />
-          <Route path="shortlists" element={<AllShortlistedApplications />} />
+          <Route path="" element={<Applications />} />
+          <Route path="shortlists">
+            <Route path="" element={<AllShortlistedApplications />} />
+            <Route path=":id/rounds">
+              <Route path="" element={<Rounds />} />
+              <Route path=":rid/interviews">
+                <Route path="" element={<Interviews />} />
+                <Route path=":iid" element={<Interview />} />
+              </Route>
+            </Route>
+          </Route>
         </Route>
 
         <Route path="positions">
@@ -181,7 +208,7 @@ function App() {
         </Route>
 
         <Route path="document-verification">
-          <Route path="" element={<DocumentVerification/>} />
+          <Route path="" element={<DocumentVerification />} />
         </Route>
       </Route>
 
@@ -211,7 +238,7 @@ function App() {
         </Route>
 
         <Route path="applications">
-          <Route path="" element={<AllApplications />} />
+          <Route path="" element={<Applications />} />
           <Route path="shortlists" element={<AllShortlistedApplications />} />
         </Route>
 
@@ -242,7 +269,7 @@ function App() {
         <Route path="candidates/:id" element={<SingleCandidateProfile />} />
 
         <Route path="applications">
-          <Route path="" element={<AllApplications />} />
+          <Route path="" element={<Applications />} />
           <Route path="shortlists" element={<AllShortlistedApplications />} />
         </Route>
         <Route path="positions">

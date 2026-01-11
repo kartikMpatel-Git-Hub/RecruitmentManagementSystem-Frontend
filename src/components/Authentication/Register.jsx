@@ -3,7 +3,18 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { UserPlus, Plus, AlertCircle, User, Mail, Lock, CheckCircle, Eye, EyeOff, Briefcase } from "lucide-react";
+import {
+  UserPlus,
+  Plus,
+  AlertCircle,
+  User,
+  Mail,
+  Lock,
+  CheckCircle,
+  Eye,
+  EyeOff,
+  Briefcase,
+} from "lucide-react";
 
 function Register() {
   const navigator = useNavigate();
@@ -164,7 +175,6 @@ function Register() {
     return Object.keys(newErrors).length === 0;
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -174,7 +184,7 @@ function Register() {
         userName: formData.userName,
         userEmail: formData.userEmail,
         userPassword: formData.userPassword,
-        role: formData.role
+        roleName: formData.role,
       };
       const formDataToSubmit = new FormData();
       formDataToSubmit.append(
@@ -199,12 +209,17 @@ function Register() {
         requestFormReset();
         setTimeout(() => {
           navigator("/login");
-        }, 3000);
+        }, 1000);
       } catch (error) {
-        toast.error(error?.response?.data?.errors[0] || error?.response?.data?.message, {
-          position: "top-right",
-          autoClose: 3000,
-        });
+        console.log(error);
+        
+        // toast.error(
+        //   error?.response?.data?.errors[0] || error?.response?.data?.message,
+        //   {
+        //     position: "top-right",
+        //     autoClose: 3000,
+        //   }
+        // );
       } finally {
         setLoading(false);
       }
@@ -218,10 +233,12 @@ function Register() {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl mb-4 shadow-lg">
             <UserPlus className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Create Account
+          </h1>
           <p className="text-gray-600">Join us today and get started</p>
         </div>
-        
+
         <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="flex justify-center mb-6">
@@ -256,7 +273,10 @@ function Register() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label htmlFor="userName" className="block text-sm font-medium text-gray-900 mb-3">
+                <label
+                  htmlFor="userName"
+                  className="block text-sm font-medium text-gray-900 mb-3"
+                >
                   Username
                 </label>
                 <div className="relative">
@@ -270,8 +290,8 @@ function Register() {
                     value={formData.userName}
                     onChange={handleInputChange}
                     className={`w-full pl-12 pr-4 py-4 border-2 rounded-2xl focus:outline-none focus:ring-0 transition-all duration-300 text-gray-900 placeholder-gray-500 ${
-                      errors.userName 
-                        ? "border-red-300 bg-red-50 focus:border-red-400" 
+                      errors.userName
+                        ? "border-red-300 bg-red-50 focus:border-red-400"
                         : "border-gray-200 bg-gray-50 focus:border-slate-400 focus:bg-white"
                     }`}
                     placeholder="Enter username"
@@ -286,7 +306,10 @@ function Register() {
               </div>
 
               <div>
-                <label htmlFor="userEmail" className="block text-sm font-medium text-gray-900 mb-3">
+                <label
+                  htmlFor="userEmail"
+                  className="block text-sm font-medium text-gray-900 mb-3"
+                >
                   Email
                 </label>
                 <div className="relative">
@@ -300,8 +323,8 @@ function Register() {
                     value={formData.userEmail}
                     onChange={handleInputChange}
                     className={`w-full pl-12 pr-4 py-4 border-2 rounded-2xl focus:outline-none focus:ring-0 transition-all duration-300 text-gray-900 placeholder-gray-500 ${
-                      errors.userEmail 
-                        ? "border-red-300 bg-red-50 focus:border-red-400" 
+                      errors.userEmail
+                        ? "border-red-300 bg-red-50 focus:border-red-400"
                         : "border-gray-200 bg-gray-50 focus:border-slate-400 focus:bg-white"
                     }`}
                     placeholder="Enter email"
@@ -318,7 +341,10 @@ function Register() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label htmlFor="userPassword" className="block text-sm font-medium text-gray-900 mb-3">
+                <label
+                  htmlFor="userPassword"
+                  className="block text-sm font-medium text-gray-900 mb-3"
+                >
                   Password
                 </label>
                 <div className="relative">
@@ -332,8 +358,8 @@ function Register() {
                     value={formData.userPassword}
                     onChange={handleInputChange}
                     className={`w-full pl-12 pr-14 py-4 border-2 rounded-2xl focus:outline-none focus:ring-0 transition-all duration-300 text-gray-900 placeholder-gray-500 ${
-                      errors.userPassword 
-                        ? "border-red-300 bg-red-50 focus:border-red-400" 
+                      errors.userPassword
+                        ? "border-red-300 bg-red-50 focus:border-red-400"
                         : "border-gray-200 bg-gray-50 focus:border-slate-400 focus:bg-white"
                     }`}
                     placeholder="Enter password"
@@ -343,7 +369,11 @@ function Register() {
                     onClick={() => setShowPassword((prev) => !prev)}
                     className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
                   >
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    {showPassword ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
                   </button>
                 </div>
                 {errors.userPassword && (
@@ -355,7 +385,10 @@ function Register() {
               </div>
 
               <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-900 mb-3">
+                <label
+                  htmlFor="confirmPassword"
+                  className="block text-sm font-medium text-gray-900 mb-3"
+                >
                   Confirm Password
                 </label>
                 <div className="relative">
@@ -369,8 +402,8 @@ function Register() {
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
                     className={`w-full pl-12 pr-14 py-4 border-2 rounded-2xl focus:outline-none focus:ring-0 transition-all duration-300 text-gray-900 placeholder-gray-500 ${
-                      errors.confirmPassword 
-                        ? "border-red-300 bg-red-50 focus:border-red-400" 
+                      errors.confirmPassword
+                        ? "border-red-300 bg-red-50 focus:border-red-400"
                         : "border-gray-200 bg-gray-50 focus:border-slate-400 focus:bg-white"
                     }`}
                     placeholder="Confirm password"
@@ -380,7 +413,11 @@ function Register() {
                     onClick={() => setShowConfirmPassword((prev) => !prev)}
                     className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
                   >
-                    {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    {showConfirmPassword ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
                   </button>
                 </div>
                 {errors.confirmPassword && (
@@ -393,7 +430,10 @@ function Register() {
             </div>
 
             <div>
-              <label htmlFor="role" className="block text-sm font-medium text-gray-900 mb-3">
+              <label
+                htmlFor="role"
+                className="block text-sm font-medium text-gray-900 mb-3"
+              >
                 Role
               </label>
               <div className="relative">
@@ -402,8 +442,8 @@ function Register() {
                 </div>
                 <select
                   className={`w-full pl-12 pr-4 py-4 border-2 rounded-2xl focus:outline-none focus:ring-0 transition-all duration-300 text-gray-900 bg-gray-50 ${
-                    errors.role 
-                      ? "border-red-300 bg-red-50 focus:border-red-400" 
+                    errors.role
+                      ? "border-red-300 bg-red-50 focus:border-red-400"
                       : "border-gray-200 focus:border-slate-400 focus:bg-white"
                   }`}
                   onChange={handleInputChange}
@@ -432,19 +472,22 @@ function Register() {
               type="submit"
               disabled={loading}
               className={`w-full py-4 px-6 rounded-2xl focus:outline-none focus:ring-4 focus:ring-slate-300 transition-all duration-300 font-semibold text-lg shadow-lg ${
-                loading 
-                  ? "bg-gray-400 cursor-not-allowed" 
+                loading
+                  ? "bg-gray-400 cursor-not-allowed"
                   : "bg-gradient-to-r from-slate-800 to-slate-900 text-white hover:from-slate-900 hover:to-black hover:shadow-2xl transform hover:-translate-y-1"
               }`}
             >
               {loading ? "Creating Account..." : "Create Account"}
             </button>
           </form>
-          
+
           <div className="mt-8 pt-6 border-t border-gray-200 text-center">
             <p className="text-gray-600">
               Already have an account?{" "}
-              <a href="/login" className="text-slate-800 hover:text-slate-900 font-semibold transition-colors underline decoration-2 underline-offset-2">
+              <a
+                href="/login"
+                className="text-slate-800 hover:text-slate-900 font-semibold transition-colors underline decoration-2 underline-offset-2"
+              >
                 Sign In
               </a>
             </p>

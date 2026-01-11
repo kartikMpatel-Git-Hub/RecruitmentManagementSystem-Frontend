@@ -8,6 +8,7 @@ import {
   Briefcase,
   MailsIcon,
   BookmarkIcon,
+  CheckCircle,
 } from "lucide-react";
 
 function Sidebar() {
@@ -87,6 +88,13 @@ function Sidebar() {
         >
           <BookmarkIcon className="w-5 h-5" />
           <span>View Shortlists</span>
+        </button>
+        <button
+          onClick={() => navigate("/admin/document-verification")}
+          className="flex items-center space-x-3 w-full text-left px-4 py-3 rounded-xl hover:bg-slate-700 transition-colors duration-200"
+        >
+          <CheckCircle className="w-5 h-5" />
+          <span>View Document Verification</span>
         </button>
       </nav>
     </aside>

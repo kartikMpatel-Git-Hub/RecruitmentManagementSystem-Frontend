@@ -31,7 +31,6 @@ export const AuthProvider = ({ children }) => {
       const response = await axios.get(`http://localhost:8080/users/profile`, {
         headers: { Authorization: `Bearer ${authToken}` },
       });
-      
       setProfileData({
         userId: response.data.userId || response.data.candidateId || "",
         userName: response.data.userName || "",

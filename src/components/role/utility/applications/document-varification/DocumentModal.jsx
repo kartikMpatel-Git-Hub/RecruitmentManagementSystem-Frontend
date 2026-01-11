@@ -235,7 +235,6 @@ function DocumentModal({
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-transparent"
                   >
                     <option value="">Select Status</option>
-                    <option value="UNDER_REVIEW">Under Review</option>
                     <option value="APPROVED">Approved</option>
                     <option value="REJECTED">Rejected</option>
                   </select>

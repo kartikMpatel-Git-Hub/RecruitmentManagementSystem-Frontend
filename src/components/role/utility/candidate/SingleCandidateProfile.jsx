@@ -11,8 +11,6 @@ function SingleCandidateProfile() {
   const navigate = useNavigate();
   const { authToken, userType } = useContext(AuthContext);
   const [candidate, setCandidate] = useState(null);
-  const [educations, setEducations] = useState([]);
-  const [candidateSkills, setCandidateSkills] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const fetchCandidate = async () => {
@@ -25,28 +23,12 @@ function SingleCandidateProfile() {
             headers: { Authorization: `Bearer ${authToken}` },
           }
         );
-        setCandidate(response.data);
       } else {
         response = await axios.get(`http://localhost:8080/candidates/${id}`, {
           headers: { Authorization: `Bearer ${authToken}` },
         });
-        setCandidate(response.data);
       }
-      const candidateId = response.data.candidateId;
-      if (candidateId) {
-        const educationResponse = await axios.get(
-          `http://localhost:8080/candidate-educations/candidate/${candidateId}`,
-          { headers: { Authorization: `Bearer ${authToken}` } }
-        );
-        setEducations(educationResponse.data.data || []);
-
-        // Fetch candidate skills
-        const skillsResponse = await axios.get(
-          `http://localhost:8080/candidate-skills/candidate/${candidateId}`,
-          { headers: { Authorization: `Bearer ${authToken}` } }
-        );
-        setCandidateSkills(skillsResponse.data.data || []);
-      }
+      setCandidate(response.data);
     } catch (error) {
       console.error("Error fetching candidate data:", error);
     } finally {
@@ -177,17 +159,17 @@ function SingleCandidateProfile() {
                 </div>
               </Section>
 
-              {candidateSkills && candidateSkills.length > 0 && (
+              {candidate.candidateSkills && candidate.candidateSkills.length > 0 && (
                 <Section title="Skills & Expertise">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {candidateSkills.map((candidateSkill, index) => (
+                    {candidate.candidateSkills.map((candidateSkill, index) => (
                       <div
-                        key={index}
+                        key={candidateSkill.candidateSkillId || index}
                         className="bg-gray-50 rounded-lg p-4 border border-gray-200"
                       >
                         <div className="flex items-center justify-between mb-2">
                           <h4 className="font-semibold text-gray-900">
-                            {candidateSkill.skillName}
+                            {candidateSkill.skill?.skill || "N/A"}
                           </h4>
                           <span
                             className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -217,26 +199,26 @@ function SingleCandidateProfile() {
                 </Section>
               )}
 
-              {educations && educations.length > 0 && (
+              {candidate.candidateEducations && candidate.candidateEducations.length > 0 && (
                 <Section title="Education">
                   <div className="space-y-6">
-                    {educations.map((education, index) => (
+                    {candidate.candidateEducations.map((education, index) => (
                       <div
-                        key={index}
+                        key={education.candidateEducationId || index}
                         className="border-l-4 border-blue-500 pl-4"
                       >
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                           <InfoField
                             label="Degree"
-                            value={education.degreeName}
+                            value={education.degree?.degree || education.degreeName}
                           />
                           <InfoField
                             label="University"
-                            value={education.universityName}
+                            value={education.university?.university || education.universityName}
                           />
                           <InfoField
                             label="Percentage"
-                            value={`${education.percentage}%`}
+                            value={education.percentage ? `${education.percentage}%` : "N/A"}
                           />
                           <InfoField
                             label="Passing Year"
