@@ -304,8 +304,6 @@ function InterviewSection({ app, round }) {
           <span>No interviews scheduled for this round</span>
         </div>
       )}
-
-      {/* Modals */}
       <AddInterviewModal
         isOpen={showAddForm}
         onClose={() => setShowAddForm(false)}

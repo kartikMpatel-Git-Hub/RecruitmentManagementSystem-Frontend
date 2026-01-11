@@ -213,13 +213,13 @@ function Register() {
       } catch (error) {
         console.log(error);
         
-        // toast.error(
-        //   error?.response?.data?.errors[0] || error?.response?.data?.message,
-        //   {
-        //     position: "top-right",
-        //     autoClose: 3000,
-        //   }
-        // );
+        toast.error(
+          error?.response?.data?.errors[0] || error?.response?.data?.message,
+          {
+            position: "top-right",
+            autoClose: 3000,
+          }
+        );
       } finally {
         setLoading(false);
       }
@@ -452,7 +452,6 @@ function Register() {
                   value={formData.role}
                 >
                   <option value="">Select Role</option>
-                  {/* <option value="ADMIN">Admin</option> */}
                   <option value="CANDIDATE">Candidate</option>
                   <option value="RECRUITER">Recruiter</option>
                   <option value="INTERVIEWER">Interviewer</option>

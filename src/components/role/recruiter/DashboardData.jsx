@@ -23,7 +23,6 @@ function DashboardData({ dashboardData }) {
   } = dashboardData || {};
 
   useEffect(() => {
-    // Application Status Chart
     if (applicationStatusChartRef.current && applicationStatusCounts.length > 0) {
       const ctx = applicationStatusChartRef.current.getContext('2d');
       new Chart(ctx, {
@@ -48,7 +47,6 @@ function DashboardData({ dashboardData }) {
       });
     }
 
-    // Applications Chart (7 days)
     if (applicationsChartRef.current && applicationsLast7Days.length > 0) {
       const ctx = applicationsChartRef.current.getContext('2d');
       new Chart(ctx, {
@@ -80,7 +78,6 @@ function DashboardData({ dashboardData }) {
       });
     }
 
-    // Applications Chart (15 days)
     if (applications15DayChartRef.current && applicationsLast15Days.length > 0) {
       const ctx = applications15DayChartRef.current.getContext('2d');
       new Chart(ctx, {
@@ -112,7 +109,6 @@ function DashboardData({ dashboardData }) {
       });
     }
 
-    // Position Performance Chart
     if (performanceChartRef.current && positionPerformance.length > 0) {
       const ctx = performanceChartRef.current.getContext('2d');
       new Chart(ctx, {
@@ -154,8 +150,6 @@ function DashboardData({ dashboardData }) {
           </div>
         </div>
       </div>
-
-      {/* Summary Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-10">
         <div className="bg-white rounded-3xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
           <div className="flex items-center justify-between">
@@ -217,8 +211,6 @@ function DashboardData({ dashboardData }) {
           </div>
         </div>
       </div>
-
-      {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
         <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-6">
           <div className="flex items-center space-x-3 mb-6">
@@ -268,8 +260,6 @@ function DashboardData({ dashboardData }) {
           </div>
         </div>
       </div>
-
-      {/* Upcoming Interviews */}
       {upcomingInterviews && upcomingInterviews.length > 0 && (
         <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-8 mb-10">
           <div className="flex items-center space-x-3 mb-6">
@@ -308,8 +298,6 @@ function DashboardData({ dashboardData }) {
           </div>
         </div>
       )}
-
-      {/* Recent Applications */}
       <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-8 mb-10">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-3">
@@ -360,8 +348,6 @@ function DashboardData({ dashboardData }) {
           </div>
         )}
       </div>
-
-      {/* Positions Overview */}
       <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-8 mb-10">
         <div className="flex items-center space-x-3 mb-6">
           <div className="p-2 bg-gradient-to-r from-slate-800 to-slate-900 rounded-xl">
@@ -415,8 +401,6 @@ function DashboardData({ dashboardData }) {
           </div>
         )}
       </div>
-
-      {/* Position Performance Details */}
       <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-8">
         <div className="flex items-center space-x-3 mb-6">
           <div className="p-2 bg-gradient-to-r from-slate-800 to-slate-900 rounded-xl">

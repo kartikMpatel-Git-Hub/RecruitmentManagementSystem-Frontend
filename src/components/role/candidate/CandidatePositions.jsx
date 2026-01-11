@@ -284,7 +284,6 @@ const CandidatePositions = () => {
                   </button>
                 </div>
               </div>
-              {/* )} */}
             </div>
 
             {positions.length === 0 ? (

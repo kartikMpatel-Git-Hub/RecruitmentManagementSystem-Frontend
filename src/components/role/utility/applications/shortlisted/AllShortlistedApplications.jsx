@@ -219,7 +219,6 @@ function AllShortlistedApplications() {
   return (
     <Layout>
       <div className="max-w-7xl mx-auto">
-        {/* Header Card */}
         <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-8 mb-8">
           <div className="flex items-center gap-4">
             <button
@@ -239,8 +238,6 @@ function AllShortlistedApplications() {
             </div>
           </div>
         </div>
-
-        {/* Content */}
         {shortlistedApplications.length === 0 ? (
           <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-16 text-center">
             <Star className="w-24 h-24 text-gray-300 mx-auto mb-6" />
@@ -261,8 +258,6 @@ function AllShortlistedApplications() {
             fetchShortlistedApplications={fetchShortlistedApplications}
           />
         )}
-
-        {/* Modals */}
         {showProfileModal && (
           <ProfileModal
             closeProfileModal={closeProfileModal}

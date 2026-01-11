@@ -177,7 +177,6 @@ const BulkEntryList = () => {
               </div>
             </div>
 
-            {/* Excel Format Guide Notice */}
             <div className="bg-amber-50 border border-amber-200 rounded-2xl overflow-hidden shadow-lg">
               <button
                 onClick={() => setShowFormatGuide(!showFormatGuide)}
@@ -207,7 +206,6 @@ const BulkEntryList = () => {
                     Your Excel file (.xlsx) must contain the following columns in the exact order. Below is the required structure with sample data:
                   </p>
                   
-                  {/* Column Structure Table */}
                   <div className="bg-white rounded-xl border border-amber-200 overflow-hidden mb-4">
                     <div className="overflow-x-auto">
                       <table className="w-full text-sm">
@@ -237,8 +235,6 @@ const BulkEntryList = () => {
                       </table>
                     </div>
                   </div>
-
-                  {/* Sample Data Table */}
                   <h4 className="text-sm font-semibold text-amber-900 mb-3 flex items-center gap-2">
                     <FileText className="w-4 h-4" />
                     Sample Data (Copy this format in your Excel):
@@ -406,7 +402,6 @@ const BulkEntryList = () => {
             </div>
           )}
 
-          {/* Pagination */}
           {pagination.totalPages >= 1 && (
             <div className="flex items-center justify-between px-6 py-4 mt-6 bg-white rounded-2xl shadow-lg border border-gray-200">
               <p className="text-sm text-gray-600">

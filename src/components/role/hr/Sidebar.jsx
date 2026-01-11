@@ -82,7 +82,6 @@ function Sidebar() {
           <CheckCircle className="w-5 h-5" />
           <span>View Document Verification</span>
         </button>
-        {/* document-verification */}
       </nav>
     </aside>
   );

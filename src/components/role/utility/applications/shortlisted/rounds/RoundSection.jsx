@@ -369,8 +369,6 @@ function RoundSection({ app, fetchShortlistedApplications, openHoldStatus }) {
                             </div>
                           )}
                         </div>
-
-                        {/* Right side actions & stars */}
                         <div className="flex flex-col items-end justify-between gap-2">
                           {canModifyRounds && (
                             <div className="flex items-center gap-2">
@@ -465,8 +463,6 @@ function RoundSection({ app, fetchShortlistedApplications, openHoldStatus }) {
           )}
         </td>
       </tr>
-
-      {/* Modals */}
       <AddRoundModal
         isOpen={showAddForm}
         onClose={() => setShowAddForm(false)}

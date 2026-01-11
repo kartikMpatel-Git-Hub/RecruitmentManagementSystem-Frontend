@@ -230,8 +230,6 @@ function UserList({
           </div>
         )}
       </div>
-
-      {/* Create User Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <div

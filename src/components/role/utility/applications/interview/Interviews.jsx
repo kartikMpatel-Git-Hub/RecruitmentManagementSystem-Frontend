@@ -288,7 +288,6 @@ function Interviews() {
   return (
     <Layout>
       <div className="max-w-7xl mx-auto">
-        {/* Header Card */}
         <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-8 mb-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -322,8 +321,6 @@ function Interviews() {
             )}
           </div>
         </div>
-
-        {/* Content */}
         {interviews.length === 0 ? (
           <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-16 text-center">
             <Video className="w-24 h-24 text-gray-300 mx-auto mb-6" />
@@ -341,7 +338,6 @@ function Interviews() {
                 key={interview.interviewId}
                 className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6"
               >
-                {/* Interview Header */}
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-full flex items-center justify-center font-bold">
@@ -418,8 +414,6 @@ function Interviews() {
                     )}
                   </div>
                 </div>
-
-                {/* Interview Details */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-4">
                   <div className="flex items-center gap-2 bg-gray-50 p-3 rounded-lg">
                     <Calendar className="w-4 h-4 text-gray-500" />
@@ -471,7 +465,6 @@ function Interviews() {
                     </div>
                   </div>
                 </div>
-                {/* Interviewers Section */}
                 {interview.interviewers &&
                   interview.interviewers.length > 0 && (
                     <div className="mt-4 border-t border-gray-200 pt-4">
@@ -488,7 +481,6 @@ function Interviews() {
                             key={interviewerData.interviewInterviewerId}
                             className="bg-gray-50 rounded-xl p-4 border border-gray-200"
                           >
-                            {/* Interviewer Info */}
                             <div className="flex items-center justify-between mb-3">
                               <div className="flex items-center gap-3">
                                 {interviewerData.interviewer?.userImageUrl ? (
@@ -527,8 +519,6 @@ function Interviews() {
                                   : "Pending"}
                               </span>
                             </div>
-
-                            {/* Feedback Section */}
                             {interviewerData.isFeedbackGiven &&
                               interviewerData.interviewerFeedback && (
                                 <div className="bg-white rounded-lg p-4 border border-gray-200">
@@ -544,8 +534,6 @@ function Interviews() {
                                         .interviewFeedback
                                     }
                                   </p>
-
-                                  {/* Skill Ratings */}
                                   {interviewerData.interviewerFeedback
                                     .skillRatings &&
                                     interviewerData.interviewerFeedback
@@ -608,8 +596,6 @@ function Interviews() {
             ))}
           </div>
         )}
-
-        {/* Add Interview Modal */}
         {showAddForm && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
@@ -727,8 +713,6 @@ function Interviews() {
             </div>
           </div>
         )}
-
-        {/* Edit Interview Modal */}
         {editingInterview && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
