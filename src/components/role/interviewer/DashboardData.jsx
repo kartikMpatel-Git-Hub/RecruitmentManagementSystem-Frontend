@@ -65,8 +65,6 @@ function DashboardData({ dashboardData }) {
           </div>
         </div>
       </div>
-
-      {/* Summary Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-10">
         <div className="bg-white rounded-3xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
           <div className="flex items-center justify-between">
@@ -144,8 +142,6 @@ function DashboardData({ dashboardData }) {
           </div>
         </div>
       </div>
-
-      {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
         <InterviewStatusChart interviewStatusCounts={interviewStatusCounts} />
         <InterviewTrendChart
@@ -153,13 +149,9 @@ function DashboardData({ dashboardData }) {
           interviewsPerPrevious7Days={interviewsPerPrevious7Days}
         />
       </div>
-
-      {/* Feedback Status Chart */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
         <FeedbackStatusChart feedbackStatus={feedbackStatus} />
       </div>
-
-      {/* Today's Interviews */}
       {todaysInterviews && todaysInterviews.length > 0 && (
         <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-8 mb-10">
           <div className="flex items-center space-x-3 mb-6">
@@ -202,8 +194,6 @@ function DashboardData({ dashboardData }) {
           </div>
         </div>
       )}
-
-      {/* Upcoming Interviews */}
       <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-8 mb-10">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-3">
@@ -328,8 +318,6 @@ function DashboardData({ dashboardData }) {
           </div>
         )}
       </div>
-
-      {/* Completed Interviews */}
       <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-8">
         <div className="flex items-center space-x-3 mb-6">
           <div className="p-2 bg-gradient-to-r from-slate-600 to-slate-700 rounded-xl">
@@ -383,7 +371,6 @@ function DashboardData({ dashboardData }) {
   );
 }
 
-// Interview Status Chart Component
 function InterviewStatusChart({ interviewStatusCounts }) {
   const chartRef = useRef(null);
 
@@ -432,7 +419,6 @@ function InterviewStatusChart({ interviewStatusCounts }) {
   );
 }
 
-// Interview Trend Chart Component
 function InterviewTrendChart({
   interviewsPerNext7Days,
   interviewsPerPrevious7Days,
@@ -500,8 +486,6 @@ function InterviewTrendChart({
     </div>
   );
 }
-
-// Feedback Status Chart Component
 function FeedbackStatusChart({ feedbackStatus }) {
   const chartRef = useRef(null);
 

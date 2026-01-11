@@ -114,7 +114,6 @@ function Round({ app, fetchShortlistedApplications, openHoldStatus, authToken, u
                   .sort((a, b) => a.roundSequence - b.roundSequence)
                   .map((round) => (
                     <div key={round.roundId} className="bg-white p-4 rounded-lg shadow">
-                      {/* Round Info Block */}
                       <div className="flex justify-between">
                         <div>
                           <div className="flex items-center gap-3">
@@ -153,11 +152,8 @@ function Round({ app, fetchShortlistedApplications, openHoldStatus, authToken, u
                               : round.roundExpectedTime || "Not Set"}
                           </p>
                         </div>
-
-                        {/* Controls */}
                         {allowedUser() && (
                           <div className="flex items-center gap-3">
-                            {/* Give Result */}
                             {round.roundResult === "PENDING" &&
                               isRoundCompleted(round) && (
                                 <button
@@ -167,8 +163,6 @@ function Round({ app, fetchShortlistedApplications, openHoldStatus, authToken, u
                                   Result
                                 </button>
                               )}
-
-                            {/* Edit */}
                             {!isRoundCompleted(round) && (
                               <button
                                 className="p-2 text-blue-600"
@@ -177,8 +171,6 @@ function Round({ app, fetchShortlistedApplications, openHoldStatus, authToken, u
                                 ✎
                               </button>
                             )}
-
-                            {/* Delete */}
                             {!isRoundCompleted(round) && (
                               <button
                                 className="p-2 text-red-600"
@@ -190,8 +182,6 @@ function Round({ app, fetchShortlistedApplications, openHoldStatus, authToken, u
                           </div>
                         )}
                       </div>
-
-                      {/* Inject Interview Component */}
                       {(round.roundType === "TECHNICAL" ||
                         round.roundType === "HR") && (
                         <Interview
@@ -219,8 +209,6 @@ function Round({ app, fetchShortlistedApplications, openHoldStatus, authToken, u
           </div>
         </td>
       </tr>
-
-      {/* MODALS */}
       {addModal && (
         <RoundAddModal
           visible={addModal}

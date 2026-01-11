@@ -28,7 +28,6 @@ function Header() {
       });
       setRequestCount(res.data || 0);
     } catch (error) {
-      // console.log(error);
     }
   };
 

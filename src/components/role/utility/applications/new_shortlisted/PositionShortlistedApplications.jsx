@@ -103,7 +103,6 @@ function PositionShortlistedApplications() {
   return (
     <Layout>
       <div className="max-w-7xl mx-auto">
-        {/* Header Card */}
         <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-8 mb-8">
           <div className="flex items-center gap-4">
             <button
@@ -125,8 +124,6 @@ function PositionShortlistedApplications() {
             </div>
           </div>
         </div>
-
-        {/* Content */}
         {applications.length === 0 ? (
           <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-16 text-center">
             <Star className="w-24 h-24 text-gray-300 mx-auto mb-6" />
@@ -139,7 +136,6 @@ function PositionShortlistedApplications() {
           </div>
         ) : (
           <div className="bg-white rounded-3xl shadow-xl border border-gray-200 overflow-hidden">
-            {/* Table */}
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-gray-50 border-b border-gray-200">
@@ -241,8 +237,6 @@ function PositionShortlistedApplications() {
                 </tbody>
               </table>
             </div>
-
-            {/* Pagination */}
             {pagination.totalPages >= 1 && (
               <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-gray-50">
                 <p className="text-sm text-gray-600">

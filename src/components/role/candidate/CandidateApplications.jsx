@@ -49,9 +49,6 @@ function CandidateApplications() {
       );
 
       setApplications(response.data.data || []);
-      // console.log(response.data.data);
-
-      // Fetch document verifications for DOCUMENT_VERIFICATION status applications
       const docVerificationApps = response.data.data.filter(
         (app) =>
           app.applicationStatus.applicationStatus === "DOCUMENT_VERIFICATION"
@@ -61,7 +58,6 @@ function CandidateApplications() {
         fetchDocumentVerification(app.applicationId);
       }
     } catch (error) {
-      // console.log(error);
     } finally {
       setLoading(false);
     }
@@ -83,7 +79,6 @@ function CandidateApplications() {
         [applicationId]: response.data,
       }));
     } catch (error) {
-      // console.log("Error fetching document verification:", error);
     }
   };
 
@@ -282,7 +277,6 @@ function CandidateApplications() {
                           Document Verification
                         </h4>
 
-                        {/* Show uploaded documents */}
                         {documentVerifications[application.applicationId]
                           ?.documents?.length > 0 && (
                           <div className="mb-4">
@@ -356,7 +350,6 @@ function CandidateApplications() {
                                     </div>
                                   </div>
 
-                                  {/* Edit document form */}
                                   {editingDocument === doc.documentId && (
                                     <div className="mt-3 pt-3 border-t border-yellow-200">
                                       {uploadingDoc === doc.documentId ? (
@@ -397,8 +390,6 @@ function CandidateApplications() {
                             </div>
                           </div>
                         )}
-
-                        {/* Document Upload Fields */}
                         <div>
                           <p className="text-sm text-yellow-800 mb-3">
                             {documentVerifications[application.applicationId]?.documents?.length > 0 

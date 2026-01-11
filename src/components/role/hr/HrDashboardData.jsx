@@ -307,8 +307,6 @@ function HrDashboardData({ dashboardData }) {
           </div>
         </div>
       </div>
-
-      {/* Summary Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
         <div className="bg-white rounded-3xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
           <div className="flex items-center justify-between">
@@ -377,8 +375,6 @@ function HrDashboardData({ dashboardData }) {
           </div>
         </div>
       </div>
-
-      {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
         <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-6">
           <div className="flex items-center space-x-3 mb-6">
@@ -462,8 +458,6 @@ function HrDashboardData({ dashboardData }) {
           </div>
         </div>
       </div>
-
-      {/* Upcoming Interviews */}
       {upcomingInterviews && upcomingInterviews.length > 0 && (
         <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-8 mb-10">
           <div className="flex items-center space-x-3 mb-6">
@@ -516,8 +510,6 @@ function HrDashboardData({ dashboardData }) {
           </div>
         </div>
       )}
-
-      {/* Recent Candidates */}
       <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-8 mb-10">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-3">
@@ -592,10 +584,7 @@ function HrDashboardData({ dashboardData }) {
           </div>
         )}
       </div>
-
-      {/* Data Tables */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
-        {/* Top Candidates by Experience */}
         <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-6">
           <div className="flex items-center space-x-3 mb-6">
             <div className="p-2 bg-gradient-to-r from-slate-800 to-slate-900 rounded-xl">
@@ -638,8 +627,6 @@ function HrDashboardData({ dashboardData }) {
             ))}
           </div>
         </div>
-
-        {/* Position Analytics */}
         <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-6">
           <div className="flex items-center space-x-3 mb-6">
             <div className="p-2 bg-gradient-to-r from-slate-800 to-slate-900 rounded-xl">
@@ -688,8 +675,6 @@ function HrDashboardData({ dashboardData }) {
           </div>
         </div>
       </div>
-
-      {/* 15-Day Applications Chart */}
       {applicationsPerDayLast15Days &&
         applicationsPerDayLast15Days.length > 0 && (
           <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-6 mb-10">
@@ -706,8 +691,6 @@ function HrDashboardData({ dashboardData }) {
             </div>
           </div>
         )}
-
-      {/* Monthly Hiring Stats */}
       {monthlyHiringStats && monthlyHiringStats.length > 0 && (
         <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-8 mb-10">
           <div className="flex items-center space-x-3 mb-6">
@@ -738,10 +721,7 @@ function HrDashboardData({ dashboardData }) {
           </div>
         </div>
       )}
-
-      {/* Additional Data Sections */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* Top Degrees */}
         <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-6">
           <div className="flex items-center space-x-3 mb-6">
             <div className="p-2 bg-gradient-to-r from-slate-800 to-slate-900 rounded-xl">
@@ -765,8 +745,6 @@ function HrDashboardData({ dashboardData }) {
             ))}
           </div>
         </div>
-
-        {/* Top Universities */}
         <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-6">
           <div className="flex items-center space-x-3 mb-6">
             <div className="p-2 bg-gradient-to-r from-slate-800 to-slate-900 rounded-xl">
@@ -792,8 +770,6 @@ function HrDashboardData({ dashboardData }) {
             ))}
           </div>
         </div>
-
-        {/* System Stats */}
         <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-6">
           <div className="flex items-center space-x-3 mb-6">
             <div className="p-2 bg-gradient-to-r from-slate-800 to-slate-900 rounded-xl">

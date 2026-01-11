@@ -183,7 +183,6 @@ function CandidateList({ candidates, onUpdate, onDelete, onView, pagination, onP
           </div>
         )}
 
-        {/* Pagination */}
         {pagination && pagination.totalPages >= 1 && (
           <div className="flex items-center justify-between px-6 py-4 mt-6 bg-white rounded-2xl shadow-lg border border-gray-200">
             <p className="text-sm text-gray-600">
@@ -216,8 +215,6 @@ function CandidateList({ candidates, onUpdate, onDelete, onView, pagination, onP
           </div>
         )}
       </div>
-
-      {/* Resume Upload Modal */}
       {showResumeModal && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6">

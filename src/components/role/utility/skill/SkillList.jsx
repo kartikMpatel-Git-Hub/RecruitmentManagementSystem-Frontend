@@ -155,8 +155,6 @@ const SkillList = () => {
               ))}
             </div>
           )}
-
-          {/* Pagination */}
           {pagination.totalPages >= 1 && (
             <div className="flex items-center justify-between px-6 py-4 mt-6 bg-white rounded-2xl shadow-lg border border-gray-200">
               <p className="text-sm text-gray-600">

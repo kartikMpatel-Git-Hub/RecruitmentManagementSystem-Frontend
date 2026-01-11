@@ -31,7 +31,6 @@ function Rounds() {
   const [applicationStatus, setApplicationStatus] = useState(null);
   const [applicationData, setApplicationData] = useState(null);
 
-  // Modal states
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingRound, setEditingRound] = useState(null);
   const [showPassForm, setShowPassForm] = useState(false);
@@ -61,7 +60,6 @@ function Rounds() {
     []
   );
 
-  // Get available status options based on current application status
   const getAvailableStatusOptions = () => {
     if (applicationStatus === "SHORTLISTED") {
       return ["SHORTLISTED", "ONHOLD", "DOCUMENT_VERIFICATION"];
@@ -83,13 +81,11 @@ function Rounds() {
     );
   };
 
-  // Check if all rounds are passed
   const areAllRoundsPassed = () => {
     if (rounds.length === 0) return false;
     return rounds.every((round) => round.roundResult === "PASS");
   };
 
-  // Check if status change button should be visible
   const canChangeStatus = () => {
     return (
       applicationStatus === "SHORTLISTED" ||
@@ -108,16 +104,13 @@ function Rounds() {
         }
       );
       
-      // Handle nested response structure
       const application = response.data;
       setApplicationData(application);
       
-      // Set application status
       if (application?.applicationStatus?.applicationStatus) {
         setApplicationStatus(application.applicationStatus.applicationStatus);
       }
 
-      // Get rounds from application data
       const roundsData = application?.rounds || [];
       setRounds(roundsData);
       
@@ -264,7 +257,6 @@ function Rounds() {
       return toast.error("Please select a status");
     }
 
-    // Validation: All rounds must be passed before DOCUMENT_VERIFICATION
     if (statusFormData.applicationStatus === "DOCUMENT_VERIFICATION") {
       if (rounds.length === 0) {
         return toast.error("Cannot move to Document Verification: No rounds have been added yet");
@@ -360,7 +352,6 @@ function Rounds() {
   return (
     <Layout>
       <div className="max-w-7xl mx-auto">
-        {/* Header Card */}
         <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-8 mb-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -420,8 +411,6 @@ function Rounds() {
             )}
           </div>
         </div>
-
-        {/* Content */}
         {rounds.length === 0 ? (
           <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-16 text-center">
             <ClipboardList className="w-24 h-24 text-gray-300 mx-auto mb-6" />
@@ -442,7 +431,6 @@ function Rounds() {
                   key={round.roundId}
                   className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6"
                 >
-                  {/* Round Header */}
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-4">
                       <div className="w-10 h-10 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-full flex items-center justify-center font-bold">
@@ -461,8 +449,6 @@ function Rounds() {
                         </span>
                       </div>
                     </div>
-
-                    {/* Actions */}
                     <div className="flex items-center gap-2">
                       {(round.roundType === "TECHNICAL" ||
                         round.roundType === "HR") && (
@@ -513,8 +499,6 @@ function Rounds() {
                       )}
                     </div>
                   </div>
-
-                  {/* Round Details */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-4">
                     <div className="flex items-center gap-2 bg-gray-50 p-3 rounded-lg">
                       <Calendar className="w-4 h-4 text-gray-500" />
@@ -582,8 +566,6 @@ function Rounds() {
                       </div>
                     </div>
                   </div>
-
-                  {/* Feedback */}
                   {round.roundFeedback && (
                     <div className="bg-gray-50 p-4 rounded-lg">
                       <div className="flex items-center gap-2 mb-2">
@@ -601,8 +583,6 @@ function Rounds() {
               ))}
           </div>
         )}
-
-        {/* Add Round Modal */}
         {showAddForm && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
@@ -715,8 +695,6 @@ function Rounds() {
             </div>
           </div>
         )}
-
-        {/* Edit Round Modal */}
         {editingRound && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
@@ -829,8 +807,6 @@ function Rounds() {
             </div>
           </div>
         )}
-
-        {/* Change Status Modal */}
         {showStatusModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
@@ -906,8 +882,6 @@ function Rounds() {
             </div>
           </div>
         )}
-
-        {/* Pass Round Modal */}
         {showPassForm && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">

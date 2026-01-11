@@ -55,7 +55,6 @@ function PositionModal({
             ) : position ? (
               <div className="flex flex-col h-full">
                 <div className="bg-gradient-to-br bg-slate-800 text-white p-5 relative overflow-hidden">
-                  {/* <div className="absolute inset-0 "></div> */}
                   <div className="relative flex items-center justify-between">
                     <div className="flex items-center gap-6">
                       <div className="p-4 bg-white/20 backdrop-blur-sm rounded-3xl border border-white/30">
