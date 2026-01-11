@@ -407,75 +407,35 @@ const PositionList = () => {
                 ))}
               </div>
 
-              {pagination.totalPages > 1 && (
-                <div className="bg-white rounded-3xl shadow-xl border border-gray-200 p-6 mt-8">
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm text-gray-600">
-                      Showing {pagination.currentPage * pagination.pageSize + 1}{" "}
-                      to{" "}
-                      {Math.min(
-                        (pagination.currentPage + 1) * pagination.pageSize,
-                        pagination.totalItems
-                      )}{" "}
-                      of {pagination.totalItems} positions
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() =>
-                          fetchPositions(
-                            pagination.currentPage - 1,
-                            pagination.pageSize
-                          )
-                        }
-                        disabled={pagination.currentPage === 0}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 disabled:bg-gray-300 disabled:text-gray-500 transition-all"
-                      >
-                        <ChevronLeft className="w-4 h-4" />
-                        Previous
-                      </button>
-
-                      <div className="flex items-center gap-1">
-                        {Array.from(
-                          { length: Math.min(5, pagination.totalPages) },
-                          (_, i) => {
-                            const pageNum =
-                              pagination.currentPage < 3
-                                ? i
-                                : pagination.currentPage - 2 + i;
-                            if (pageNum >= pagination.totalPages) return null;
-                            return (
-                              <button
-                                key={pageNum}
-                                onClick={() =>
-                                  fetchPositions(pageNum, pagination.pageSize)
-                                }
-                                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                                  pageNum === pagination.currentPage
-                                    ? "bg-slate-800 text-white"
-                                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                                }`}
-                              >
-                                {pageNum + 1}
-                              </button>
-                            );
-                          }
-                        )}
-                      </div>
-
-                      <button
-                        onClick={() =>
-                          fetchPositions(
-                            pagination.currentPage + 1,
-                            pagination.pageSize
-                          )
-                        }
-                        disabled={pagination.last}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 disabled:bg-gray-300 disabled:text-gray-500 transition-all"
-                      >
-                        Next
-                        <ChevronRight className="w-4 h-4" />
-                      </button>
-                    </div>
+              {/* Pagination */}
+              {pagination.totalPages >= 1 && (
+                <div className="flex items-center justify-between px-6 py-4 mt-6 bg-white rounded-2xl shadow-lg border border-gray-200">
+                  <p className="text-sm text-gray-600">
+                    Showing {pagination.currentPage * pagination.pageSize + 1} to{" "}
+                    {Math.min(
+                      (pagination.currentPage + 1) * pagination.pageSize,
+                      pagination.totalItems
+                    )}{" "}
+                    of {pagination.totalItems} positions
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => fetchPositions(pagination.currentPage - 1, pagination.pageSize)}
+                      disabled={pagination.currentPage === 0}
+                      className="p-2 rounded-lg border border-gray-300 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <ChevronLeft className="w-5 h-5 text-gray-600" />
+                    </button>
+                    <span className="px-4 py-2 text-sm font-medium text-gray-700">
+                      Page {pagination.currentPage + 1} of {pagination.totalPages}
+                    </span>
+                    <button
+                      onClick={() => fetchPositions(pagination.currentPage + 1, pagination.pageSize)}
+                      disabled={pagination.last}
+                      className="p-2 rounded-lg border border-gray-300 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <ChevronRight className="w-5 h-5 text-gray-600" />
+                    </button>
                   </div>
                 </div>
               )}

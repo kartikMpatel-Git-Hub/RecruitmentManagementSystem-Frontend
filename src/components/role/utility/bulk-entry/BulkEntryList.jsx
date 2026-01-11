@@ -13,6 +13,11 @@ import {
   FileText,
   X,
   Eye,
+  ChevronLeft,
+  ChevronRight,
+  Info,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { toast } from "react-toastify";
 import Layout from "../Layout";
@@ -26,17 +31,34 @@ const BulkEntryList = () => {
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
+  const [showFormatGuide, setShowFormatGuide] = useState(false);
+  const [pagination, setPagination] = useState({
+    currentPage: 0,
+    pageSize: 10,
+    totalItems: 0,
+    totalPages: 0,
+    last: false,
+  });
 
-  const fetchJobs = async () => {
+  const fetchJobs = async (page = 0) => {
     try {
       const response = await axios.get("http://localhost:8080/bulk-entries/", {
         headers: { Authorization: `Bearer ${authToken}` },
+        params: { page, size: pagination.pageSize },
       });
-      setJobs(response.data.data || response.data);
+      const { data, currentPage, pageSize, totalItems, totalPages, last } = response.data;
+      setJobs(data || response.data);
+      setPagination({ currentPage, pageSize, totalItems, totalPages, last });
     } catch (error) {
       console.error("Error fetching jobs:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 0 && newPage < pagination.totalPages) {
+      fetchJobs(newPage);
     }
   };
 
@@ -154,6 +176,131 @@ const BulkEntryList = () => {
                 </button>
               </div>
             </div>
+
+            {/* Excel Format Guide Notice */}
+            <div className="bg-amber-50 border border-amber-200 rounded-2xl overflow-hidden shadow-lg">
+              <button
+                onClick={() => setShowFormatGuide(!showFormatGuide)}
+                className="w-full flex items-center justify-between p-4 text-left hover:bg-amber-100 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-amber-200 rounded-xl">
+                    <Info className="w-5 h-5 text-amber-700" />
+                  </div>
+                  <div>
+                    <span className="text-base font-semibold text-amber-900">
+                      Excel File Format Guide
+                    </span>
+                    <p className="text-sm text-amber-700">Click to view required column structure and sample data</p>
+                  </div>
+                </div>
+                {showFormatGuide ? (
+                  <ChevronUp className="w-5 h-5 text-amber-700" />
+                ) : (
+                  <ChevronDown className="w-5 h-5 text-amber-700" />
+                )}
+              </button>
+              
+              {showFormatGuide && (
+                <div className="px-6 pb-6 border-t border-amber-200">
+                  <p className="text-sm text-amber-800 mt-4 mb-4">
+                    Your Excel file (.xlsx) must contain the following columns in the exact order. Below is the required structure with sample data:
+                  </p>
+                  
+                  {/* Column Structure Table */}
+                  <div className="bg-white rounded-xl border border-amber-200 overflow-hidden mb-4">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead className="bg-slate-800 text-white">
+                          <tr>
+                            <th className="px-3 py-2.5 text-left font-medium">#</th>
+                            <th className="px-3 py-2.5 text-left font-medium">Column Name</th>
+                            <th className="px-3 py-2.5 text-left font-medium">Description</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-amber-100">
+                          <tr className="hover:bg-amber-50"><td className="px-3 py-2 text-gray-500">1</td><td className="px-3 py-2 font-medium text-gray-700">userName</td><td className="px-3 py-2 text-gray-600">Unique username for login</td></tr>
+                          <tr className="hover:bg-amber-50"><td className="px-3 py-2 text-gray-500">2</td><td className="px-3 py-2 font-medium text-gray-700">userEmail</td><td className="px-3 py-2 text-gray-600">Valid email address</td></tr>
+                          <tr className="hover:bg-amber-50"><td className="px-3 py-2 text-gray-500">3</td><td className="px-3 py-2 font-medium text-gray-700">candidateFirstName</td><td className="px-3 py-2 text-gray-600">First name</td></tr>
+                          <tr className="hover:bg-amber-50"><td className="px-3 py-2 text-gray-500">4</td><td className="px-3 py-2 font-medium text-gray-700">candidateMiddleName</td><td className="px-3 py-2 text-gray-600">Middle name (optional)</td></tr>
+                          <tr className="hover:bg-amber-50"><td className="px-3 py-2 text-gray-500">5</td><td className="px-3 py-2 font-medium text-gray-700">candidateLastName</td><td className="px-3 py-2 text-gray-600">Last name</td></tr>
+                          <tr className="hover:bg-amber-50"><td className="px-3 py-2 text-gray-500">6</td><td className="px-3 py-2 font-medium text-gray-700">candidatePhoneNumber</td><td className="px-3 py-2 text-gray-600">10-digit phone number</td></tr>
+                          <tr className="hover:bg-amber-50"><td className="px-3 py-2 text-gray-500">7</td><td className="px-3 py-2 font-medium text-gray-700">candidateGender</td><td className="px-3 py-2 text-gray-600">Male or Female</td></tr>
+                          <tr className="hover:bg-amber-50"><td className="px-3 py-2 text-gray-500">8</td><td className="px-3 py-2 font-medium text-gray-700">candidateDateOfBirth</td><td className="px-3 py-2 text-gray-600">Date in YYYY-MM-DD format</td></tr>
+                          <tr className="hover:bg-amber-50"><td className="px-3 py-2 text-gray-500">9</td><td className="px-3 py-2 font-medium text-gray-700">candidateAddress</td><td className="px-3 py-2 text-gray-600">Street address</td></tr>
+                          <tr className="hover:bg-amber-50"><td className="px-3 py-2 text-gray-500">10</td><td className="px-3 py-2 font-medium text-gray-700">candidateCity</td><td className="px-3 py-2 text-gray-600">City name</td></tr>
+                          <tr className="hover:bg-amber-50"><td className="px-3 py-2 text-gray-500">11</td><td className="px-3 py-2 font-medium text-gray-700">candidateState</td><td className="px-3 py-2 text-gray-600">State name</td></tr>
+                          <tr className="hover:bg-amber-50"><td className="px-3 py-2 text-gray-500">12</td><td className="px-3 py-2 font-medium text-gray-700">candidateCountry</td><td className="px-3 py-2 text-gray-600">Country name</td></tr>
+                          <tr className="hover:bg-amber-50"><td className="px-3 py-2 text-gray-500">13</td><td className="px-3 py-2 font-medium text-gray-700">candidateZipCode</td><td className="px-3 py-2 text-gray-600">Postal/ZIP code</td></tr>
+                          <tr className="hover:bg-amber-50"><td className="px-3 py-2 text-gray-500">14</td><td className="px-3 py-2 font-medium text-gray-700">candidateTotalExperienceInYears</td><td className="px-3 py-2 text-gray-600">Years of experience (number)</td></tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  {/* Sample Data Table */}
+                  <h4 className="text-sm font-semibold text-amber-900 mb-3 flex items-center gap-2">
+                    <FileText className="w-4 h-4" />
+                    Sample Data (Copy this format in your Excel):
+                  </h4>
+                  <div className="bg-white rounded-xl border border-amber-200 overflow-hidden">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-xs">
+                        <thead className="bg-slate-800 text-white">
+                          <tr>
+                            <th className="px-2 py-2 text-left font-medium whitespace-nowrap">userName</th>
+                            <th className="px-2 py-2 text-left font-medium whitespace-nowrap">userEmail</th>
+                            <th className="px-2 py-2 text-left font-medium whitespace-nowrap">candidateFirstName</th>
+                            <th className="px-2 py-2 text-left font-medium whitespace-nowrap">candidateMiddleName</th>
+                            <th className="px-2 py-2 text-left font-medium whitespace-nowrap">candidateLastName</th>
+                            <th className="px-2 py-2 text-left font-medium whitespace-nowrap">candidatePhoneNumber</th>
+                            <th className="px-2 py-2 text-left font-medium whitespace-nowrap">candidateGender</th>
+                            <th className="px-2 py-2 text-left font-medium whitespace-nowrap">candidateDateOfBirth</th>
+                            <th className="px-2 py-2 text-left font-medium whitespace-nowrap">candidateAddress</th>
+                            <th className="px-2 py-2 text-left font-medium whitespace-nowrap">candidateCity</th>
+                            <th className="px-2 py-2 text-left font-medium whitespace-nowrap">candidateState</th>
+                            <th className="px-2 py-2 text-left font-medium whitespace-nowrap">candidateCountry</th>
+                            <th className="px-2 py-2 text-left font-medium whitespace-nowrap">candidateZipCode</th>
+                            <th className="px-2 py-2 text-left font-medium whitespace-nowrap">candidateTotalExperienceInYears</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-amber-100">
+                          <tr className="hover:bg-amber-50">
+                            <td className="px-2 py-1.5 text-gray-700 whitespace-nowrap">kartik01</td>
+                            <td className="px-2 py-1.5 text-gray-700 whitespace-nowrap">patelkartik7892@gmail.com</td>
+                            <td className="px-2 py-1.5 text-gray-700 whitespace-nowrap">kartik</td>
+                            <td className="px-2 py-1.5 text-gray-700 whitespace-nowrap">miteshbhai</td>
+                            <td className="px-2 py-1.5 text-gray-700 whitespace-nowrap">patel</td>
+                            <td className="px-2 py-1.5 text-gray-700 whitespace-nowrap">8460888834</td>
+                            <td className="px-2 py-1.5 text-gray-700 whitespace-nowrap">Male</td>
+                            <td className="px-2 py-1.5 text-gray-700 whitespace-nowrap">2004-05-22</td>
+                            <td className="px-2 py-1.5 text-gray-700 whitespace-nowrap">123 Street</td>
+                            <td className="px-2 py-1.5 text-gray-700 whitespace-nowrap">Bhavnagar</td>
+                            <td className="px-2 py-1.5 text-gray-700 whitespace-nowrap">Gujarat</td>
+                            <td className="px-2 py-1.5 text-gray-700 whitespace-nowrap">India</td>
+                            <td className="px-2 py-1.5 text-gray-700 whitespace-nowrap">364004</td>
+                            <td className="px-2 py-1.5 text-gray-700 whitespace-nowrap">2</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 flex items-start gap-2 p-3 bg-amber-100 rounded-lg">
+                    <Info className="w-4 h-4 mt-0.5 flex-shrink-0 text-amber-700" />
+                    <div className="text-sm text-amber-800">
+                      <strong>Important Notes:</strong>
+                      <ul className="list-disc list-inside mt-1 space-y-1">
+                        <li>Date format must be <strong>YYYY-MM-DD</strong> (e.g., 1998-01-21)</li>
+                        <li>Gender must be exactly <strong>Male</strong> or <strong>Female</strong></li>
+                        <li>Phone number should be 10 digits without country code</li>
+                        <li>All column headers must match exactly as shown above</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           {jobs.length === 0 ? (
@@ -256,6 +403,39 @@ const BulkEntryList = () => {
                   </div>
                 </div>
               ))}
+            </div>
+          )}
+
+          {/* Pagination */}
+          {pagination.totalPages >= 1 && (
+            <div className="flex items-center justify-between px-6 py-4 mt-6 bg-white rounded-2xl shadow-lg border border-gray-200">
+              <p className="text-sm text-gray-600">
+                Showing {pagination.currentPage * pagination.pageSize + 1} to{" "}
+                {Math.min(
+                  (pagination.currentPage + 1) * pagination.pageSize,
+                  pagination.totalItems
+                )}{" "}
+                of {pagination.totalItems} jobs
+              </p>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => handlePageChange(pagination.currentPage - 1)}
+                  disabled={pagination.currentPage === 0}
+                  className="p-2 rounded-lg border border-gray-300 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronLeft className="w-5 h-5 text-gray-600" />
+                </button>
+                <span className="px-4 py-2 text-sm font-medium text-gray-700">
+                  Page {pagination.currentPage + 1} of {pagination.totalPages}
+                </span>
+                <button
+                  onClick={() => handlePageChange(pagination.currentPage + 1)}
+                  disabled={pagination.last}
+                  className="p-2 rounded-lg border border-gray-300 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronRight className="w-5 h-5 text-gray-600" />
+                </button>
+              </div>
             </div>
           )}
         </div>

@@ -12,6 +12,7 @@ function Header() {
     navigate("/logout");
   };
 
+  
   const goToProfile = () => {
     navigate("/reviewer/profile");
   };
@@ -38,7 +39,7 @@ function Header() {
             )}
           </div>
           <span className="text-gray-800 font-medium">
-            {profileData.userName ? profileData.userName : "Admin"}
+            {profileData.userName ? profileData.userName : "Reviewer"}
           </span>
         </button>
         {isUserMenuOpen && (

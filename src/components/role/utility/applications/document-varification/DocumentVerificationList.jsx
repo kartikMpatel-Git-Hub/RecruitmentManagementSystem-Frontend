@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { FileText, Eye, CheckCircle, Trash2, MessageSquare, X } from 'lucide-react';
+import { FileText, Eye, CheckCircle, Trash2, MessageSquare, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import DocumentModal from './DocumentModal';
+import { useNavigate } from 'react-router-dom';
 
 function DocumentVerificationList({
   documentVerifications,
@@ -9,10 +10,15 @@ function DocumentVerificationList({
   setFilters,
   finalizeVerification,
   reviewDocument,
-  deleteDocument
+  deleteDocument,
+  userType,
+  pagination,
+  handlePageChange
 }) {
   const [selectedVerification, setSelectedVerification] = useState(null);
   const [showDocumentModal, setShowDocumentModal] = useState(false);
+  const [finalizingId, setFinalizingId] = useState(null);
+  const navigate = useNavigate()
 
   const getStatusBadge = (status) => {
     const statusColors = {
@@ -24,6 +30,10 @@ function DocumentVerificationList({
     return statusColors[status] || 'bg-gray-100 text-gray-800';
   };
 
+  const navigateToCandidate = (candidateId) => {
+    navigate(`/${userType.toLowerCase()}/candidates/${candidateId}?page=profile`);
+  };
+
   const handleViewDocuments = (verification) => {
     setSelectedVerification(verification);
     setShowDocumentModal(true);
@@ -32,6 +42,15 @@ function DocumentVerificationList({
   const handleCloseModal = () => {
     setShowDocumentModal(false);
     setSelectedVerification(null);
+  };
+
+  const handleFinalizeVerification = async (verificationId) => {
+    setFinalizingId(verificationId);
+    try {
+      await finalizeVerification(verificationId);
+    } finally {
+      setFinalizingId(null);
+    }
   };
 
   if (loading) {
@@ -91,6 +110,7 @@ function DocumentVerificationList({
               <tr>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-white">ID</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-white">Application ID</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-white">Candidate ID</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-white">Status</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-white">Verified By</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-white">Documents</th>
@@ -105,6 +125,11 @@ function DocumentVerificationList({
                   </td>
                   <td className="px-6 py-4">
                     <span className="text-gray-900 font-medium">{verification.applicationId}</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <button onClick={() => navigateToCandidate(verification.candidateId)} className="text-gray-900 font-medium hover:underline">
+                      <span className="text-gray-900 font-medium">#{verification.candidateId}</span> - View Profile
+                    </button>
                   </td>
                   <td className="px-6 py-4">
                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadge(verification.verificationStatus)}`}>
@@ -131,13 +156,18 @@ function DocumentVerificationList({
                       </button>
                       {verification.verificationStatus !== 'APPROVED' && verification.verificationStatus !== 'REJECTED' && (
                         <button
-                          onClick={() => finalizeVerification(verification.documentVerificationId)}
-                          className="group relative p-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-lg hover:from-slate-700 hover:to-slate-800 transition-all shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
+                          onClick={() => handleFinalizeVerification(verification.documentVerificationId)}
+                          disabled={finalizingId === verification.documentVerificationId}
+                          className={`group relative p-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-lg hover:from-slate-700 hover:to-slate-800 transition-all shadow-sm hover:shadow-md transform hover:-translate-y-0.5 ${finalizingId === verification.documentVerificationId ? 'opacity-70 cursor-not-allowed' : ''}`}
                           title="Finalize Verification"
                         >
-                          <CheckCircle className="w-4 h-4" />
+                          {finalizingId === verification.documentVerificationId ? (
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          ) : (
+                            <CheckCircle className="w-4 h-4" />
+                          )}
                           <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                            Finalize Verification
+                            {finalizingId === verification.documentVerificationId ? 'Processing...' : 'Finalize Verification'}
                           </span>
                         </button>
                       )}
@@ -147,6 +177,39 @@ function DocumentVerificationList({
               ))}
             </tbody>
           </table>
+        )}
+
+        {/* Pagination */}
+        {pagination && pagination.totalPages >= 1 && (
+          <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-gray-50">
+            <p className="text-sm text-gray-600">
+              Showing {pagination.currentPage * pagination.pageSize + 1} to{" "}
+              {Math.min(
+                (pagination.currentPage + 1) * pagination.pageSize,
+                pagination.totalItems
+              )}{" "}
+              of {pagination.totalItems} verifications
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => handlePageChange(pagination.currentPage - 1)}
+                disabled={pagination.currentPage === 0}
+                className="p-2 rounded-lg border border-gray-300 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronLeft className="w-5 h-5 text-gray-600" />
+              </button>
+              <span className="px-4 py-2 text-sm font-medium text-gray-700">
+                Page {pagination.currentPage + 1} of {pagination.totalPages}
+              </span>
+              <button
+                onClick={() => handlePageChange(pagination.currentPage + 1)}
+                disabled={pagination.last}
+                className="p-2 rounded-lg border border-gray-300 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronRight className="w-5 h-5 text-gray-600" />
+              </button>
+            </div>
+          </div>
         )}
       </div>
 

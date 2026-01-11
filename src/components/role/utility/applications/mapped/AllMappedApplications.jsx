@@ -17,6 +17,9 @@ import {
   Pause,
   Clock,
   FileText,
+  ChevronLeft,
+  ChevronRight,
+  ExternalLink,
 } from "lucide-react";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -26,28 +29,27 @@ import PositionModal from "../modal/PositionModal";
 import { currencyCalculate } from "../../until/AmountCalculation";
 
 const AllMappedApplications = () => {
-  const { authToken } = useContext(AuthContext);
+  const { authToken, userType } = useContext(AuthContext);
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const { positionId } = useParams("positionId");
 
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("ALL");
+
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
+  const pageSize = 20;
   const [showThresholdModal, setShowThresholdModal] = useState(false);
   const [thresholdScore, setThresholdScore] = useState(50);
 
-  const [showProfileModal, setShowProfileModal] = useState(false);
-  const [showPositionModal, setShowPositionModal] = useState(false);
-  const [candidateProfile, setCandidateProfile] = useState(null);
-  const [candidateEducations, setCandidateEducations] = useState([]);
-  const [candidateSkills, setCandidateSkills] = useState([]);
-  const [position, setPosition] = useState(null);
-  const [profileLoading, setProfileLoading] = useState(false);
-  const [positionLoading, setPositionLoading] = useState(false);
+  const handleOpenProfile = (candidateId) => {
+    if (candidateId)
+      navigate(`/${userType}/candidates/${candidateId}?page=profile`);
+  };
+  const handleOpenPosition = (positionId) => {
+    if (positionId) navigate(`/${userType}/positions/${positionId}`);
+  };
 
   const fetchApplications = async () => {
     if (!positionId) return;
@@ -56,13 +58,16 @@ const AllMappedApplications = () => {
         `http://localhost:8080/applications/mapped/position/${positionId}`,
         {
           headers: { Authorization: `Bearer ${authToken}` },
-          params: { page, size: 20 },
+          params: { page, size: pageSize },
         }
       );
       setApplications(
         response.data.data || response.data.content || response.data
       );
       setTotalPages(response.data.totalPages || 0);
+      setTotalItems(
+        response.data.totalItems || response.data.totalElements || 0
+      );
     } catch (error) {
       console.error("Error fetching applications:", error);
       toast.error("Failed to fetch applications");
@@ -127,100 +132,7 @@ const AllMappedApplications = () => {
 
   const getFilteredApplications = () => {
     let filtered = applications;
-
-    if (statusFilter !== "ALL") {
-      filtered = filtered.filter(
-        (app) => app.applicationStatus?.applicationStatus === statusFilter
-      );
-    }
-
-    if (searchTerm) {
-      filtered = filtered.filter(
-        (app) =>
-          app.applicationId.toString().includes(searchTerm) ||
-          app.candidateId.toString().includes(searchTerm)
-      );
-    }
-
     return filtered;
-  };
-
-  const openProfileModal = async (candidateId) => {
-    setProfileLoading(true);
-    setShowProfileModal(true);
-    try {
-      const [candidateResponse, educationResponse, skillsResponse] =
-        await Promise.all([
-          axios.get(`http://localhost:8080/candidates/${candidateId}`, {
-            headers: { Authorization: `Bearer ${authToken}` },
-          }),
-          axios.get(
-            `http://localhost:8080/candidate-educations/candidate/${candidateId}`,
-            {
-              headers: { Authorization: `Bearer ${authToken}` },
-            }
-          ),
-          axios.get(
-            `http://localhost:8080/candidate-skills/candidate/${candidateId}`,
-            {
-              headers: { Authorization: `Bearer ${authToken}` },
-            }
-          ),
-        ]);
-      setCandidateProfile(candidateResponse.data);
-      setCandidateEducations(educationResponse.data.data || []);
-      setCandidateSkills(skillsResponse.data.data || []);
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to load candidate profile");
-    } finally {
-      setProfileLoading(false);
-    }
-  };
-
-  const closeProfileModal = () => {
-    setShowProfileModal(false);
-    setCandidateProfile(null);
-    setCandidateEducations([]);
-    setCandidateSkills([]);
-  };
-
-  const openPositionModal = async (positionId) => {
-    if (!positionId) return;
-    setPositionLoading(true);
-    setShowPositionModal(true);
-    try {
-      const response = await axios.get(
-        `http://localhost:8080/positions/${positionId}`,
-        {
-          headers: { Authorization: `Bearer ${authToken}` },
-        }
-      );
-      setPosition(response.data);
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to load position");
-    } finally {
-      setPositionLoading(false);
-    }
-  };
-
-  const closePositionModal = () => {
-    setShowPositionModal(false);
-    setPosition(null);
-  };
-
-  const getStatusIcon = (status) => {
-    switch (status?.toLowerCase()) {
-      case "open":
-        return <CheckCircle className="w-5 h-5 text-green-500" />;
-      case "closed":
-        return <XCircle className="w-5 h-5 text-red-500" />;
-      case "on_hold":
-        return <Pause className="w-5 h-5 text-yellow-500" />;
-      default:
-        return <Clock className="w-5 h-5 text-gray-500" />;
-    }
   };
 
   useEffect(() => {
@@ -259,17 +171,15 @@ const AllMappedApplications = () => {
 
               <div className="flex flex-col sm:flex-row gap-4">
                 <button
-                  onClick={
-                    ()=>navigate(`../${positionId}/applications`)
-                  }
+                  onClick={() => navigate(`../${positionId}/applications`)}
                   className="mx-3 inline-flex gap-2 px-4 py-4 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-xl hover:from-slate-700 hover:to-slate-800 transition-all font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                  >
+                >
                   <FileText className="w-5 h-5" />
                   View Applications
                 </button>
                 <button
-                  onClick={
-                    ()=>navigate(`../${positionId}/applications/shortlist`)
+                  onClick={() =>
+                    navigate(`../${positionId}/applications/shortlist`)
                   }
                   className="mx-3 inline-flex gap-2 px-4 py-4 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-xl hover:from-slate-700 hover:to-slate-800 transition-all font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                 >
@@ -333,18 +243,31 @@ const AllMappedApplications = () => {
                           #{app.applicationId}
                         </td>
                         <td className="px-6 py-4">
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm text-gray-700">
-                              #{app.candidateId}
-                            </span>
-                          </div>
+                          <button
+                            onClick={() => handleOpenProfile(app.candidateId)}
+                            className="flex items-center gap-2 text-slate-700 hover:text-slate-900 font-medium transition-colors group"
+                          >
+                            <User className="w-4 h-4" />
+                            <span>Candidate #{app.candidateId}</span>
+                            <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          </button>
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
-                            <Star className="w-4 h-4 text-yellow-500" />
-                            <span className="text-sm font-medium">
-                              {app.matchingScore
-                                ? `${app.matchingScore.toFixed(1)}%`
+                            <div className="w-16 bg-gray-200 rounded-full h-2">
+                              <div
+                                className="bg-gradient-to-r from-slate-600 to-slate-800 h-2 rounded-full"
+                                style={{
+                                  width: `${Math.min(
+                                    app.matchScore || 0,
+                                    100
+                                  )}%`,
+                                }}
+                              ></div>
+                            </div>
+                            <span className="text-sm font-medium text-gray-700">
+                              {app.matchScore
+                                ? `${app.matchScore.toFixed(0)}%`
                                 : "N/A"}
                             </span>
                           </div>
@@ -373,14 +296,14 @@ const AllMappedApplications = () => {
                         <td className="px-6 py-4">
                           <div className="flex gap-3">
                             <button
-                              onClick={() => openProfileModal(app.candidateId)}
+                              onClick={() => handleOpenProfile(app.candidateId)}
                               className="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors"
                               title="View Profile"
                             >
                               <User className="w-4 h-4" />
                             </button>
                             <button
-                              onClick={() => openPositionModal(app.positionId)}
+                              onClick={() => handleOpenPosition(app.positionId)}
                               className="p-1 text-yellow-600 hover:bg-blue-50 rounded transition-colors"
                               title="View Position"
                             >
@@ -410,27 +333,32 @@ const AllMappedApplications = () => {
               </div>
 
               {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="px-6 py-4 border-t border-gray-200 flex justify-between items-center">
-                  <div className="text-sm text-gray-600">
-                    Page {page + 1} of {totalPages}
-                  </div>
-                  <div className="flex gap-2">
+              {totalPages >= 1 && (
+                <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-gray-50">
+                  <p className="text-sm text-gray-600">
+                    Showing {page * pageSize + 1} to{" "}
+                    {Math.min((page + 1) * pageSize, totalItems)} of{" "}
+                    {totalItems} applications
+                  </p>
+                  <div className="flex items-center gap-2">
                     <button
                       onClick={() => setPage((p) => Math.max(0, p - 1))}
                       disabled={page === 0}
-                      className="px-3 py-1 text-sm border rounded-lg disabled:opacity-50"
+                      className="p-2 rounded-lg border border-gray-300 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
-                      Previous
+                      <ChevronLeft className="w-5 h-5 text-gray-600" />
                     </button>
+                    <span className="px-4 py-2 text-sm font-medium text-gray-700">
+                      Page {page + 1} of {totalPages}
+                    </span>
                     <button
                       onClick={() =>
                         setPage((p) => Math.min(totalPages - 1, p + 1))
                       }
                       disabled={page >= totalPages - 1}
-                      className="px-3 py-1 text-sm border rounded-lg disabled:opacity-50"
+                      className="p-2 rounded-lg border border-gray-300 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
-                      Next
+                      <ChevronRight className="w-5 h-5 text-gray-600" />
                     </button>
                   </div>
                 </div>
@@ -511,28 +439,6 @@ const AllMappedApplications = () => {
             </div>
           </div>
         </div>
-      )}
-
-      {/* Modals */}
-      {showProfileModal && (
-        <ProfileModal
-          closeProfileModal={closeProfileModal}
-          profileLoading={profileLoading}
-          candidateProfile={candidateProfile}
-          candidateSkills={candidateSkills}
-          candidateEducations={candidateEducations}
-        />
-      )}
-
-      {showPositionModal && (
-        <PositionModal
-          closePositionModal={closePositionModal}
-          position={position}
-          positionLoading={positionLoading}
-          getStatusIcon={getStatusIcon}
-          getStatusBadge={getStatusBadge}
-          currencyCalculat={currencyCalculate}
-        />
       )}
     </Layout>
   );

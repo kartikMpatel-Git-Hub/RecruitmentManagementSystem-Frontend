@@ -4,15 +4,24 @@ import { AuthContext } from "../../../../context/AuthContext";
 import { toast } from "react-toastify";
 import DocumentVerificationList from "./DocumentVerificationList";
 import Layout from "../../Layout";
+import { useNavigate } from "react-router-dom";
 
 function DocumentVerification() {
-  const { authToken } = useContext(AuthContext);
+  const { authToken ,userType} = useContext(AuthContext);
+  const navigat = useNavigate()
   const [documentVerifications, setDocumentVerifications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [pagination, setPagination] = useState({
+    currentPage: 0,
+    pageSize: 10,
+    totalItems: 0,
+    totalPages: 0,
+    last: false,
+  });
   const [filters, setFilters] = useState({
     status: "",
     page: 0,
-    size: 30,
+    size: 10,
     sortBy: "documentVerificationId",
     sortDir: "desc",
   });
@@ -34,7 +43,9 @@ function DocumentVerification() {
         }
       );
 
-      setDocumentVerifications(response.data.data || []);
+      const { data, currentPage, pageSize, totalItems, totalPages, last } = response.data;
+      setDocumentVerifications(data || []);
+      setPagination({ currentPage, pageSize, totalItems, totalPages, last });
     } catch (error) {
       console.error("Error fetching document verifications:", error);
     } finally {
@@ -102,9 +113,17 @@ function DocumentVerification() {
     }
   };
 
+  const handlePageChange = (newPage) => {
+    if (newPage >= 0 && newPage < pagination.totalPages) {
+      setFilters(prev => ({ ...prev, page: newPage }));
+    }
+  };
+
   useEffect(() => {
+    if(!authToken) 
+      navigat("/login");
     fetchDocumentVerifications();
-  }, [filters]);
+  }, [filters, authToken]);
 
   return (
     <Layout>
@@ -116,6 +135,9 @@ function DocumentVerification() {
         finalizeVerification={finalizeVerification}
         reviewDocument={reviewDocument}
         deleteDocument={deleteDocument}
+        userType={userType}
+        pagination={pagination}
+        handlePageChange={handlePageChange}
       />
     </Layout>
   );

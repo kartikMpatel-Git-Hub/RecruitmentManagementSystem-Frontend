@@ -38,7 +38,7 @@ function Header() {
             )}
           </div>
           <span className="text-gray-800 font-medium">
-            {profileData.userName ? profileData.userName : "Admin"}
+            {profileData.userName ? profileData.userName : "Interviewer"}
           </span>
         </button>
         {isUserMenuOpen && (

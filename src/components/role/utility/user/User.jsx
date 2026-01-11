@@ -11,6 +11,13 @@ function User() {
   const navigate = useNavigate();
   const { userType, authToken } = useContext(AuthContext);
   const [users, setUsers] = useState([]);
+  const [pagination, setPagination] = useState({
+    currentPage: 0,
+    pageSize: 10,
+    totalItems: 0,
+    totalPages: 0,
+    last: false,
+  });
 
   const updateUserStatus = async (status, userId) => {
     if(!authToken)
@@ -32,7 +39,6 @@ function User() {
       toast.success("User Status Updated Successfully!", { position: "top-right", autoClose: 3000 });
     } catch (error) {
       toast.error(error?.response?.data?.message || "User Status Update failed!", { position: "top-right", autoClose: 3000 });
-      console.error(error);
     }
   };
 
@@ -67,25 +73,51 @@ function User() {
     }
   };
 
+  const createUser = async (userData) => {
+    if(!authToken)
+      navigate("/login");
+    try {
+      await axios.post("http://localhost:8080/users", userData, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+      toast.success("User Created Successfully! Credentials sent to email.", { position: "top-right", autoClose: 3000 });
+      fetchUsers(pagination.currentPage);
+      return true;
+    } catch (error) {
+      toast.error(error?.response?.data?.message || error?.response?.data || "User Creation failed!", { position: "top-right", autoClose: 3000 });
+      console.error(error);
+      return false;
+    }
+  };
+
   useEffect(() => {
     if (userType !== "admin") 
       navigate("/");
   }, [userType]);
 
-  const fetchUsers = async () => {
+  const fetchUsers = async (page = 0) => {
     if(!authToken)
       navigate("/login");
     try {
       const response = await axios.get("http://localhost:8080/users/non-candidates", {
         headers: { Authorization: `Bearer ${authToken}` },
+        params: { page, size: pagination.pageSize },
       });
-      setUsers(response.data.data || []);
+      const { data, currentPage, pageSize, totalItems, totalPages, last } = response.data;
+      setUsers(data || []);
+      setPagination({ currentPage, pageSize, totalItems, totalPages, last });
     } catch (error) {
       console.error("Error fetching users:", error);
     }
   };
 
   useEffect(() => { fetchUsers(); }, []);
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 0 && newPage < pagination.totalPages) {
+      fetchUsers(newPage);
+    }
+  };
 
   return (
     <AdminLayout>
@@ -94,6 +126,9 @@ function User() {
         onUpdate={updateUserStatus} 
         onDelete={deleteUser}
         onView={viewUser}
+        onCreate={createUser}
+        pagination={pagination}
+        onPageChange={handlePageChange}
       />
     </AdminLayout>
   );
